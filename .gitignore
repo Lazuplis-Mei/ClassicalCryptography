@@ -1,0 +1,9 @@
+
+.vs
+ClassicalCryptography/bin
+ClassicalCryptography/obj
+ClassicalCryptographyInterfaces/bin
+ClassicalCryptographyInterfaces/obj
+ClassicalCryptographyTest/bin
+ClassicalCryptographyTest/obj
+

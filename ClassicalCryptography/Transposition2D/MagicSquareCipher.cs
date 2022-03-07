@@ -32,7 +32,7 @@ public class MagicSquareCipher : TranspositionCipher2D
     protected override ushort[,] Transpose(ushort[,] indexes)
     {
         int N = indexes.GetLength(0);
-        if (N % 2 == 1)//奇数阶幻方，loubere法
+        if (N % 2 == 1)//奇数阶幻方，louberel法
             LouberelMethod(indexes, N);
         else if (N % 4 == 0)//双偶阶幻方，对称交换法
             Exchange(indexes, N);
