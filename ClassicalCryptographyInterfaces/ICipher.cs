@@ -1,17 +1,5 @@
 ﻿namespace ClassicalCryptography.Interfaces;
 
-/*
- private readonly bool saveKey;
-    private readonly Dictionary<IKey<ushort[][]>, ushort[,]> keys;
-
-    public CycleTranspose(bool saveOrder = false)
-    {
-        saveKey = saveOrder;
-        keys = null!;
-        if (saveOrder) keys = new();
-    }
- 
- */
 /// <summary>
 /// 密码接口
 /// </summary>

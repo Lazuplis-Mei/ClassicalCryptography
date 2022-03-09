@@ -1,6 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition;
-using ClassicalCryptography.Transposition2D;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ClassicalCryptographyTest
@@ -17,22 +16,6 @@ namespace ClassicalCryptographyTest
         public void TestTriangle(string plainText, string cipherText)
         {
             var cipher = new TriangleCipher();
-            Assert.AreEqual(CipherType.Transposition, cipher.Type);
-
-            Assert.AreEqual(cipherText, cipher.Encrypt(plainText));
-            Assert.AreEqual(plainText, cipher.Decrypt(cipherText)[..plainText.Length]);
-        }
-    }
-
-    [TestClass]
-    public class MagicSquareTest
-    {
-        [TestMethod]
-        [DataRow("123456789", "816357492")]
-        [DataRow("0123456789ABCDEF", "0ED3B56879A4C21F")]
-        public void TestMagicSquare(string plainText, string cipherText)
-        {
-            var cipher = new MagicSquareCipher();
             Assert.AreEqual(CipherType.Transposition, cipher.Type);
 
             Assert.AreEqual(cipherText, cipher.Encrypt(plainText));
