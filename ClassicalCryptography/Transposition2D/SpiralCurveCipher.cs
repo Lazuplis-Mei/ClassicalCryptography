@@ -7,7 +7,7 @@ namespace ClassicalCryptography.Transposition2D;
 /// 螺旋曲线密码
 /// </summary>
 [Introduction("螺旋曲线密码", "文本按照左上=>右上=>右下=>左下=>左上的顺序加密文本。")]
-public class SpiralCurveCipher : TranspositionCipher2D<int>
+public partial class SpiralCurveCipher : TranspositionCipher2D<int>
 {
     /// <summary>
     /// 螺旋曲线密码

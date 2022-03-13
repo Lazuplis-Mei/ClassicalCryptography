@@ -29,4 +29,12 @@ public static class Globals
         return quotient;
     }
 
+    /// <summary>
+    /// 向上取平方根
+    /// </summary>
+    public static int SqrtCeil(this int number)
+    {
+        return (int)Math.Ceiling(Math.Sqrt(number));
+    }
+
 }

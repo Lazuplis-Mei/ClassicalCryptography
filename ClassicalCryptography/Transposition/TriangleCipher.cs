@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
+using ClassicalCryptography.Utils;
 
 namespace ClassicalCryptography.Transposition;
 
@@ -21,7 +22,7 @@ public class TriangleCipher : TranspositionCipher
     /// <param name="length">文本长度</param>
     protected override int PadLength(int length)
     {
-        int N = (int)Math.Ceiling(Math.Sqrt(length));
+        int N = length.SqrtCeil();
         return N * N;
     }
     /// <summary>

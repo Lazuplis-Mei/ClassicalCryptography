@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
+using ClassicalCryptography.Utils;
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
@@ -24,7 +25,7 @@ public class MagicSquareCipher : TranspositionCipher2D
     /// <param name="textLength">原文长度</param>
     protected override (int Width, int Height) Partition(int textLength)
     {
-        int N = (int)Math.Ceiling(Math.Sqrt(textLength));
+        int N = textLength.SqrtCeil();
         return (N, N);
     }
 
@@ -35,9 +36,9 @@ public class MagicSquareCipher : TranspositionCipher2D
     protected override ushort[,] Transpose(ushort[,] indexes)
     {
         int N = indexes.GetLength(0);
-        if (N % 2 == 1)//奇数阶幻方，louberel法
+        if ((N & 1) == 1)//奇数阶幻方，louberel法
             LouberelMethod(indexes, N);
-        else if (N % 4 == 0)//双偶阶幻方，对称交换法
+        else if ((N & 3) == 0)//双偶阶幻方，对称交换法
             Exchange(indexes, N);
         else
             StracheyMethod(indexes, N);

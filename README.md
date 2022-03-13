@@ -316,3 +316,39 @@ tmmveeewepeatlmt
 根据顺序按行读出
 0123BCD4AFE59876
 ```
+
+---
+
+### ArnoldCatMapCipher
+
+* 猫映射变换密码
+* 无密钥
+* 可能需要补充字符(默认`)
+
+  1. 文字排列成N^2的方阵
+  2. x=>2x+y(mod N)
+  3. y=>x+y(mod N)
+  4. 根据变换后的顺序加密文本
+
+---
+
+### VBakersMapCipher
+
+* 魔改Baker's映射变换密码
+* 无密钥
+* 可能需要补充字符(默认`)
+* 具体方法请前往[VBakersMapCipher.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Transposition2D/VBakersMapCipher.cs)查看代码
+
+### JigsawCipher
+
+* 锯齿分割密码
+* 有密钥(文本方阵的一个整数分拆)
+* 可能需要补充字符(默认`)
+* 具体方法请前往[JigsawCipher.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Transposition2D/JigsawCipher.cs)查看代码
+
+  1. 文字排列成N^2的方阵
+  2. 取整数N的一个分拆{P1,P2,...,Pn}
+  3. 方阵竖着划分成n个块
+  4. 每一个块按顺序分割成Pi个面积为N的锯齿拼图
+  5. 余项使用右对齐
+  6. 根据顺序写入文字
