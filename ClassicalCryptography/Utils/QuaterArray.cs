@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Utils;
+using System;
 using System.Collections;
 
 namespace ClassicalCryptography.Transposition;
@@ -36,13 +37,13 @@ public class QuaterArray : IEnumerable<int>
     /// </summary>
     /// <param name="index"></param>
     /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
+    /// <exception cref="IndexOutOfRangeException"></exception>
     public int this[int index]
     {
         get
         {
             if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new IndexOutOfRangeException();
             byte val = array[index >> 2];
             return (index & 0B11) switch
             {
@@ -56,7 +57,7 @@ public class QuaterArray : IEnumerable<int>
         set
         {
             if (index < 0 || index >= Count)
-                throw new ArgumentOutOfRangeException(nameof(index));
+                throw new IndexOutOfRangeException();
             value &= 0B11;
             switch (index & 0B11)
             {

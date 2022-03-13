@@ -43,7 +43,7 @@ public class HilbertCurveCipher : TranspositionCipher2D
         }
         int n = N >> 1;
         HilbertCurve(indexes, n);//左上角初始化
-        RightPart(indexes, n);
+        RestPart(indexes, n);
         FlipLeftTop(indexes, n);
         FlipLeftBottom(indexes, n);
         static void InternalInit(ushort[,] indexes)
@@ -53,7 +53,7 @@ public class HilbertCurveCipher : TranspositionCipher2D
             indexes[1, 1] = 2;
             indexes[0, 1] = 3;
         }
-        static void RightPart(ushort[,] indexes, int n)
+        static void RestPart(ushort[,] indexes, int n)
         {
             for (int x = 0; x < n; x++)
             {
