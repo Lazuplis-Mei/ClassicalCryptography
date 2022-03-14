@@ -8,10 +8,12 @@ namespace ClassicalCryptographyTest
     public class JigsawCipherTest
     {
         [TestMethod]
-        [DataRow("0123456789ABCDEF", "045C167D289E3ABF", "1,2,1")]
-        [DataRow("0123456789ABCDEFGHIJKLMNO", "01ABC23FDE54GHI67KLJ89MNO", "2,3")]
+        [DataRow("0123456789ABCDEF", "F763E542DBA1C980", "1,2,1")]
+        [DataRow("0123456789ABCDEFGHIJKLMNO", "JI432HG910OF876NMED5LKCBA", "2,3")]
         [DataRow("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                 "0123OP6745QR89ABSTCDEFUVIJGHWXKLMNYZ", "4,2")]
+                 "HGFE54NMDC32LKJI10TSRQBAZYPO98XWVU76", "4,2")]
+        [DataRow("Love,and the same charcoal,burning,needs to find ways to ask cooling.Allow an arbitrary,it is necessary to heart charred.",
+                 ".ilooc oht d ksa t dnaena wosd,evrollA.eeroLr,yrgnn,ahcaartibtg emhsera  sas ccen syanie ai tiw nruteh otdnb,lr yrasifaoc", "1,5,2,3")]
         public void TestJigsawCipher(string plainText, string cipherText, string keyStr)
         {
             var cipher = new JigsawCipher();

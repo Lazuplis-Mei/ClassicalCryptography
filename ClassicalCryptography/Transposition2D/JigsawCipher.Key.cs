@@ -43,7 +43,10 @@ public partial class JigsawCipher
         public static IKey<ushort[]> GenerateKey(int textLength)
         {
             int N = textLength.SqrtCeil();
-            int n = Random.Shared.Next(N) + 1;
+            /*
+            int n = (N >= 5 && RandomHelper.TrueOrFalse) ?
+                N / 4 + Random.Shared.Next(N / 4) : 
+                Random.Shared.Next(N) + 1;//这里真实的分布可能更接近于Gamma分布
             ushort[] partition = new ushort[n];
             for (int i = 0; i < n - 1; i++)
             {
@@ -52,6 +55,15 @@ public partial class JigsawCipher
             }
             partition[n - 1] = (ushort)N;
             return new Key(partition);
+            */
+            var partition = new List<ushort>();
+            while (N > 0)
+            {
+                ushort n = (ushort)Random.Shared.Next(1, N);
+                partition.Add(n);
+                N -= n;
+            }
+            return new Key(partition.ToArray());
         }
 
         /// <summary>
@@ -61,6 +73,8 @@ public partial class JigsawCipher
         public static BigInteger GetKeySpace(int textLength)
         {
             int N = textLength.SqrtCeil();
+            return BigInteger.One << (N - 1);
+            /*
             var arr = new BigInteger[N];
             arr[0] = BigInteger.One;
             for (int i = 1; i < arr.Length; i++)
@@ -78,6 +92,7 @@ public partial class JigsawCipher
                 }
             }
             return arr[N - 1];
+            */
         }
         /// <summary>
         /// 字符串形式
