@@ -126,7 +126,7 @@ public partial class CycleTranspose
         /// <param name="textLength">加密内容的长度</param>
         public static BigInteger GetKeySpace(int textLength)
         {
-            return PermutHelper.Factorial(textLength);
+            return MathExtension.Factorial(textLength);
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace ClassicalCryptography.Transposition;
+namespace ClassicalCryptography.Utils;
 
 internal class LinkedList
 {

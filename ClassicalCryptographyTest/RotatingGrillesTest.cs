@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Transposition;
 using ClassicalCryptography.Transposition2D;
+using ClassicalCryptography.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;

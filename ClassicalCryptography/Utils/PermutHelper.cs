@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using static ClassicalCryptography.Utils.MathExtension;
 
 namespace ClassicalCryptography.Utils
 {
@@ -14,32 +15,6 @@ namespace ClassicalCryptography.Utils
     public static class PermutHelper
     {
 
-        /// <summary>
-        /// 产生不大于<paramref name="maxValue"/>的随机数
-        /// </summary>
-        /// <param name="maxValue">最大值</param>
-        public static BigInteger RandomBigInt(BigInteger maxValue)
-        {
-            if (maxValue < int.MaxValue)
-                return Random.Shared.Next((int)maxValue);
-            int byteCount = maxValue.GetByteCount(true);
-            Span<byte> buffer = stackalloc byte[byteCount];
-            byte firstBit = (byte)(maxValue >> ((byteCount - 1) << 3));
-            buffer[0] = RandomHelper.RandomByte(firstBit);
-            Random.Shared.NextBytes(buffer[1..]);
-            return new BigInteger(buffer, true, true);
-        }
-
-        /// <summary>
-        /// 计算x的阶乘(朴素方法)
-        /// </summary>
-        public static BigInteger Factorial(int x)
-        {
-            var result = BigInteger.One;
-            for (int i = 2; i <= x; i++)
-                result *= i;
-            return result;
-        }
 
         /// <summary>
         /// 获得<paramref name="count"/>个数的第n个排列

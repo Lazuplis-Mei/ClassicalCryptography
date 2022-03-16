@@ -1,8 +1,6 @@
-﻿using ClassicalCryptography.Utils;
-using System;
-using System.Collections;
+﻿using System.Collections;
 
-namespace ClassicalCryptography.Transposition;
+namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 4进制数组

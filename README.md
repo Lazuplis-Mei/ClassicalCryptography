@@ -352,3 +352,15 @@ tmmveeewepeatlmt
   4. 每一个块按顺序分割成Pi个面积为N的锯齿拼图
   5. 余项使用右对齐
   6. 根据**特定的顺序**写入文字
+
+
+## Calculation
+
+自定义算法计算的密码。
+
+### ShortHide5
+
+* ShortHide5密码
+* 无密钥
+* [Standard Short Hide5(标准SH5)](https://www.bilibili.com/read/cv15660906)
+* [标准的1组SH5推荐字母表](https://www.bilibili.com/read/cv15676311)

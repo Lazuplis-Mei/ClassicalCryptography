@@ -46,7 +46,7 @@ public partial class JigsawCipher
             /*
             int n = (N >= 5 && RandomHelper.TrueOrFalse) ?
                 N / 4 + Random.Shared.Next(N / 4) : 
-                Random.Shared.Next(N) + 1;//这里真实的分布可能更接近于Gamma分布
+                Random.Shared.Next(N) + 1;
             ushort[] partition = new ushort[n];
             for (int i = 0; i < n - 1; i++)
             {
@@ -74,25 +74,6 @@ public partial class JigsawCipher
         {
             int N = textLength.SqrtCeil();
             return BigInteger.One << (N - 1);
-            /*
-            var arr = new BigInteger[N];
-            arr[0] = BigInteger.One;
-            for (int i = 1; i < arr.Length; i++)
-            {
-                for (int j = 1, ri = 0; ; j++)
-                {
-                    ri += 2 * j - 1;
-                    if (i < ri)
-                        break;
-                    arr[i] += (j % 2 == 0) ? -arr[i - ri] : arr[i - ri];
-                    ri += j;
-                    if (i < ri)
-                        break;
-                    arr[i] += (j % 2 == 0) ? -arr[i - ri] : arr[i - ri];
-                }
-            }
-            return arr[N - 1];
-            */
         }
         /// <summary>
         /// 字符串形式

@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition;
+using System.Numerics;
 
 namespace ClassicalCryptography.Utils
 {
@@ -54,6 +55,41 @@ namespace ClassicalCryptography.Utils
             for (int i = 0; i < count; i++)
                 array[i] = TwoBits;
             return array;
+        }
+
+
+        /// <summary>
+        /// 产生不大于<paramref name="maxValue"/>的随机数
+        /// </summary>
+        /// <param name="maxValue">最大值</param>
+        public static BigInteger RandomBigInt(BigInteger maxValue)
+        {
+            if (maxValue < int.MaxValue)
+                return Random.Shared.Next((int)maxValue);
+            int byteCount = maxValue.GetByteCount(true);
+            Span<byte> buffer = stackalloc byte[byteCount];
+            byte firstBit = (byte)(maxValue >> ((byteCount - 1) << 3));
+            buffer[0] = RandomByte(firstBit);
+            Random.Shared.NextBytes(buffer[1..]);
+            return new BigInteger(buffer, true, true);
+        }
+
+        /// <summary>
+        /// 随机的列表项目
+        /// </summary>
+        public static T RandomItem<T>(this List<T> list)
+        {
+            return list[Random.Shared.Next(list.Count)];
+        }
+
+        /// <summary>
+        /// 返回并移除随机的列表项目
+        /// </summary>
+        public static T PopRandomItem<T>(this List<T> list)
+        {
+            var item = list.RandomItem();
+            list.Remove(item);
+            return item;
         }
     }
 }

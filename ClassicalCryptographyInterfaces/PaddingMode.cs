@@ -6,7 +6,7 @@
 public enum PaddingMode
 {
     /// <summary>
-    /// 使用<see cref="TranspositionCipherHelper.PaddingChar"/>
+    /// 使用<see cref="TranspositionHelper.PaddingChar"/>
     /// </summary>
     SingleChar,
     /// <summary>

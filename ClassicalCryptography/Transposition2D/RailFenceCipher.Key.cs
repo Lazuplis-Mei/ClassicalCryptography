@@ -93,7 +93,7 @@ public partial class RailFenceCipher
         /// <param name="textLength">加密内容的长度</param>
         public static BigInteger GetKeySpace(int textLength)
         {
-            return PermutHelper.Factorial(textLength);
+            return MathExtension.Factorial(textLength);
         }
         /// <summary>
         /// 字符串形式

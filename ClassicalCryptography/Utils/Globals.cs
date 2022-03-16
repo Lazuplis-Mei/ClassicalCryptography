@@ -18,23 +18,13 @@ public static class Globals
     public static readonly string VBase64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 
     /// <summary>
-    /// 向上整除
+    /// 数字和小写字母组成的36进制
     /// </summary>
-    /// <param name="dividend">被除数</param>
-    /// <param name="divisor">除数</param>
-    public static int DivCeil(this int dividend, int divisor)
-    {
-        int quotient = dividend / divisor;
-        quotient += dividend % divisor == 0 ? 0 : 1;
-        return quotient;
-    }
+    public static readonly string Base36 = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     /// <summary>
-    /// 向上取平方根
+    /// 26个大写字母
     /// </summary>
-    public static int SqrtCeil(this int number)
-    {
-        return (int)Math.Ceiling(Math.Sqrt(number));
-    }
+    public static readonly string ULetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 }

@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition;
+using ClassicalCryptography.Utils;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
