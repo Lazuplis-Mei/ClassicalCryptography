@@ -78,6 +78,8 @@ public class ShortHide5 : ICipher<string, string>
     /// <param name="plainText">纯英文单词</param>
     public static SH5 EncryptSH5(string plainText)
     {
+        if (plainText.Length - GetPrefixCount(plainText) > 28)
+            throw new ArgumentException("字符串太长", nameof(plainText));
         var results = EncryptSingles(plainText);
         if (results.Count > 0)
             return results.Count == 1 ? results[0] : results.RandomItem();
