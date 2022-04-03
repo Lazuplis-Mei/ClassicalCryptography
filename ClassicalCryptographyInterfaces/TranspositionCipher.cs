@@ -51,7 +51,8 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
         ushort[] order;
         if (StoreKey)
         {
-            if (keys == null) keys = new();
+            if (keys == null)
+                keys = new();
             if (!keys.ContainsKey(key))
             {
                 order = new ushort[textLength];
@@ -60,7 +61,8 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
                 order = Transpose(order, key);
                 keys.Add(key, order);
             }
-            else order = keys[key];
+            else
+                order = keys[key];
         }
         else
         {
@@ -120,6 +122,20 @@ public abstract class TranspositionCipher : ICipher<string, string>
         if (FillOrder)
             order.FillOrder();
         return Transpose(order).AssembleText(plainText);
+    }
+
+    /// <summary>
+    /// 多重加密
+    /// </summary>
+    /// <param name="plainText">明文文本</param>
+    /// <param name="n">加密次数</param>
+    public string MultiEncrypt(string plainText, int n)
+    {
+        ushort[] order = new ushort[PadLength(plainText.Length)];
+        if (FillOrder)
+            order.FillOrder();
+        order = Transpose(order).MultiTranspose(n);
+        return order.AssembleText(plainText);
     }
     /// <summary>
     /// 解密指定的文本

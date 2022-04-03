@@ -1,4 +1,8 @@
 ﻿namespace ClassicalCryptography.Interfaces;
+using System.Collections;
+using System.Collections.Generic;
+
+
 
 /// <summary>
 /// 换位密码使用的扩展方法
@@ -156,4 +160,111 @@ public static class TranspositionHelper
         return new string(buffer);
     }
 
+    /// <summary>
+    /// 获得周期
+    /// </summary>
+    /// <param name="order">顺序</param>
+    public static int GetPeriod(ushort[] order)
+    {
+        var cycles = new List<int>();
+        var visited = new BitArray(order.Length);
+        for (int i = 0; i < order.Length; i++)
+        {
+            if (visited[i])
+                continue;
+            int cycle = 0;
+            int next = i;
+            do
+            {
+                visited[next] = true;
+                next = order[next];
+                cycle++;
+            }
+            while (next != i);
+            cycles.Add(cycle);
+        }
+
+        return LCM(cycles.ToArray().AsSpan());
+    }
+
+    /// <summary>
+    /// 获得周期
+    /// </summary>
+    /// <param name="order2D">顺序</param>
+    public static int GetPeriod(ushort[,] order2D)
+    {
+        ushort[] order = new ushort[order2D.Length];
+        int width = order2D.GetLength(0);
+        int height = order2D.GetLength(1);
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                order[x * height + y] = order2D[x, y];
+        return GetPeriod(order);
+    }
+
+    /// <summary>
+    /// 多重置换
+    /// </summary>
+    /// <param name="order">顺序</param>
+    /// <param name="n">次数</param>
+    public static ushort[] MultiTranspose(this ushort[] order, int n)
+    {
+        int p = GetPeriod(order);
+        if (p == 1)
+            return order;
+        n %= p;
+        ushort[] result = new ushort[order.Length];
+        result.FillOrder();
+        ushort[] temp = new ushort[order.Length];
+        while (n != 0)
+        {
+            if ((n & 1) == 1)
+            {
+                for (int i = 0; i < result.Length; i++)
+                    temp[i] = result[order[i]];
+                (temp, result) = (result, temp);
+            }
+            if (n == 1)
+                break;
+            for (int i = 0; i < order.Length; i++)
+                temp[i] = order[order[i]];
+            (temp, order) = (order, temp);
+            n >>= 1;
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 最小公倍数
+    /// </summary>
+    /// <param name="cycles"></param>
+    public static int LCM(Span<int> cycles)
+    {
+        if (cycles.Length == 1)
+            return cycles[0];
+        if (cycles.Length == 2)
+            return LCM(cycles[0], cycles[1]);
+        int mid = cycles.Length / 2;
+        return LCM(LCM(cycles[..mid]), LCM(cycles[mid..]));
+    }
+
+    /// <summary>
+    /// 最大公约数
+    /// </summary>
+    public static int GCD(int n, int m)
+    {
+        while (m != n)
+        {
+            if (m > n)
+                m -= n;
+            else
+                n -= m;
+        }
+        return m;
+    }
+
+    /// <summary>
+    /// 最小公倍数
+    /// </summary>
+    public static int LCM(int n, int m) => n * m / GCD(n, m);
 }
