@@ -17,4 +17,8 @@ public enum CipherType
     /// 计算的
     /// </summary>
     Calculation,
+    /// <summary>
+    /// 未定义的(如输出图像的)
+    /// </summary>
+    Undefined,
 }
