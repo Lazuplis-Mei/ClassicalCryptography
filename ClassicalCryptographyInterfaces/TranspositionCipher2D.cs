@@ -57,7 +57,8 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         ushort[,] order;
         if (StoreKey)
         {
-            if (keys == null) keys = new();
+            if (keys == null)
+                keys = new();
             if (!keys.ContainsKey(key))
             {
                 order = new ushort[width, height];
@@ -75,6 +76,36 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
                 order.FillOrderByRow();
             return Transpose(order, key);
         }
+    }
+
+    /// <summary>
+    /// 多重加密
+    /// </summary>
+    /// <param name="plainText">明文文本</param>
+    /// <param name="key">密钥</param>
+    /// <param name="n">加密次数</param>
+    public string MultiEncrypt(string plainText, IKey<T> key, int n)
+    {
+        ushort[,] order = GetOrder(plainText.Length, key);
+        order = order.MultiTranspose(n, ByColumn);
+        if (ByColumn)
+            return order.AssembleTextByColumn(plainText);
+        return order.AssembleTextByRow(plainText);
+    }
+
+    /// <summary>
+    /// 多重解密
+    /// </summary>
+    /// <param name="cipherText">密文文本</param>
+    /// <param name="key">密钥</param>
+    /// <param name="n">解密次数</param>
+    public string MultiDecrypt(string cipherText, IKey<T> key, int n)
+    {
+        ushort[,] order = GetOrder(cipherText.Length, key);
+        order = order.MultiTranspose(n, ByColumn);
+        if (ByColumn)
+            return order.AssembleTextByColumnInverse(cipherText);
+        return order.AssembleTextByRowInverse(cipherText);
     }
 
     /// <summary>
@@ -137,6 +168,41 @@ public abstract class TranspositionCipher2D : ICipher<string, string>
             return Transpose(order).AssembleTextByColumn(plainText);
         return Transpose(order).AssembleTextByRow(plainText);
     }
+
+    /// <summary>
+    /// 多重加密
+    /// </summary>
+    /// <param name="plainText">明文文本</param>
+    /// <param name="n">加密次数</param>
+    public string MultiEncrypt(string plainText, int n)
+    {
+        (int width, int height) = Partition(plainText.Length);
+        ushort[,] order = new ushort[width, height];
+        if (FillOrder)
+            order.FillOrderByRow();
+        order = Transpose(order).MultiTranspose(n, ByColumn);
+        if (ByColumn)
+            return order.AssembleTextByColumn(plainText);
+        return order.AssembleTextByRow(plainText);
+    }
+
+    /// <summary>
+    /// 多重解密
+    /// </summary>
+    /// <param name="cipherText">密文文本</param>
+    /// <param name="n">解密次数</param>
+    public string MultiDecrypt(string cipherText, int n)
+    {
+        (int width, int height) = Partition(cipherText.Length);
+        ushort[,] order = new ushort[width, height];
+        if (FillOrder)
+            order.FillOrderByRow();
+        order = Transpose(order).MultiTranspose(n, ByColumn);
+        if (ByColumn)
+            return order.AssembleTextByColumnInverse(cipherText);
+        return order.AssembleTextByRowInverse(cipherText);
+    }
+
     /// <summary>
     /// 解密指定的文本
     /// </summary>

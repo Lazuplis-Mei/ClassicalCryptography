@@ -1,6 +1,7 @@
 ﻿namespace ClassicalCryptography.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -57,6 +58,7 @@ public static class TranspositionHelper
     /// 填充二维数组的顺序(按列填充)
     /// </summary>
     /// <param name="order">顺序数组</param>
+    [Obsolete("如非必要，不要使用此方法，使用FillOrderByRow代替")]
     public static void FillOrderByColumn(this ushort[,] order)
     {
         int width = order.GetLength(0);
@@ -190,16 +192,46 @@ public static class TranspositionHelper
     /// <summary>
     /// 获得周期
     /// </summary>
-    /// <param name="order2D">顺序</param>
-    public static int GetPeriod(ushort[,] order2D)
+    /// <param name="order">顺序</param>
+    public static int GetPeriod(ushort[,] order)
     {
-        ushort[] order = new ushort[order2D.Length];
-        int width = order2D.GetLength(0);
-        int height = order2D.GetLength(1);
+        /*
+        //额外空间的方法
+        ushort[] order = new ushort[order.Length];
+        int width = order.GetLength(0);
+        int height = order.GetLength(1);
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-                order[x * height + y] = order2D[x, y];
+                order[x * height + y] = order[x, y];
         return GetPeriod(order);
+        */
+        int width = order.GetLength(0);
+        int height = order.GetLength(1);
+        var cycles = new List<int>();
+        var visited = new BitArray(order.Length);
+        for (int y = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                int cur = x * height + y;
+                if (visited[cur])
+                    continue;
+                int cycle = 0;
+                (int nx, int ny) = (x, y);
+                ushort next;
+                do
+                {
+                    visited[nx * height + ny] = true;
+                    next = order[nx, ny];
+                    nx = next / height;
+                    ny = next % height;
+                    cycle++;
+                }
+                while (next != cur);
+                cycles.Add(cycle);
+            }
+        }
+        return LCM(cycles.ToArray().AsSpan());
     }
 
     /// <summary>
@@ -209,6 +241,8 @@ public static class TranspositionHelper
     /// <param name="n">次数</param>
     public static ushort[] MultiTranspose(this ushort[] order, int n)
     {
+        if (n == 1)
+            return order;
         int p = GetPeriod(order);
         if (p == 1)
             return order;
@@ -234,18 +268,71 @@ public static class TranspositionHelper
         return result;
     }
 
+
+    /// <summary>
+    /// 多重置换(二维)
+    /// </summary>
+    /// <param name="order">顺序</param>
+    /// <param name="n">次数</param>
+    /// <param name="byColumn">按列</param>
+    public static ushort[,] MultiTranspose(this ushort[,] order, int n, bool byColumn = false)
+    {
+        if (n == 1)
+            return order;
+        int p = GetPeriod(order);
+        if (p == 1)
+            return order;
+        n %= p;
+        int width = order.GetLength(0);
+        int height = order.GetLength(1);
+        ushort[,] result = new ushort[width, height];
+        result.FillOrderByRow();
+        ushort[,] temp = new ushort[width, height];
+        while (n != 0)
+        {
+            if ((n & 1) == 1)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    for (int y = 0; y < height; y++)
+                    {
+                        var t = order[x, y];
+                        temp[x, y] = result[t % width, t / width];
+                    }
+                }
+                (temp, result) = (result, temp);
+            }
+            if (n == 1)
+                break;
+            for (int x = 0; x < width; x++)
+            {
+                for (int y = 0; y < height; y++)
+                {
+                    var t = order[x, y];
+                    temp[x, y] = byColumn ?
+                        order[t / height, t % height] :
+                        order[t % width, t / width];
+                }
+            }
+            (temp, order) = (order, temp);
+            n >>= 1;
+        }
+        return result;
+    }
+
+
     /// <summary>
     /// 最小公倍数
     /// </summary>
-    /// <param name="cycles"></param>
-    public static int LCM(Span<int> cycles)
+    /// <param name="nums"></param>
+    public static int LCM(Span<int> nums)
     {
-        if (cycles.Length == 1)
-            return cycles[0];
-        if (cycles.Length == 2)
-            return LCM(cycles[0], cycles[1]);
-        int mid = cycles.Length / 2;
-        return LCM(LCM(cycles[..mid]), LCM(cycles[mid..]));
+        if (nums.Length == 1)
+            return nums[0];
+        if (nums.Length == 2)
+            return LCM(nums[0], nums[1]);
+        int mid = nums.Length / 2;
+        return LCM(LCM(nums[..mid]), LCM(nums[mid..]));
     }
 
     /// <summary>

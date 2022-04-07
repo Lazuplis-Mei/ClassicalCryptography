@@ -76,6 +76,30 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
     }
 
     /// <summary>
+    /// 多重加密
+    /// </summary>
+    /// <param name="plainText">明文文本</param>
+    /// <param name="key">密钥</param>
+    /// <param name="n">加密次数</param>
+    public string MultiEncrypt(string plainText, IKey<T> key, int n)
+    {
+        ushort[] order = GetOrder(PadLength(plainText.Length), key);
+        return order.MultiTranspose(n).AssembleText(plainText);
+    }
+
+    /// <summary>
+    /// 多重解密
+    /// </summary>
+    /// <param name="cipherText">密文文本</param>
+    /// <param name="key">密钥</param>
+    /// <param name="n">解密次数</param>
+    public string MultiDecrypt(string cipherText, IKey<T> key, int n)
+    {
+        ushort[] order = GetOrder(PadLength(cipherText.Length), key);
+        return order.MultiTranspose(n).AssembleTextInverse(cipherText);
+    }
+
+    /// <summary>
     /// 解密指定的文本
     /// </summary>
     /// <param name="cipherText">密文文本</param>
@@ -137,6 +161,21 @@ public abstract class TranspositionCipher : ICipher<string, string>
         order = Transpose(order).MultiTranspose(n);
         return order.AssembleText(plainText);
     }
+
+    /// <summary>
+    /// 多重解密
+    /// </summary>
+    /// <param name="cipherText">密文文本</param>
+    /// <param name="n">解密次数</param>
+    public string MultiDecrypt(string cipherText, int n)
+    {
+        ushort[] order = new ushort[PadLength(cipherText.Length)];
+        if (FillOrder)
+            order.FillOrder();
+        order = Transpose(order).MultiTranspose(n);
+        return order.AssembleTextInverse(cipherText);
+    }
+
     /// <summary>
     /// 解密指定的文本
     /// </summary>
