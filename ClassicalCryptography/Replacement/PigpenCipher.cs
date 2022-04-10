@@ -1,6 +1,7 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Utils;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
@@ -82,16 +83,7 @@ public class PigpenCipher
 
     private static readonly (Point[] Points, bool HasDot)[] vfigures =
     {
-        (new[] { LB, RB, RT }, false),             //A
-        (new[] { LT, LB, RB, RT }, false),         //B
-        (new[] { LT, LB, RB }, false),             //C
-        (new[] { LT, RT, RB, LB }, false),         //D
-        (new[] { LT, RT, RB, LB, LT }, false),     //E
-        (new[] { RT, LT, LB, RB }, false),         //F
-        (new[] { LT, RT, RB }, false),             //G
-        (new[] { LB, LT, RT, RB }, false),         //H
-        (new[] { LB, LT, RT }, false),             //I
-
+        //省略了重复的
         (new[] { LT, MB, RT }, false),             //J
         (new[] { ML, MB, MR, MT }, false),         //K
         (new[] { MT, ML, MB, MR }, false),         //L
@@ -106,11 +98,7 @@ public class PigpenCipher
         (new[] { LT, LB, RB }, true),              //T
         (new[] { LT, RT, RB }, true),              //U
         (new[] { LB, LT, RT }, true),              //V
-        (new[] { LT, MB, RT }, true),              //W
-        (new[] { LT, MR, LB }, true),              //X
-        (new[] { RT, ML, RB }, true),              //Y
-        (new[] { LB, MT, RB }, true),              //Z
-
+        //省略了重复的
     };
 
     /// <summary>
@@ -118,47 +106,59 @@ public class PigpenCipher
     /// </summary>
     public static void Encrypt(string plainText, string imagePath, bool variant = false)
     {
-        plainText = Purify(plainText);
+        plainText = Purify(plainText, out int line);
         int length = Math.Min(LetterPerLine, plainText.Length);
-        int line = plainText.Length.DivCeil(LetterPerLine);
+        line += plainText.Length.DivCeil(LetterPerLine);
         using var bitmap = new Bitmap(figureSize * length, figureSize * line);
         using var graphics = Graphics.FromImage(bitmap);
         using var pen = new Pen(Color.Black, lineWidth);
+        graphics.SmoothingMode = SmoothingMode.AntiAlias;
         graphics.Clear(Color.White);
-        for (int y = 0; y < line; y++)
+        for (int y = 0, i = 0; y < line; y++)
         {
-            for (int x = 0; x < length; x++)
+            for (int x = 0; x < length; x++, i++)
             {
-                if (x + length * y == plainText.Length)
-                    goto LOut;
-                int fi = Globals.ULetters.IndexOf(plainText[x + length * y]);
+                if (i == plainText.Length)
+                    break;
+                if (plainText[i] == '\n')
+                {
+                    i++;
+                    break;
+                }
+                int fi = Globals.ULetters.IndexOf(plainText[i]);
                 if (fi != -1)
                 {
-                    (Point[] points, bool hasDot) = variant ? vfigures[fi] : figures[fi];
+                    (Point[] points, bool hasDot) = variant && fi >= 9 && fi <= 21 ?
+                        vfigures[fi - 9] : figures[fi];//省略了重复的
                     graphics.DrawLines(pen, points);
                     if (hasDot)
                         graphics.FillEllipse(pen.Brush, dotPosition, dotPosition, dotSize, dotSize);
                 }
                 graphics.TranslateTransform(figureSize, 0);
             }
-            graphics.TranslateTransform(-bitmap.Width, figureSize);
+            graphics.TranslateTransform(-graphics.Transform.OffsetX, figureSize);
         }
-    LOut:
         bitmap.Save(imagePath, ImgFormat);
     }
 
     [SkipLocalsInit]
-    private static string Purify(string text)
+    private static string Purify(string text, out int line)
     {
         Span<char> str = stackalloc char[text.Length];
-        int j = 0;
+        int count = 0;
+        line = 0;
         for (int i = 0; i < text.Length; i++)
         {
             if (text[i] is (>= 'A' and <= 'Z') or ' ')
-                str[j++] = text[i];
+                str[count++] = text[i];
             else if (text[i] is >= 'a' and <= 'z')
-                str[j++] = (char)(text[i] - 'a' + 'A');
+                str[count++] = (char)(text[i] - 'a' + 'A');
+            else if (text[i] == '\n')
+            {
+                str[count++] = text[i];
+                line++;
+            }
         }
-        return new string(str[..j]);
+        return new string(str[..count]);
     }
 }
