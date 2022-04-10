@@ -1,7 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Utils;
-using System;
-using System.Collections.Generic;
 
 namespace ClassicalCryptography.Transposition;
 

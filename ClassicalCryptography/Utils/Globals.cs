@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ClassicalCryptographyTest")]
 
 namespace ClassicalCryptography.Utils;
-
 
 /// <summary>
 /// 全局表与工具类

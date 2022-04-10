@@ -6,7 +6,7 @@ using static ClassicalCryptography.Utils.Globals;
 /// <summary>
 /// 进制转换
 /// </summary>
-public static class BaseConverter
+internal static class BaseConverter
 {
     /// <summary>
     /// 转换成36进制

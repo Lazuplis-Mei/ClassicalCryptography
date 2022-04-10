@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-namespace ClassicalCryptography.Utils;
+﻿namespace ClassicalCryptography.Utils;
 
 internal class LinkedList
 {
@@ -36,7 +33,8 @@ internal class LinkedList
     {
         for (int i = 0; i < n; i++)
         {
-            if (IsEnd) return false;
+            if (IsEnd)
+                return false;
             Current = Current.Next!;
         }
         return true;
@@ -44,7 +42,8 @@ internal class LinkedList
 
     public LinkedList? SubList()
     {
-        if (IsEnd) return null;
+        if (IsEnd)
+            return null;
         return new(Current.Next!, Last);
     }
 

@@ -380,6 +380,21 @@ tmmveeewepeatlmt
   5. 余项使用右对齐
   6. 根据**特定的顺序**写入文字
 
+## Replacement
+
+替换/代换密码(也包括输出图像)
+
+### PigpenCipher
+
+* 猪圈密码
+* 无密钥
+* 仅提供解密
+* 仅处理纯英文字母和空格
+* 包含变体
+
+  1. ![类型1](Images/PigpenCipher1.png)
+  2. ![类型2](Images/PigpenCipher2.png)
+
 
 ## Calculation
 
@@ -391,3 +406,19 @@ tmmveeewepeatlmt
 * 无密钥
 * [Standard Short Hide5(标准SH5)](https://www.bilibili.com/read/cv15660906)
 * [标准的1组SH5推荐字母表](https://www.bilibili.com/read/cv15676311)
+
+## Undefined
+
+未定义的密码(可能不提供解密)。
+
+### ColorfulBarcode
+
+* 彩色二维码
+* 无密钥
+* 仅提供解密
+* 中文可用base64代替
+
+  1. 文字分成3部分/6部分
+  2. 生成3个/6个二维码
+  3. 二维码分别对应rgb色彩通道(3份)
+  4. 如果是6组色彩,请查看[ColorfulBarcode.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Undefined/ColorfulBarcode.cs)

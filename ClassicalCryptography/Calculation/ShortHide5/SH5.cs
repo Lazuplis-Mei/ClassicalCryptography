@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Utils;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using static ClassicalCryptography.Utils.BaseConverter;

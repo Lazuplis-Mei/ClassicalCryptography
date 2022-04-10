@@ -1,12 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Transposition;
 using ClassicalCryptography.Utils;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Transposition2D;
 
@@ -43,6 +37,7 @@ public partial class RotatingGrillesCipher : TranspositionCipher2D<QuaterArray>
     /// </summary>
     /// <param name="indexes">正常顺序</param>
     /// <param name="key">密钥</param>
+    [SkipLocalsInit]
     protected override ushort[,] Transpose(ushort[,] indexes, IKey<QuaterArray> key)
     {
         ushort count = (ushort)key.KeyValue.Count;

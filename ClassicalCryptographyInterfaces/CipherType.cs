@@ -10,7 +10,7 @@ public enum CipherType
     /// </summary>
     Transposition,
     /// <summary>
-    /// 代换密码
+    /// 替换/代换密码(也包括输出图像)
     /// </summary>
     Replacement,
     /// <summary>
@@ -18,7 +18,7 @@ public enum CipherType
     /// </summary>
     Calculation,
     /// <summary>
-    /// 未定义的(如输出图像的)
+    /// 未定义的
     /// </summary>
     Undefined,
 }

@@ -1,9 +1,11 @@
-﻿namespace ClassicalCryptography.Utils;
+﻿using System.Text;
+
+namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 
 /// </summary>
-public static class StringExtension
+internal static class StringExtension
 {
     /// <summary>
     /// 分解字符串为不重复的大写字母字符集合
@@ -35,7 +37,8 @@ public static class StringExtension
         {
             result.Add(si);
             si = str.IndexOf(c, si + 1);
-        }*/
+        }
+        */
         for (int i = 0; i < str.Length; i++)
             if (str[i] == c)
                 result.Add(i);
@@ -56,10 +59,36 @@ public static class StringExtension
         {
             result.Add(si);
             si = str.IndexOf(c, si + 1);
-        }*/
+        }
+        */
         for (int i = 0; i < str.Length; i++)
             if (str[i] == c)
                 result.Add(i);
         return result;
+    }
+
+    /// <summary>
+    /// 默认编码
+    /// </summary>
+    public static readonly Encoding DefaultEncoding = Encoding.UTF8;
+
+    /// <summary>
+    /// 中文按UTF-8转换成Base64字符串
+    /// </summary>
+    /// <param name="text">中文字符串</param>
+    public static string ToBase64(this string text)
+    {
+        var bytes = DefaultEncoding.GetBytes(text);
+        return Convert.ToBase64String(bytes);
+    }
+
+    /// <summary>
+    /// Base64字符串按UTF-8转换成中文
+    /// </summary>
+    /// <param name="base64">中文字符串</param>
+    public static string FromBase64(this string base64)
+    {
+        var bytes = Convert.FromBase64String(base64);
+        return DefaultEncoding.GetString(bytes);
     }
 }

@@ -1,8 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Utils;
-using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace ClassicalCryptography.Transposition2D;
 

@@ -1,8 +1,7 @@
 ﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Transposition;
 using ClassicalCryptography.Utils;
-using System.Globalization;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ClassicalCryptography.Transposition2D;
@@ -61,6 +60,7 @@ public partial class RotatingGrillesCipher
         /// <summary>
         /// 栅格的字符串形式，H代表对应的格子
         /// </summary>
+        [SkipLocalsInit]
         public override string ToString()
         {
             int N = (int)Math.Sqrt(KeyValue.Count);
@@ -72,7 +72,8 @@ public partial class RotatingGrillesCipher
             {
                 for (int y = 0; y < N; y++)
                 {
-                    rot[0] = x; rot[3] = y;
+                    rot[0] = x;
+                    rot[3] = y;
                     rot[1] = length - y - 1;
                     rot[2] = length - x - 1;
                     int j = x + (N * y);

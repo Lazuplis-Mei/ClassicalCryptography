@@ -1,11 +1,7 @@
 ﻿using ClassicalCryptography.Interfaces;
-using static ClassicalCryptography.Calculation.ShortHide5.SH5;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ClassicalCryptography.Utils;
+using System.Runtime.CompilerServices;
+using static ClassicalCryptography.Calculation.ShortHide5.SH5;
 
 namespace ClassicalCryptography.Calculation.ShortHide5;
 
@@ -17,6 +13,7 @@ public class ShortHide5 : ICipher<string, string>
 {
     private static readonly string[] sGroups;//26
     private static readonly string[,] dGroups;//25*25
+    [SkipLocalsInit]
     static ShortHide5()
     {
         Span<char> span = stackalloc char[25];
@@ -53,6 +50,7 @@ public class ShortHide5 : ICipher<string, string>
     /// 解密指定的内容
     /// </summary>
     /// <param name="cipher"></param>
+    [SkipLocalsInit]
     public static string DecryptSH5(SH5 cipher)
     {
         var alphaBet = cipher.GetAlphaBet();

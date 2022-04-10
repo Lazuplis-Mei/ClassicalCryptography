@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Transposition2D;
 
@@ -8,7 +9,7 @@ namespace ClassicalCryptography.Transposition2D;
 [Introduction("周期/列置换密码", "明文排成方阵，并根据每组密钥顺序进行列的轮换，按行/列读出。")]
 public partial class CycleTranspose : TranspositionCipher2D<ushort[][]>
 {
-    
+
     /// <summary>
     /// 划分二维顺序矩阵
     /// </summary>
@@ -30,6 +31,7 @@ public partial class CycleTranspose : TranspositionCipher2D<ushort[][]>
     /// </summary>
     /// <param name="indexes">正常顺序</param>
     /// <param name="key">密钥</param>
+    [SkipLocalsInit]
     protected override ushort[,] Transpose(ushort[,] indexes, IKey<ushort[][]> key)
     {
         int height = indexes.GetLength(1);
@@ -51,7 +53,9 @@ public partial class CycleTranspose : TranspositionCipher2D<ushort[][]>
                     t2[j] = indexes[m, j];
                     indexes[m, j] = t1[j];
                 }
-                t = t1; t1 = t2; t2 = t;
+                t = t1;
+                t1 = t2;
+                t2 = t;
             }
         }
         return indexes;

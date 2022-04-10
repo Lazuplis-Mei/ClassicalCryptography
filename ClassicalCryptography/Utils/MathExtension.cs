@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
 namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 一些数学计算的方法
 /// </summary>
-public static class MathExtension
+internal static class MathExtension
 {
 
     /// <summary>

@@ -1,5 +1,4 @@
 ﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
 using System.Numerics;
 using static ClassicalCryptography.Utils.Globals;
 

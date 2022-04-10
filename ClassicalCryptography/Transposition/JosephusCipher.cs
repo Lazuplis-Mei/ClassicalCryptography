@@ -1,9 +1,5 @@
-﻿using ClassicalCryptography.Utils;
-using ClassicalCryptography.Interfaces;
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using ClassicalCryptography.Interfaces;
+using ClassicalCryptography.Utils;
 
 namespace ClassicalCryptography.Transposition;
 

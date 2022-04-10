@@ -1,7 +1,7 @@
 ﻿namespace ClassicalCryptography.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.CompilerServices;
 
 
 
@@ -73,6 +73,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleText(this ushort[] order, string text)
     {
         Span<char> buffer = stackalloc char[order.Length];
@@ -86,6 +87,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleTextInverse(this ushort[] order, string text)
     {
         Span<char> buffer = stackalloc char[order.Length];
@@ -99,6 +101,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleTextByRow(this ushort[,] order, string text)
     {
         int width = order.GetLength(0);
@@ -116,6 +119,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleTextByRowInverse(this ushort[,] order, string text)
     {
         int width = order.GetLength(0);
@@ -133,6 +137,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleTextByColumn(this ushort[,] order, string text)
     {
         int width = order.GetLength(0);
@@ -150,6 +155,7 @@ public static class TranspositionHelper
     /// </summary>
     /// <param name="text">参考文本</param>
     /// <param name="order">顺序</param>
+    [SkipLocalsInit]
     public static string AssembleTextByColumnInverse(this ushort[,] order, string text)
     {
         int width = order.GetLength(0);

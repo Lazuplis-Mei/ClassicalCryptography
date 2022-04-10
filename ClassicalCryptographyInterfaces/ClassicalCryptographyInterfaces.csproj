@@ -7,6 +7,7 @@
 		<EnablePreviewFeatures>true</EnablePreviewFeatures>
 		<AssemblyName>ClassicalCryptographyInterfaces</AssemblyName>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 </Project>

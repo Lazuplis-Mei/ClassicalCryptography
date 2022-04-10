@@ -104,7 +104,8 @@ public partial class CycleTranspose
             var cycleList = new List<ushort[]>();
             for (int i = 0; i < textLength; i++)
             {
-                if (used[i]) continue;
+                if (used[i])
+                    continue;
                 var cycle = new List<ushort>();
                 ushort j = (ushort)i;
                 while (!used[j])
