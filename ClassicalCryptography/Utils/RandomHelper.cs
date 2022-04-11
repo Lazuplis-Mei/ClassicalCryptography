@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
@@ -43,6 +44,40 @@ internal static class RandomHelper
             list.RemoveAt(t);
         }
         return permutation;
+    }
+
+    /// <summary>
+    /// 打乱数组
+    /// </summary>
+    public static void Shuffle(this int[] arr)
+    {
+        for (int i = arr.Length - 1; i > 0; i--)
+        {
+            int j = Random.Shared.Next(i + 1);
+            if (i != j)
+                (arr[j], arr[i]) = (arr[i], arr[j]);
+        }
+    }
+
+    /// <summary>
+    /// 获得随机且不重复的自然数
+    /// </summary>
+    /// <param name="max">最大值</param>
+    /// <param name="count">数量</param>
+    public static List<int> RandomSample(int max, int count)
+    {
+        if (count > max || count <= 0)
+            throw new ArgumentException("不正确的数量", nameof(count));
+        var list = new List<int>(count);
+        for (int i = 0; i < count; i++)
+        {
+            int t;
+            do
+                t = Random.Shared.Next(max);
+            while (list.Contains(t));
+            list.Add(t);
+        }
+        return list;
     }
 
     /// <summary>

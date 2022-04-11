@@ -91,4 +91,6 @@ internal static class StringExtension
         var bytes = Convert.FromBase64String(base64);
         return DefaultEncoding.GetString(bytes);
     }
+
+    public static bool IsPrintable(this char c) => c is >= ' ' and not (char)0x7F;
 }

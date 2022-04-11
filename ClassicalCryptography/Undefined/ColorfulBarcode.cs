@@ -18,7 +18,7 @@ public static class ColorfulBarcode
 {
 
     /// <summary>
-    /// 未定义密码类型
+    /// 未定义的密码类型
     /// </summary>
     public static readonly CipherType Type = CipherType.Undefined;
 

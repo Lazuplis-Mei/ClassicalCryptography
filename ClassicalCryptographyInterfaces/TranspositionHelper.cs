@@ -19,7 +19,10 @@ public static class TranspositionHelper
     /// </summary>
     public static PaddingMode PaddingMode { get; set; } = PaddingMode.SingleChar;
 
-    private static char GetPaddingChar()
+    /// <summary>
+    /// 获得补充字符
+    /// </summary>
+    public static char GetPaddingChar()
     {
         return PaddingMode switch
         {

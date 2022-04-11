@@ -28,6 +28,18 @@ public class PigpenCipher
     /// 每行字母数
     /// </summary>
     public static int LetterPerLine { get; set; } = 20;
+    /// <summary>
+    /// 文字笔刷
+    /// </summary>
+    public static Brush Foreground { get; set; } = Brushes.Black;
+    /// <summary>
+    /// 背景色
+    /// </summary>
+    public static Color? Background { get; set; } = Color.White;
+    /// <summary>
+    /// 额外字符笔刷
+    /// </summary>
+    public static Brush Extraground { get; set; } = Brushes.White;
 
     private const int lineWidth = 5;
     private const int figureSize = 60;
@@ -48,13 +60,24 @@ public class PigpenCipher
     private static readonly Point MB = new(midPosition, negPadding);
 #pragma warning restore IDE1006 // 命名样式
 
+    private static readonly Rectangle rect = Rectangle.FromLTRB(
+    posPadding, posPadding, negPadding, negPadding);
+    private static readonly Rectangle dotRect = new(
+        dotPosition, dotPosition, dotSize, dotSize);
+    private static readonly Font font = new("Consolas", 26);
+    private static readonly StringFormat format = new()
+    {
+        Alignment = StringAlignment.Center,
+        LineAlignment = StringAlignment.Center
+    };
+
     private static readonly (Point[] Points, bool HasDot)[] figures =
     {
         (new[] { LB, RB, RT }, false),             //A
         (new[] { LT, LB, RB, RT }, false),         //B
         (new[] { LT, LB, RB }, false),             //C
         (new[] { LT, RT, RB, LB }, false),         //D
-        (new[] { LT, RT, RB, LB, LT }, false),     //E
+        (new[] { LT, RT, RB, LB, LT, RT }, false), //E
         (new[] { RT, LT, LB, RB }, false),         //F
         (new[] { LT, RT, RB }, false),             //G
         (new[] { LB, LT, RT, RB }, false),         //H
@@ -64,7 +87,7 @@ public class PigpenCipher
         (new[] { LT, LB, RB, RT }, true),          //K
         (new[] { LT, LB, RB }, true),              //L
         (new[] { LT, RT, RB, LB }, true),          //M
-        (new[] { LT, RT, RB, LB, LT }, true),      //N
+        (new[] { LT, RT, RB, LB, LT, RT }, true),  //N
         (new[] { RT, LT, LB, RB }, true),          //O
         (new[] { LT, RT, RB }, true),              //P
         (new[] { LB, LT, RT, RB }, true),          //Q
@@ -88,7 +111,7 @@ public class PigpenCipher
         (new[] { ML, MB, MR, MT }, false),         //K
         (new[] { MT, ML, MB, MR }, false),         //L
         (new[] { LT, MR, LB }, false),             //M
-        (new[] { ML, MT, MR, MB, ML }, false),     //N
+        (new[] { ML, MT, MR, MB, ML, MT }, false), //N
         (new[] { RT, ML, RB }, false),             //O
         (new[] { ML, MT, MR, MB }, false),         //P
         (new[] { MB, ML, MT, MR }, false),         //Q
@@ -111,9 +134,11 @@ public class PigpenCipher
         line += plainText.Length.DivCeil(LetterPerLine);
         using var bitmap = new Bitmap(figureSize * length, figureSize * line);
         using var graphics = Graphics.FromImage(bitmap);
-        using var pen = new Pen(Color.Black, lineWidth);
+        using var pen = new Pen(Foreground, lineWidth);
         graphics.SmoothingMode = SmoothingMode.AntiAlias;
-        graphics.Clear(Color.White);
+        if (Background.HasValue)
+            graphics.Clear(Background.Value);
+
         for (int y = 0, i = 0; y < line; y++)
         {
             for (int x = 0; x < length; x++, i++)
@@ -132,7 +157,12 @@ public class PigpenCipher
                         vfigures[fi - 9] : figures[fi];//省略了重复的
                     graphics.DrawLines(pen, points);
                     if (hasDot)
-                        graphics.FillEllipse(pen.Brush, dotPosition, dotPosition, dotSize, dotSize);
+                        graphics.FillEllipse(Foreground, dotRect);
+                }
+                else if (plainText[i] != ' ')
+                {
+                    graphics.FillRectangle(Foreground, rect);
+                    graphics.DrawString(plainText[i].ToString(), font, Extraground, rect, format);
                 }
                 graphics.TranslateTransform(figureSize, 0);
             }
@@ -147,17 +177,17 @@ public class PigpenCipher
         Span<char> str = stackalloc char[text.Length];
         int count = 0;
         line = 0;
-        for (int i = 0; i < text.Length; i++)
+        foreach (char c in text)
         {
-            if (text[i] is (>= 'A' and <= 'Z') or ' ')
-                str[count++] = text[i];
-            else if (text[i] is >= 'a' and <= 'z')
-                str[count++] = (char)(text[i] - 'a' + 'A');
-            else if (text[i] == '\n')
+            if (c is >= 'a' and <= 'z')
+                str[count++] = (char)(c ^ 0x20);//大小写转换
+            else if (c == '\n')
             {
-                str[count++] = text[i];
                 line++;
+                str[count++] = c;
             }
+            else if (c.IsPrintable())
+                str[count++] = c;
         }
         return new string(str[..count]);
     }

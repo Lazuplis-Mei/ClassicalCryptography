@@ -422,3 +422,17 @@ tmmveeewepeatlmt
   2. 生成3个/6个二维码
   3. 二维码分别对应rgb色彩通道(3份)
   4. 如果是6组色彩,请查看[ColorfulBarcode.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Undefined/ColorfulBarcode.cs)
+
+
+### SemaphorePathCipher
+
+* 旗语路径密码
+* 无密钥
+* ![旗语](Images/Semaphores.png)
+
+  1. 从左往右进入左上角开始
+  2. 根据旗语对应的符号连接写一个字母
+  3. 删除所有路径上的字母
+  4. 剩余的则为内容
+
+
