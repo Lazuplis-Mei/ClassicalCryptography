@@ -37,8 +37,6 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
     /// 旗语字母
     /// </summary>
     public static readonly string FLetters = $"ABCDEFGHIJKLMNOPQRSTUVWXYZ{FDigits}{FCancel}";
-
-#pragma warning disable IDE1006 // 命名样式
     private static readonly (int dx, int dy) U = (0, -1);
     private static readonly (int dx, int dy) D = (0, 1);
     private static readonly (int dx, int dy) L = (-1, 0);
@@ -47,8 +45,6 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
     private static readonly (int dx, int dy) UR = (1, -1);
     private static readonly (int dx, int dy) DL = (-1, 1);
     private static readonly (int dx, int dy) DR = (1, 1);
-#pragma warning restore IDE1006 // 命名样式
-
     private static readonly (int dx, int dy)[] diffs = { U, D, L, R, UL, UR, DL, DR };
 
     private static readonly ((int dx, int dy) In, (int dx, int dy) Out)[] semaphores =

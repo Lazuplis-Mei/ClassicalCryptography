@@ -48,8 +48,6 @@ public class PigpenCipher
     private const int midPosition = figureSize / 2;
     private const int dotSize = 10;
     private const int dotPosition = midPosition - dotSize / 2;
-
-#pragma warning disable IDE1006 // 命名样式
     private static readonly Point LT = new(posPadding, posPadding);
     private static readonly Point RT = new(negPadding, posPadding);
     private static readonly Point LB = new(posPadding, negPadding);
@@ -58,8 +56,6 @@ public class PigpenCipher
     private static readonly Point MT = new(midPosition, posPadding);
     private static readonly Point MR = new(negPadding, midPosition);
     private static readonly Point MB = new(midPosition, negPadding);
-#pragma warning restore IDE1006 // 命名样式
-
     private static readonly Rectangle rect = Rectangle.FromLTRB(
     posPadding, posPadding, negPadding, negPadding);
     private static readonly Rectangle dotRect = new(
