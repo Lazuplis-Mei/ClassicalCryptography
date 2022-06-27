@@ -12,7 +12,7 @@ public enum CipherType
     /// <summary>
     /// 替换/代换密码(也包括输出图像)
     /// </summary>
-    Replacement,
+    Substitution,
     /// <summary>
     /// 计算的
     /// </summary>

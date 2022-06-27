@@ -52,9 +52,9 @@ namespace ClassicalCryptographyTest
         [DataRow("123456789ABCDEFGHIJKLMNO", "147ADGJM258BEHKN369CFILO")]
         public void TestRailFence(string plainText, string cipherText)
         {
-            var cipher = new RailFenceCipher();
+            var cipher = new AdvancedRailFenceCipher();
 
-            var key = RailFenceCipher.Key.FromString("4");
+            var key = AdvancedRailFenceCipher.Key.FromString("4");
 
             Assert.AreEqual(cipherText, cipher.MultiEncrypt(plainText, key, 4));
             Assert.AreEqual(plainText, cipher.MultiDecrypt(cipherText, key, 4));

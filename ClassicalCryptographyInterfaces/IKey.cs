@@ -42,16 +42,3 @@ public interface IKey<T>
     static abstract BigInteger GetKeySpace(int textLength);
 
 }
-
-/// <summary>
-/// 密钥不可逆
-/// </summary>
-public class KeyCannotInverseException<T> : Exception
-{
-    /// <summary>
-    /// 密钥不可逆
-    /// </summary>
-    /// <param name="key">密钥</param>
-    public KeyCannotInverseException(IKey<T> key) : base($"密钥[{key.GetString()}]不可逆。") { }
-
-}

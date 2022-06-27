@@ -18,7 +18,7 @@ public class PigpenCipher
     /// <summary>
     /// 替代密码
     /// </summary>
-    public static CipherType Type => CipherType.Replacement;
+    public static CipherType Type => CipherType.Substitution;
 
     /// <summary>
     /// 图片保存的格式
