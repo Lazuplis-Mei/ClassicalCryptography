@@ -34,12 +34,23 @@ public static class ColorfulBarcode
     /// <param name="base64">是否使用base64</param>
     public static void Encrypt(string plainText, string imagePath, bool base64 = false)
     {
+        using var bitmap = Encrypt(plainText, base64);
+        bitmap.Save(imagePath, ImgFormat);
+    }
+
+    /// <summary>
+    /// 彩色二维码加密
+    /// </summary>
+    /// <param name="plainText">的字符串</param>
+    /// <param name="base64">是否使用base64</param>
+    public static Bitmap Encrypt(string plainText, bool base64 = false)
+    {
         var b64Str = base64 ? plainText.ToBase64() : plainText;
         int si = b64Str.Length / 3;
         var text1 = b64Str[..si];
         var text2 = b64Str[si..(si + si)];
         var text3 = b64Str[(si + si)..];
-        using var bitmap = new Bitmap(600, 600);
+        var bitmap = new Bitmap(600, 600);
         var writer = new QRCodeWriter();
         var bits1 = writer.encode(text1, BarcodeFormat.QR_CODE, 600, 600);
         var bits2 = writer.encode(text2, BarcodeFormat.QR_CODE, 600, 600);
@@ -57,7 +68,7 @@ public static class ColorfulBarcode
                     bits3[x, y] ? 0 : 255));
             }
         }
-        bitmap.Save(imagePath, ImgFormat);
+        return bitmap;
     }
 
     /// <summary>
@@ -107,5 +118,31 @@ public static class ColorfulBarcode
             }
         }
         bitmap.Save(imagePath, ImgFormat);
+    }
+
+    /// <summary>
+    /// 识别3色的彩色二维码
+    /// </summary>
+    public static string Decrypt(Bitmap bitmap)
+    {
+        using var redBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+        using var greenBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+        using var blueBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+        for (int x = 0; x < bitmap.Width; x++)
+        {
+            for (int y = 0; y < bitmap.Height; y++)
+            {
+                var color = bitmap.GetPixel(x, y);
+                redBitmap.SetPixel(x, y, color.R > 200 ? Color.White : Color.Black);
+                greenBitmap.SetPixel(x, y, color.G > 200 ? Color.White : Color.Black);
+                blueBitmap.SetPixel(x, y, color.B > 200 ? Color.White : Color.Black);
+            }
+        }
+
+        var reader = new ZXing.Windows.Compatibility.BarcodeReader();
+        var result = reader.Decode(redBitmap).Text;
+        result += reader.Decode(greenBitmap).Text;
+        result += reader.Decode(blueBitmap).Text;
+        return result;
     }
 }
