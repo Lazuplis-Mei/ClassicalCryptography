@@ -58,9 +58,8 @@ Key = (2,3)
   2. 按列读出文字
 * 如下所示即是一个三角形排列
 
-
   |   |   | 1 |   |   |
-  | --- | --- | --- | --- | --- |
+  | - | - | - | - | - |
   |   | 1 | 1 | 1 |   |
   | 1 | 1 | 1 | 1 | 1 |
 
@@ -73,6 +72,7 @@ Key = (2,3)
 
 526137489
 ```
+
 ---
 
 ### JosephusCipher
@@ -185,9 +185,8 @@ RlnChTtaFciee`ieeprs`
   6. 按行读出结果
 * 如下所示即是一个栅格(H代表对应位置有洞)
 
-
   |   |   | H |   |
-  | --- | :-- | --- | --- |
+  | - | :- | - | - |
   |   | H |   |   |
   | H |   |   |   |
   |   |   |   | H |
@@ -274,9 +273,8 @@ tmmveeewepeatlmt
   2. 根据幻方的顺序，按行读出文字
 * 如下所示即是一个3阶幻方(行列和对角线的和都相等)
 
-
   | 8 | 1 | 6 |
-  | --- | :-- | --- |
+  | - | :- | - |
   | 3 | 5 | 7 |
   | 4 | 9 | 2 |
 
@@ -388,13 +386,26 @@ tmmveeewepeatlmt
 
 * 猪圈密码
 * 无密钥
-* 仅提供解密
 * 仅处理纯英文字母和空格
 * 包含变体
 
   1. ![类型1](Images/PigpenCipher1.png)
   2. ![类型2](Images/PigpenCipher2.png)
 
+### SingleReplacementCipher
+
+* 单表替换密码
+
+  1. 凯撒密码
+  2. qwer键盘表
+  3. Atbash
+  4. 汉语拼音
+  5. rot5
+  6. rot13
+  7. rot18(rot5+rot13)
+  8. rot47
+  9. Al Bhed
+* 更多可自定义
 
 ## Calculation
 
@@ -415,14 +426,12 @@ tmmveeewepeatlmt
 
 * 彩色二维码
 * 无密钥
-* 仅提供解密
 * 中文可用base64代替
 
   1. 文字分成3部分/6部分
   2. 生成3个/6个二维码
   3. 二维码分别对应rgb色彩通道(3份)
   4. 如果是6组色彩,请查看[ColorfulBarcode.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Undefined/ColorfulBarcode.cs)
-
 
 ### SemaphorePathCipher
 
@@ -434,5 +443,3 @@ tmmveeewepeatlmt
   2. 根据旗语对应的符号连接写一个字母
   3. 删除所有路径上的字母
   4. 剩余的则为内容
-
-

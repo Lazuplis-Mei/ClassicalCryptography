@@ -17,7 +17,7 @@ namespace ClassicalCryptographyTest
         [TestMethod]
         public void TestColorfulBarcode()
         {
-            var plainText = RandomString.GenerateUppers(100);
+            var plainText = RandomString.Generate(100);
 
             var bitmap = ColorfulBarcode.Encrypt(plainText);
             var text = ColorfulBarcode.Decrypt(bitmap);
