@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace ClassicalCryptography.Replacement;
 
@@ -13,7 +14,7 @@ namespace ClassicalCryptography.Replacement;
 /// </summary>
 [SupportedOSPlatform("windows")]
 [Introduction("猪圈密码", "一种以格子为基础的替代式密码。")]
-public class PigpenCipher
+public static partial class PigpenCipher
 {
     /// <summary>
     /// 替代密码
@@ -45,6 +46,7 @@ public class PigpenCipher
     private const int figureSize = 60;
     private const int posPadding = 7;
     private const int negPadding = figureSize - posPadding;
+    private const int checkStep = (negPadding - posPadding) / 5;
     private const int midPosition = figureSize / 2;
     private const int dotSize = 10;
     private const int dotPosition = midPosition - dotSize / 2;
@@ -123,12 +125,12 @@ public class PigpenCipher
     /// <summary>
     /// 加密成图像
     /// </summary>
-    public static void Encrypt(string plainText, string imagePath, bool variant = false)
+    public static Bitmap Encrypt(string plainText, bool variant = false)
     {
         plainText = Purify(plainText, out int line);
         int length = Math.Min(LetterPerLine, plainText.Length);
         line += plainText.Length.DivCeil(LetterPerLine);
-        using var bitmap = new Bitmap(figureSize * length, figureSize * line);
+        var bitmap = new Bitmap(figureSize * length, figureSize * line);
         using var graphics = Graphics.FromImage(bitmap);
         using var pen = new Pen(Foreground, lineWidth);
         graphics.SmoothingMode = SmoothingMode.AntiAlias;
@@ -164,7 +166,50 @@ public class PigpenCipher
             }
             graphics.TranslateTransform(-graphics.Transform.OffsetX, figureSize);
         }
+        return bitmap;
+    }
+
+    /// <summary>
+    /// 加密成图像
+    /// </summary>
+    public static void Encrypt(string plainText, string imagePath, bool variant = false)
+    {
+        using var bitmap = Encrypt(plainText, variant);
         bitmap.Save(imagePath, ImgFormat);
+    }
+
+    /// <summary>
+    /// 解密图像(只支持标准形状)
+    /// </summary>
+    public static string Decrypt(Bitmap bitmap)
+    {
+        var strBuilder = new StringBuilder();
+
+        for (int y = 0; y < bitmap.Height; y += figureSize)
+        {
+            for (int x = 0; x < bitmap.Width; x += figureSize)
+            {
+                if (CheckBlackBox(bitmap, x, y))
+                {
+                    strBuilder.Append('.');
+                    continue;
+                }
+                var hasDot = CheckDot(bitmap, x, y);
+                if (CheckFigureLeft(bitmap, x, y))
+                    strBuilder.Append(hasDot ? 'Y' : 'U');
+                else if (CheckFigureUp(bitmap, x, y))
+                    strBuilder.Append(hasDot ? 'Z' : 'V');
+                else if (CheckFigureRight(bitmap, x, y))
+                    strBuilder.Append(hasDot ? 'X' : 'T');
+                else if (CheckFigureDown(bitmap, x, y))
+                    strBuilder.Append(hasDot ? 'W' : 'S');
+                else
+                    strBuilder.Append(figureDict[(CheckLines(bitmap, x, y), hasDot)]);
+            }
+            strBuilder.AppendLine();
+        }
+        strBuilder.Remove(strBuilder.Length - 2, 2);
+        return strBuilder.ToString();
     }
 
     [SkipLocalsInit]

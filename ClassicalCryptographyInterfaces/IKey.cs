@@ -29,16 +29,16 @@ public interface IKey<T>
     /// 从文本格式创建密钥
     /// </summary>
     /// <param name="strKey">文本类型的密钥</param>
-    static abstract IKey<T> FromString(string strKey);
+    static IKey<T> FromString(string strKey) => throw new NotImplementedException();
     /// <summary>
     /// 产生随机密钥
     /// </summary>
     /// <param name="textLength">加密内容的长度</param>
-    static abstract IKey<T> GenerateKey(int textLength);
+    static IKey<T> GenerateKey(int textLength) => throw new NotImplementedException();
     /// <summary>
     /// 获得密钥的空间
     /// </summary>
     /// <param name="textLength">加密内容的长度</param>
-    static abstract BigInteger GetKeySpace(int textLength);
+    static BigInteger GetKeySpace(int textLength) => throw new NotImplementedException();
 
 }

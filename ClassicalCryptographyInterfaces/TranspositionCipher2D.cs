@@ -57,8 +57,7 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         ushort[,] order;
         if (StoreKey)
         {
-            if (keys == null)
-                keys = new();
+            keys ??= new();
             if (!keys.ContainsKey(key))
             {
                 order = new ushort[width, height];

@@ -15,7 +15,7 @@ public partial class CycleTranspose
     /// 周期/列置换密码的密钥
     /// </summary>
     [Introduction("周期/列置换密码的密钥", @"正确的格式为多个正则匹配项/(\d+)/")]
-    public class Key : IKey<ushort[][]>
+    public partial class Key : IKey<ushort[][]>
     {
         private readonly ushort[][] keyValue;
         /// <summary>
@@ -66,6 +66,10 @@ public partial class CycleTranspose
         /// 字符串形式
         /// </summary>
         public string GetString() => ToString();
+
+        [GeneratedRegex("(?<=\\()[\\d\\,]+(?=\\))")]
+        private static partial Regex CycleKeyRegex();
+
         /// <summary>
         /// 从文本格式创建密钥
         /// </summary>
@@ -75,7 +79,7 @@ public partial class CycleTranspose
             if (ushort.TryParse(strKey, out ushort k))
                 return new Key(new[] { new[] { k } });
 
-            var matches = Regex.Matches(strKey, @"(?<=\()[\d\,]+(?=\))");
+            var matches = CycleKeyRegex().Matches(strKey);
             ushort[][] keyValue = new ushort[matches.Count][];
             for (int i = 0; i < keyValue.Length; i++)
             {

@@ -9,7 +9,7 @@ namespace ClassicalCryptography.Calculation.ShortHide5;
 /// <summary>
 /// ShortHide5密文结果的结构
 /// </summary>
-public class SH5 : IEnumerable<int>
+public partial class SH5 : IEnumerable<int>
 {
     /// <summary>
     /// 1组SH5的字母表(推荐的)
@@ -121,12 +121,15 @@ public class SH5 : IEnumerable<int>
         Level = SH5Level.Trible;
     }
 
+    [GeneratedRegex("[A-Z][0-9a-z]+")]
+    private static partial Regex SH5GroupRegex();
+
     /// <summary>
     /// 通过字符串创建SH5结构
     /// </summary>
     public SH5(string str)
     {
-        var matches = Regex.Matches(str, "[A-Z][0-9a-z]+");
+        var matches = SH5GroupRegex().Matches(str);
         Level = (SH5Level)matches.Count;
         if (!Enum.IsDefined(Level))
             throw new FormatException("不正确的SH5格式");
