@@ -25,6 +25,8 @@ public interface IKey<T>
     /// </summary>
     string GetString();
 
+    //以下的三个方法本应该是静态的抽象方法，但如果它没有实现就不能用于类型参数(在.net6预览的C#11中是允许的)
+
     /// <summary>
     /// 从文本格式创建密钥
     /// </summary>

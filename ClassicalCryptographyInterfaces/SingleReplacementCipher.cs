@@ -62,7 +62,8 @@ public class SingleReplacementCipher : ICipher<string, string>
     {
         reverseDict = new();
         for (int i = 0; i < ReflectionCharSet.Length; i++)
-            reverseDict.Add(ReflectionCharSet[i], SupposedCharSet[i]);
+            reverseDict[ReflectionCharSet[i]] = SupposedCharSet[i];
+
         return reverseDict;
     }
 
@@ -87,7 +88,7 @@ public class SingleReplacementCipher : ICipher<string, string>
     {
         dict = new();
         for (int i = 0; i < SupposedCharSet.Length; i++)
-            dict.Add(SupposedCharSet[i], ReflectionCharSet[i]);
+            dict[SupposedCharSet[i]] = ReflectionCharSet[i];
         return dict;
     }
 }

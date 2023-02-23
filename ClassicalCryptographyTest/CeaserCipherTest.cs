@@ -36,5 +36,16 @@ namespace ClassicalCryptographyTest
             Assert.AreEqual(cipherText, cipher.Encrypt(plainText));
             Assert.AreEqual(plainText, cipher.Decrypt(cipherText));
         }
+
+        [TestMethod]
+        [DataRow("qwerty", "gnohky")]
+        public void TestSaurian(string plainText, string cipherText)
+        {
+            var cipher = CommonTables.Saurian;
+            Assert.AreEqual(CipherType.Substitution, cipher.Type);
+
+            Assert.AreEqual(cipherText, cipher.Encrypt(plainText));
+            Assert.AreEqual(plainText, cipher.Decrypt(cipherText));
+        }
     }
 }
