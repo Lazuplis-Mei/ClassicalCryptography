@@ -93,4 +93,19 @@ internal static class StringExtension
     }
 
     public static bool IsPrintable(this char c) => c is >= ' ' and not (char)0x7F;
+
+    public static string[] Partition(this string self, int length)
+    {
+        return self.Partition(length, s => s);
+    }
+
+    public static T[] Partition<T>(this string self, int length, Func<string, T> converter)
+    {
+        var result = new T[self.Length / length];
+        for (int i = 0; i < result.Length; i++)
+        {
+            result[i] = converter(self.Substring(i * length, length));
+        }
+        return result;
+    }
 }
