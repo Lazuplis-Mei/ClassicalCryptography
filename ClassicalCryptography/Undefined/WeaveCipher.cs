@@ -34,7 +34,7 @@ public static partial class WeaveCipher
     /// </summary>
     public static ImageFormat ImgFormat { get; set; } = ImageFormat.Png;
 
-    private const int blockSize = 15;
+    private const int blockSize = 16;
     /// <summary>
     /// 核心加密代码
     /// </summary>

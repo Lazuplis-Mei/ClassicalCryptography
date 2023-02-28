@@ -73,6 +73,7 @@ X X   X X X     X X
 
             var m = WeaveCipher.EncryptBits4d(bits1, bits1, bits1, bits1);
             WeaveCipher.Encrypt4d("Soul.Undertone.", @"E:/test.png");
+            WeaveCipher.Encrypt4d("Taiji__no__yume", @"E:/test2.png");
 
             Debug.WriteLine(m);/*
   X   X       X   X X X X   
