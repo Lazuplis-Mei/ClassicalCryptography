@@ -1,18 +1,20 @@
-﻿namespace ClassicalCryptography.Interfaces;
+﻿using System.Runtime.CompilerServices;
+
+namespace ClassicalCryptography.Interfaces;
 
 
 /// <summary>
-/// 单表替换密码(对于未知的密钥如何解密，可以尝试https://www.quipqiup.com/)
+/// 单表替换密码
 /// </summary>
-[Introduction("单表替换密码", "最经典朴素的密码。")]
+[Introduction("单表替换密码", "最经典朴素的密码，通过将明文内容替换成其他内容实现。")]
 public class SingleReplacementCipher : ICipher<string, string>
 {
     /// <summary>
-    /// 缺省
+    /// 单表替换密码
     /// </summary>
     public SingleReplacementCipher()
     {
-        SupposedCharSet = ReflectionCharSet = "";
+        SupposedCharSet = ReflectionCharSet = string.Empty;
     }
 
     /// <summary>
@@ -40,40 +42,47 @@ public class SingleReplacementCipher : ICipher<string, string>
     public virtual string ReflectionCharSet { get; }
 
     private Dictionary<char, char> dict = null!;
-    private Dictionary<char, char> reverseDict = null!;
+    private Dictionary<char, char> refDict = null!;
+
     /// <summary>
     /// 解密文本
     /// </summary>
+    [SkipLocalsInit]
     public string Decrypt(string cipherText)
     {
-        reverseDict ??= BuildReverseDict();
-        Span<char> result = stackalloc char[cipherText.Length];
+        Span<char> result = cipherText.Length <= StackLimit.MaxCharSize 
+            ? stackalloc char[cipherText.Length] : new char[cipherText.Length];
+        
+        refDict ??= BuildReflectionDict();
         for (int i = 0; i < cipherText.Length; i++)
         {
-            if (reverseDict.ContainsKey(cipherText[i]))
-                result[i] = reverseDict[cipherText[i]];
+            if (refDict.ContainsKey(cipherText[i]))
+                result[i] = refDict[cipherText[i]];
             else
                 result[i] = cipherText[i];
         }
         return result.ToString();
     }
 
-    private Dictionary<char, char> BuildReverseDict()
+    private Dictionary<char, char> BuildReflectionDict()
     {
-        reverseDict = new();
+        refDict = new();
         for (int i = 0; i < ReflectionCharSet.Length; i++)
-            reverseDict[ReflectionCharSet[i]] = SupposedCharSet[i];
+            refDict[ReflectionCharSet[i]] = SupposedCharSet[i];
 
-        return reverseDict;
+        return refDict;
     }
 
     /// <summary>
     /// 加密文本
     /// </summary>
+    [SkipLocalsInit]
     public string Encrypt(string plainText)
     {
+        Span<char> result = plainText.Length <= StackLimit.MaxCharSize
+            ? stackalloc char[plainText.Length] : new char[plainText.Length];
+
         dict ??= BuildDict();
-        Span<char> result = stackalloc char[plainText.Length];
         for (int i = 0; i < plainText.Length; i++)
         {
             if (dict.ContainsKey(plainText[i]))

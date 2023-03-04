@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using ClassicalCryptography.Interfaces;
 using System.Text;
-using System.Threading.Tasks;
-using ZXing.QrCode.Internal;
 
 namespace ClassicalCryptography.Replacement;
 
 /// <summary>
-/// 摩斯密码  https://github.com/Lazuplis-Mei/MorseCode.Chinese
+/// 摩斯密码<see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">MorseCode.Chinese</see>
 /// </summary>
+[Introduction("摩斯密码", "一种用信号时长和断续表示内容的代码")]
 public class MorseCode
 {
-
-    private const char S = '.';
-    private const char L = '-';
     private const string standardLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static readonly string[] standardCodes =
     {

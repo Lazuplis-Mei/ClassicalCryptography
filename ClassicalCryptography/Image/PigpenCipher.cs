@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text;
 
-namespace ClassicalCryptography.Replacement;
+namespace ClassicalCryptography.Image;
 
 /// <summary>
 /// 猪圈密码
@@ -17,9 +17,9 @@ namespace ClassicalCryptography.Replacement;
 public static partial class PigpenCipher
 {
     /// <summary>
-    /// 替代密码
+    /// 图形密码
     /// </summary>
-    public static CipherType Type => CipherType.Substitution;
+    public static CipherType Type => CipherType.Image;
 
     /// <summary>
     /// 图片保存的格式
@@ -148,7 +148,7 @@ public static partial class PigpenCipher
                     i++;
                     break;
                 }
-                int fi = Globals.ULetters.IndexOf(plainText[i]);
+                int fi = GlobalTables.U_Letters.IndexOf(plainText[i]);
                 if (fi != -1)
                 {
                     (Point[] points, bool hasDot) = variant && fi >= 9 && fi <= 21 ?
@@ -215,7 +215,8 @@ public static partial class PigpenCipher
     [SkipLocalsInit]
     private static string Purify(string text, out int line)
     {
-        Span<char> str = stackalloc char[text.Length];
+        Span<char> str = text.Length <= StackLimit.MaxCharSize
+            ? stackalloc char[text.Length] : new char[text.Length];
         int count = 0;
         line = 0;
         foreach (char c in text)

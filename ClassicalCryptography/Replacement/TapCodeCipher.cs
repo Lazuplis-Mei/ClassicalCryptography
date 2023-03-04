@@ -7,6 +7,7 @@ namespace ClassicalCryptography.Replacement;
 /// <summary>
 /// 敲击码，使用<see cref="TapCode"/>加密
 /// </summary>
+[Introduction("敲击码", "使用一系列的点击声音来编码，但通常以数字形式表示")]
 public class TapCodeCipher : ICipher<string, string>
 {
     /// <summary>
@@ -19,7 +20,9 @@ public class TapCodeCipher : ICipher<string, string>
     /// </summary>
     public string Decrypt(string cipherText)
     {
-        Span<char> result = stackalloc char[cipherText.Length >> 1];
+        int size = cipherText.Length >> 1;
+        Span<char> result = size <= StackLimit.MaxCharSize
+            ? stackalloc char[size] : new char[size];
 
         for (int i = 0; i < cipherText.Length; i++)
         {

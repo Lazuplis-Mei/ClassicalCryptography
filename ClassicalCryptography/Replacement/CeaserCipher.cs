@@ -1,11 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ClassicalCryptography.Utils.Globals;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Replacement
 {
@@ -20,13 +14,13 @@ namespace ClassicalCryptography.Replacement
         /// </summary>
         public CeaserCipher(int key = 3)
         {
-            ReflectionCharSet = $"{ULetters[key..]}{ULetters[..key]}";
-            ReflectionCharSet += $"{LLetters[key..]}{LLetters[..key]}";
+            ReflectionCharSet = $"{U_Letters[key..]}{U_Letters[..key]}";
+            ReflectionCharSet += $"{L_Letters[key..]}{L_Letters[..key]}";
         }
         /// <summary>
         /// 英文字母
         /// </summary>
-        public override string SupposedCharSet => ULLetters;
+        public override string SupposedCharSet => UL_Letters;
 
         /// <summary>
         /// 位移后的字母表

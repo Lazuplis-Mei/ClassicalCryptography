@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassicalCryptography.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,10 @@ public partial class UnicodeEncoding
     public static string DecodeUnicode(string str)
     {
         var matches = UnicodeRegex().Matches(str);
-        Span<byte> bytes = stackalloc byte[matches.Count * 2];
+        int size = matches.Count << 1;
+        Span<byte> bytes = size <= StackLimit.MaxByteSize
+            ? stackalloc byte[size] : new byte[size];
+
         int i = 0;
         foreach (var match in matches.Cast<Match>())
         {

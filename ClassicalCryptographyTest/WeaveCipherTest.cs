@@ -1,6 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Replacement;
-using ClassicalCryptography.Undefined;
+using ClassicalCryptography.Image;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -71,9 +71,9 @@ X X   X X X     X X
             bits1.appendBit(false);
             bits1.appendBit(false);
 
-            var m = WeaveCipher.EncryptBits4d(bits1, bits1, bits1, bits1);
-            WeaveCipher.Encrypt4d("Soul.Undertone.", @"E:/test.png");
-            WeaveCipher.Encrypt4d("Taiji__no__yume", @"E:/test2.png");
+            var m = WeaveCipher.EncryptBitsExtend(bits1, bits1, bits1, bits1);
+            WeaveCipher.EncryptExtend("Soul.Undertone.", @"E:/test.png");
+            WeaveCipher.EncryptExtend("Taiji__no__yume", @"E:/test2.png");
 
             Debug.WriteLine(m);/*
   X   X       X   X X X X   

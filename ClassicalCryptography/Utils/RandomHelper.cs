@@ -103,7 +103,8 @@ internal static class RandomHelper
         if (maxValue < int.MaxValue)
             return Random.Shared.Next((int)maxValue);
         int byteCount = maxValue.GetByteCount(true);
-        Span<byte> buffer = stackalloc byte[byteCount];
+        Span<byte> buffer = byteCount <= StackLimit.MaxByteSize
+            ? stackalloc byte[byteCount] : new byte[byteCount];
         byte firstBit = (byte)(maxValue >> ((byteCount - 1) << 3));
         buffer[0] = RandomByte(firstBit);
         Random.Shared.NextBytes(buffer[1..]);

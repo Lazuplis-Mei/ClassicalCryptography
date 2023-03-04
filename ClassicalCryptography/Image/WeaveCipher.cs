@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ZXing.Common;
 
-namespace ClassicalCryptography.Undefined;
+namespace ClassicalCryptography.Image;
 
 /// <summary>
 /// 编织图形密码
@@ -21,6 +21,11 @@ namespace ClassicalCryptography.Undefined;
 [SupportedOSPlatform("windows")]
 public static partial class WeaveCipher
 {
+    /// <summary>
+    /// 图形密码
+    /// </summary>
+    public static CipherType Type => CipherType.Image;
+
     /// <summary>
     /// 前景颜色
     /// </summary>

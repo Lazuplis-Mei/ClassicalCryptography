@@ -1,7 +1,7 @@
 ﻿namespace ClassicalCryptography.Utils;
 
 using System;
-using static ClassicalCryptography.Utils.Globals;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 /// <summary>
 /// 进制转换

@@ -1,6 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
 using System.Numerics;
-using static ClassicalCryptography.Utils.Globals;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Transposition;
 
@@ -33,15 +33,15 @@ public partial class TakeTranslateCipher
         private Key(int N, int K) => keyValue = (N, K);
 
         /// <summary>
-        /// 从文本格式创建密钥(10~//)参考<see cref="VBase64"/>
+        /// 从文本格式创建密钥(10~//)参考<see cref="VChar64"/>
         /// </summary>
         /// <param name="strKey">密钥文本</param>
         public static IKey<(int N, int K)> FromString(string strKey)
         {
             if (strKey.Length != 2)
                 throw new ArgumentException("应为2个字符", nameof(strKey));
-            int n = VBase64.IndexOf(strKey[0]);
-            int k = VBase64.IndexOf(strKey[1]);
+            int n = VChar64.IndexOf(strKey[0]);
+            int k = VChar64.IndexOf(strKey[1]);
             if (n <= 0 || k == -1)
                 throw new FormatException("不正确的格式");
             return new Key(n, k);
@@ -70,7 +70,7 @@ public partial class TakeTranslateCipher
         /// </summary>
         public override string ToString()
         {
-            return $"{VBase64[KeyValue.N]}{VBase64[KeyValue.K]}";
+            return $"{VChar64[KeyValue.N]}{VChar64[KeyValue.K]}";
         }
         /// <summary>
         /// 字符串形式

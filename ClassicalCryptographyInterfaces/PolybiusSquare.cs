@@ -4,6 +4,7 @@ using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,12 +38,12 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     public PolybiusSquare(string padding, string alphabet)
     {
         if (alphabet.Length != padding.Length * padding.Length)
-            throw new ArgumentException("长度不匹配", nameof(alphabet));
+            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}.Length 应为{nameof(padding)}.Length 的平方", nameof(alphabet));
         keyValue = (padding, alphabet);
     }
 
     /// <summary>
-    /// 从文本格式创建密钥例如(ADFGX,BTALPDHOZKQFVSNGICUXMREWY)
+    /// 从文本格式创建密钥，例如(ADFGX,BTALPDHOZKQFVSNGICUXMREWY)
     /// </summary>
     public static IKey<(string Padding, string Alphabet)> FromString(string strKey)
     {
@@ -53,26 +54,31 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     }
 
     /// <summary>
-    /// 产生随机密钥(5*5的方阵)
+    /// 产生随机5*5的密钥方阵(<see href="Padding"/>也为大写字母)
     /// </summary>
+    /// <param name="textLength">参数将被忽略</param>
+    [SkipLocalsInit]
     public unsafe static IKey<(string Padding, string Alphabet)> GenerateKey(int textLength)
     {
+        const string ULetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         Span<char> alphabet = stackalloc char[25];
-        var list = new List<char>("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        for (int i = 0; i < 25; i++)
+        var list = new List<char>(ULetters);
+        for (int i = 0; i < alphabet.Length; i++)
         {
-            int t = Random.Shared.Next(list.Count);
-            alphabet[i] = list[t];
-            list.RemoveAt(t);
+            int index = Random.Shared.Next(list.Count);
+            alphabet[i] = list[index];
+            list.RemoveAt(index);
         }
         list.Clear();
+
         Span<char> padding = stackalloc char[5];
-        list.AddRange("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-        for (int i = 0; i < 5; i++)
+        list.AddRange(ULetters);
+        for (int i = 0; i < padding.Length; i++)
         {
-            int t = Random.Shared.Next(list.Count);
-            padding[i] = list[t];
-            list.RemoveAt(t);
+            int index = Random.Shared.Next(list.Count);
+            padding[i] = list[index];
+            list.RemoveAt(index);
         }
 
         return new PolybiusSquare(new(padding), new(alphabet));
@@ -81,7 +87,7 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// <summary>
     /// 获得密钥的空间
     /// </summary>
-    /// <param name="textLength">加密内容的长度</param>
+    /// <param name="textLength">参数将被忽略</param>
     public static BigInteger GetKeySpace(int textLength)
     {
         //25*25!*C(26,5)
@@ -93,16 +99,16 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// </summary>
     public override string ToString()
     {
-        var strBuilder = new StringBuilder();
+        var strBuilder = new StringBuilder(78);//可能的大小
         strBuilder.Append("  ");
-        strBuilder.AppendJoin(' ', keyValue.Padding.ToCharArray());
+        strBuilder.AppendJoin(' ', (IEnumerable<char>)keyValue.Padding);
         strBuilder.AppendLine();
-        int n = keyValue.Padding.Length;
-        for (int i = 0; i < n; i++)
+        int paddingLen = keyValue.Padding.Length;
+        for (int i = 0; i < paddingLen; i++)
         {
             strBuilder.Append(keyValue.Padding[i]);
             strBuilder.Append(' ');
-            strBuilder.AppendJoin(' ', keyValue.Alphabet.Substring(n * i, n).ToCharArray());
+            strBuilder.AppendJoin(' ', (IEnumerable<char>)keyValue.Alphabet.Substring(paddingLen * i, paddingLen));
             strBuilder.AppendLine();
         }
         strBuilder.Remove(strBuilder.Length - 2, 2);

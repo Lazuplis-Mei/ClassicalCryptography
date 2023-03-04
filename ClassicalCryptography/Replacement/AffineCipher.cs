@@ -1,17 +1,12 @@
 ﻿using ClassicalCryptography.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static ClassicalCryptography.Utils.Globals;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Replacement
 {
     /// <summary>
     /// 仿射密码
     /// </summary>
-    [Introduction("仿射密码", "(a x + b) mod 26")]
+    [Introduction("仿射密码", "替换密码的一种，使用(a x + b) mod 26变换后的字母表")]
     public class AffineCipher : SingleReplacementCipher
     {
         /// <summary>
@@ -20,20 +15,20 @@ namespace ClassicalCryptography.Replacement
         public AffineCipher(int a, int b)
         {
             if (a <= 0 || a >= 26 || b < 0 || b >= 26)
-                throw new ArgumentException("参数范围不正确");
+                throw new ArgumentException($"{nameof(a)}和{nameof(b)}的范围应该是[0,26)");
             if (a % 2 == 0 || a == 13)
-                throw new ArgumentException("参数范围不正确", nameof(a));
+                throw new ArgumentException($"{nameof(a)}应该是{{1,3,5,7,9,11,15,17,19,21,23,25}}中的一个", nameof(a));
 
             var arr = new ushort[26];
             for (int i = 0; i < 26; i++)
                 arr[i] = (ushort)((a * i + b) % 26);
-            ReflectionCharSet = arr.AssembleText(ULetters);
-            ReflectionCharSet += arr.AssembleText(LLetters);
+            ReflectionCharSet = arr.AssembleText(U_Letters);
+            ReflectionCharSet += arr.AssembleText(L_Letters);
         }
         /// <summary>
         /// 英文字母
         /// </summary>
-        public override string SupposedCharSet => ULLetters;
+        public override string SupposedCharSet => UL_Letters;
 
         /// <summary>
         /// 变化后的字母表

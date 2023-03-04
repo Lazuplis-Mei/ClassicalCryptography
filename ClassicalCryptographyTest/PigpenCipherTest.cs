@@ -1,5 +1,5 @@
 ﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Replacement;
+using ClassicalCryptography.Image;
 using ClassicalCryptography.Transposition;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;

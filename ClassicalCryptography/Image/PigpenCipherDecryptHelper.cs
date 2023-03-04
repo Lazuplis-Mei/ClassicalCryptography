@@ -1,5 +1,5 @@
 ﻿using System.Drawing;
-namespace ClassicalCryptography.Replacement;
+namespace ClassicalCryptography.Image;
 
 public static partial class PigpenCipher
 {

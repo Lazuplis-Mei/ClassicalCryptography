@@ -8,22 +8,21 @@ using System.Runtime.Versioning;
 using System.Text;
 using ZXing;
 using ZXing.QrCode;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace ClassicalCryptography.Undefined;
+namespace ClassicalCryptography.Image;
 
 /// <summary>
 /// 彩色二维码
 /// </summary>
-[Introduction("彩色二维码", "以颜色通道分别存储信息")]
+[Introduction("彩色二维码", "以颜色通道分别存储多个二维码")]
 [SupportedOSPlatform("windows")]
 public static class ColorfulBarcode
 {
 
     /// <summary>
-    /// 未定义的密码类型
+    /// 图形密码
     /// </summary>
-    public static readonly CipherType Type = CipherType.Undefined;
+    public static CipherType Type => CipherType.Image;
 
     /// <summary>
     /// 图片保存的格式

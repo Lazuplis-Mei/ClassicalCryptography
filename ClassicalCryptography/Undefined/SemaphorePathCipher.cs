@@ -2,6 +2,7 @@
 using ClassicalCryptography.Utils;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -247,9 +248,9 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
             try
             {
                 cMatrix = GenerateMatrix(plainText.Length, len, len, t);
-#if DEBUG
-                DrawSemaphores(cMatrix, $"temp_{plainText.GetHashCode()}.png");
-#endif
+
+                if (Debugger.IsAttached)
+                    DrawSemaphores(cMatrix, $"temp_{plainText.GetHashCode()}.png");
                 break;
             }
             catch

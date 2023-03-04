@@ -1,5 +1,5 @@
-﻿using ClassicalCryptography.Replacement;
-using ClassicalCryptography.Undefined;
+﻿using ClassicalCryptography.Image;
+using ClassicalCryptography.Replacement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition;
-using static ClassicalCryptography.Utils.Globals;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Replacement
 {

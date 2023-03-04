@@ -1,10 +1,13 @@
-﻿namespace ClassicalCryptography.Encoder;
+﻿using ClassicalCryptography.Utils;
+
+namespace ClassicalCryptography.Encoder;
 
 /// <summary>
-/// copy from https://stackoverflow.com/questions/641361/base32-decoding
+/// copy from <see href="https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008">Base32 Decoding</see>
 /// </summary>
-public class Base32Encoding
+public static class Base32Encoding
 {
+
     /// <summary>
     /// to bytes
     /// </summary>
@@ -92,6 +95,9 @@ public class Base32Encoding
 
     private static int CharToValue(char c)
     {
+        //this can be change
+        //return GlobalTables.Base32_RFC3548.IndexOf(c);
+
         int value = (int)c;
 
         //65-90 == uppercase letters
@@ -103,17 +109,19 @@ public class Base32Encoding
         //97-122 == lowercase letters
         if (value < 123 && value > 96)
             return value - 97;
-
-        throw new ArgumentException("Character is not a Base32 character.", "c");
+        
+        throw new ArgumentException("Character is not a Base32 character.", nameof(c));
     }
 
     private static char ValueToChar(byte b)
     {
+        //this can be change
+        //return GlobalTables.Base32_RFC3548[b];
         if (b < 26)
             return (char)(b + 65);
         if (b < 32)
             return (char)(b + 24);
-        throw new ArgumentException("Byte is not a value Base32 value.", "b");
+        throw new ArgumentException("Byte is not a value Base32 value.", nameof(b));
     }
 
 }
