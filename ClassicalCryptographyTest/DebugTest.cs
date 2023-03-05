@@ -1,4 +1,5 @@
-﻿using ClassicalCryptography.Encoder;
+﻿using ClassicalCryptography.Calculation.CustomRSAPK;
+using ClassicalCryptography.Encoder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Numerics;
@@ -11,7 +12,9 @@ namespace ClassicalCryptographyTest
         [TestMethod]
         public void Test()
         {
-            PLEncoding.JJEncode("alert(\"Hello, JavaScript\")");
+            
+
+
         }
     }
 }

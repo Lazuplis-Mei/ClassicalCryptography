@@ -1,5 +1,8 @@
 ﻿using ClassicalCryptography.Utils;
+using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
+using static ClassicalCryptography.Encoder.PLEncodings.Constants;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -8,6 +11,61 @@ namespace ClassicalCryptography.Encoder;
 /// </summary>
 public static partial class PLEncoding
 {
+    [GeneratedRegex("\\\\x[0-9a-f]")]
+    private static partial Regex PYHexRegex();
+
+
+    /// <summary>
+    /// 转换为python bytes
+    /// </summary>
+    public static string ToPYBytes(string input, Encoding? encoding = null)
+    {
+        encoding ??= Encoding.Default;
+        var bytes = encoding.GetBytes(input);
+        var str = new StringBuilder(bytes.Length * 4);
+        foreach (var b in bytes)
+        {
+            str.Append(@"\x");
+            str.Append(b.ToString("x2"));
+        }
+        return str.ToString();
+    }
+
+    /// <summary>
+    /// 从python bytes转换
+    /// </summary>
+    public static string FromPYBytes(string input, Encoding? encoding = null)
+    {
+        encoding ??= Encoding.Default;
+        var matches = PYHexRegex().Matches(input);
+        var bytes = new byte[matches.Count];
+        for (int i = 0; i < matches.Count; i++)
+        {
+            Match match = matches[i];
+            bytes[i++] = Convert.ToByte(match.Value[2..], 16);
+        }
+        return encoding.GetString(bytes);
+    }
+
+    /// <summary>
+    /// To Punycode
+    /// </summary>
+    public static string ToPunycode(string input)
+    {
+        var mapping = new IdnMapping();
+        return mapping.GetAscii(input);
+    }
+
+    /// <summary>
+    /// From Punycode
+    /// </summary>
+    public static string FromPunycode(string input)
+    {
+        var mapping = new IdnMapping();
+        return mapping.GetUnicode(input);
+    }
+
+
     /// <summary>
     /// a subset of Perl who restricts source code to have only Perl keywords
     /// </summary>
@@ -196,19 +254,12 @@ public static partial class PLEncoding
     }
 
     /// <summary>
-    /// BrainfuckILCompile
-    /// </summary>
-    public static void BrainfuckILCompile(string text, string filePath)
-    {
-        
-    }
-
-    /// <summary>
     /// BrainfuckDecode
     /// </summary>
     public static string BrainfuckDecode(string bfcode)
     {
         return "";
     }
+
 
 }

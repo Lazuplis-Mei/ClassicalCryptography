@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ClassicalCryptography.Encoder.BaseEncodings;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -140,57 +141,6 @@ public static partial class BaseEncoding
 
 
     /// <summary>
-    /// 转换为python bytes
-    /// </summary>
-    public static string ToPYBytes(string input, Encoding? encoding = null)
-    {
-        encoding ??= Encoding.Default;
-        var bytes = encoding.GetBytes(input);
-        var str = new StringBuilder(bytes.Length * 4);
-        foreach (var b in bytes)
-        {
-            str.Append(@"\x");
-            str.Append(b.ToString("x2"));
-        }
-        return str.ToString();
-    }
-
-    /// <summary>
-    /// 从python bytes转换
-    /// </summary>
-    public static string FromPYBytes(string input, Encoding? encoding = null)
-    {
-        encoding ??= Encoding.Default;
-        var matches = PYHexRegex().Matches(input);
-        var bytes = new byte[matches.Count];
-        int i = 0;
-        foreach (Match match in matches)
-        {
-            bytes[i++] = Convert.ToByte(match.Value[2..], 16);
-        }
-        return encoding.GetString(bytes);
-    }
-
-    /// <summary>
-    /// To Punycode
-    /// </summary>
-    public static string ToPunycode(string input)
-    {
-        var mapping = new IdnMapping();
-        return mapping.GetAscii(input);
-    }
-
-    /// <summary>
-    /// From Punycode
-    /// </summary>
-    public static string FromPunycode(string input)
-    {
-        var mapping = new IdnMapping();
-        return mapping.GetUnicode(input);
-    }
-
-
-    /// <summary>
     /// 转换为Emoji表情符号
     /// </summary>
     public static string ToBase100(string input, Encoding? encoding = null)
@@ -217,13 +167,7 @@ public static partial class BaseEncoding
     {
         encoding ??= Encoding.Default;
         var bytes = encoding.GetBytes(input);
-        var number = new BigInteger(bytes);
-        if (number.Sign == -1)
-        {
-            var posBytes = new byte[bytes.Length + 1];
-            Array.Copy(bytes, 0, posBytes, 1, bytes.Length);
-            number = new BigInteger(posBytes);
-        }
+        var number = new BigInteger(bytes, true, true);
 
         var stack = new Stack<char>();
         while (!number.IsZero)
@@ -234,6 +178,4 @@ public static partial class BaseEncoding
         return new(stack.ToArray());
     }
 
-    [GeneratedRegex("\\\\x[0-9a-f]")]
-    private static partial Regex PYHexRegex();
 }

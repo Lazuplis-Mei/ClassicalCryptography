@@ -1,6 +1,6 @@
 ﻿using ClassicalCryptography.Utils;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// copy from <see href="https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008">Base32 Decoding</see>
@@ -29,16 +29,16 @@ public static class Base32Encoding
             int mask;
             if (bitsRemaining > 5)
             {
-                mask = cValue << (bitsRemaining - 5);
+                mask = cValue << bitsRemaining - 5;
                 curByte = (byte)(curByte | mask);
                 bitsRemaining -= 5;
             }
             else
             {
-                mask = cValue >> (5 - bitsRemaining);
+                mask = cValue >> 5 - bitsRemaining;
                 curByte = (byte)(curByte | mask);
                 returnArray[arrayIndex++] = curByte;
-                curByte = (byte)(cValue << (3 + bitsRemaining));
+                curByte = (byte)(cValue << 3 + bitsRemaining);
                 bitsRemaining += 3;
             }
         }
@@ -69,18 +69,18 @@ public static class Base32Encoding
 
         foreach (byte b in input)
         {
-            nextChar = (byte)(nextChar | (b >> (8 - bitsRemaining)));
+            nextChar = (byte)(nextChar | b >> 8 - bitsRemaining);
             returnArray[arrayIndex++] = ValueToChar(nextChar);
 
             if (bitsRemaining < 4)
             {
-                nextChar = (byte)((b >> (3 - bitsRemaining)) & 31);
+                nextChar = (byte)(b >> 3 - bitsRemaining & 31);
                 returnArray[arrayIndex++] = ValueToChar(nextChar);
                 bitsRemaining += 5;
             }
 
             bitsRemaining -= 3;
-            nextChar = (byte)((b << bitsRemaining) & 31);
+            nextChar = (byte)(b << bitsRemaining & 31);
         }
 
         //if we didn't end with a full char
@@ -98,7 +98,7 @@ public static class Base32Encoding
         //this can be change
         //return GlobalTables.Base32_RFC3548.IndexOf(c);
 
-        int value = (int)c;
+        int value = c;
 
         //65-90 == uppercase letters
         if (value < 91 && value > 64)
@@ -109,7 +109,7 @@ public static class Base32Encoding
         //97-122 == lowercase letters
         if (value < 123 && value > 96)
             return value - 97;
-        
+
         throw new ArgumentException("Character is not a Base32 character.", nameof(c));
     }
 

@@ -1,11 +1,11 @@
 ﻿using ZXing;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.PLEncodings;
 
-public static partial class PLEncoding
+static class Constants
 {
 
-    private static readonly string jjcode = "{0}=~[];{0}={{___:++{0},$$$$:(![]+" +
+    public static readonly string jjcode = "{0}=~[];{0}={{___:++{0},$$$$:(![]+" +
         "\"\")[{0}],__$:++{0},$_$_:(![]+\"\")[{0}],_$_:++{0},$_$$:({{}}+\"\")" +
         "[{0}],$$_$:({0}[{0}]+\"\")[{0}],_$$:++{0},$$$_:(!\"\"+\"\")[{0}],$__:" +
         "++{0},$_$:++{0},$$__:({{}}+\"\")[{0}],$$_:++{0},$$$:++{0},$___:++{0}," +
@@ -16,13 +16,13 @@ public static partial class PLEncoding
         "+{0}.__+{0}._+{0}.$+{0}.$$;{0}.$=({0}.___)[{0}.$_][{0}.$_];{0}.$({0}.$" +
         "({0}.$$+\"\\\"\"+{1}\"\\\"\")())();";
 
-    private static readonly string[] jjcodes = new[]
+    public static readonly string[] jjcodes = new[]
     {
-        "___", "__$", "_$_", "_$$", "$__", "$_$", "$$_", "$$$", 
-        "$___", "$__$", "$_$_", "$_$$", "$$__", "$$_$", "$$$_", "$$$$" 
+        "___", "__$", "_$_", "_$$", "$__", "$_$", "$$_", "$$$",
+        "$___", "$__$", "$_$_", "$_$$", "$$__", "$$_$", "$$$_", "$$$$"
     };
 
-    private static readonly string[] aacodes = new[]
+    public static readonly string[] aacodes = new[]
     {
         "(c^_^o)",
         "(ﾟΘﾟ)",
@@ -43,7 +43,7 @@ public static partial class PLEncoding
     };
 
 
-    private static readonly string aacode = "ﾟωﾟﾉ= /｀ｍ´）ﾉ ~┻━┻   //*´∇｀*/ ['_']; o=(ﾟｰﾟ)  =_=3; c=(ﾟΘﾟ) =(ﾟｰﾟ)-(ﾟｰﾟ); " +
+    public static readonly string aacode = "ﾟωﾟﾉ= /｀ｍ´）ﾉ ~┻━┻   //*´∇｀*/ ['_']; o=(ﾟｰﾟ)  =_=3; c=(ﾟΘﾟ) =(ﾟｰﾟ)-(ﾟｰﾟ); " +
     "(ﾟДﾟ) =(ﾟΘﾟ)= (o^_^o)/ (o^_^o);" +
     "(ﾟДﾟ)={ﾟΘﾟ: '_' ,ﾟωﾟﾉ : ((ﾟωﾟﾉ==3) +'_') [ﾟΘﾟ] " +
     ",ﾟｰﾟﾉ :(ﾟωﾟﾉ+ '_')[o^_^o -(ﾟΘﾟ)] " +
@@ -65,7 +65,7 @@ public static partial class PLEncoding
     "(ﾟДﾟ) ['_'] ( (ﾟДﾟ) ['_'] (ﾟεﾟ+(ﾟДﾟ)[ﾟoﾟ]+ ";
 
 
-    private static readonly string[] ppwords = new[]
+    public static readonly string[] ppwords = new[]
     {
         "abs", "accept", "alarm", "and", "bind", "binmode", "bless", "caller",
         "chdir", "chmod", "chomp", "chop", "chown", "chr", "chroot", "close",
@@ -99,7 +99,7 @@ public static partial class PLEncoding
         "warn", "while", "write", "x", "xor", "y" };
 
     //但它就是这样......
-    private static readonly string[][] ppcodes = new string[][]
+    public static readonly string[][] ppcodes = new string[][]
     {
         new[]{"8182","8282","798182"},
         new[]{"75755479817C","75755479811E","61817C"},

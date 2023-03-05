@@ -1,22 +1,19 @@
 ﻿using System.Text;
-using static ClassicalCryptography.Encoder.Constants;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
-static class Constants
-{
-    public const int PaddingBlockStart = 5376;
-    public const int PossibleBytes = 1 << 8;
-    public const int BmpThreshold = 1 << 16;
-    public const int High = 0xD800;
-    public const int Low = 0xDC00;
-    public const int Offset = 1 << 10;
-}
 /// <summary>
 /// Base65536 from <see href="https://github.com/cyberdot/base65536"/>
 /// </summary>
 public static class Base65536Encoding
 {
+    private const int PaddingBlockStart = 5376;
+    private const int PossibleBytes = 1 << 8;
+    private const int BmpThreshold = 1 << 16;
+    private const int High = 0xD800;
+    private const int Low = 0xDC00;
+    private const int Offset = 1 << 10;
+
     private static readonly Dictionary<int, int> EncodeMap = new()
     {
         {-1, 5376},{0, 13312},{1, 13568},{2, 13824},{3, 14080},{4, 14336},{5, 14592},{6, 14848},
@@ -100,7 +97,7 @@ public static class Base65536Encoding
         for (var i = 0; i < data.Length; i += 2)
         {
             var p1 = data[i];
-            var blockStart = (i + 1 < data.Length) ? EncodeMap[data[i + 1]] : PaddingBlockStart;
+            var blockStart = i + 1 < data.Length ? EncodeMap[data[i + 1]] : PaddingBlockStart;
             var p2 = blockStart + p1;
 
             if (p2 < BmpThreshold)
@@ -170,7 +167,7 @@ public static class Base65536Encoding
 
         foreach (var codePoint in data.ToCodePoints())
         {
-            var p1 = codePoint & (PossibleBytes - 1);
+            var p1 = codePoint & PossibleBytes - 1;
             var blockStart = codePoint - p1;
 
             if (blockStart == PaddingBlockStart)

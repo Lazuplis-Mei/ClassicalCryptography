@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// 使用Emoji表情符号编码
@@ -38,7 +38,7 @@ public static class Base100Encoding
             if (i % 4 == 2)
                 t = (data[i] - 0x8F) * 0x40 % 0x100;
             else if (i % 4 == 3)
-                bytes[i / 4] = (byte)((data[i] - 0x80 + t - 55) & 0xFF);
+                bytes[i / 4] = (byte)(data[i] - 0x80 + t - 55 & 0xFF);
         }
         return bytes;
     }

@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// encoding optimised for UTF-16-encoded text <see href="https://github.com/qntm/base32768">Base32768</see>
@@ -28,5 +28,5 @@ public static class Base32768Encoding
     /// decode Base32768
     /// </summary>
     public static byte[] Decode(string str) => base32768.Decode(str);
-    
+
 }

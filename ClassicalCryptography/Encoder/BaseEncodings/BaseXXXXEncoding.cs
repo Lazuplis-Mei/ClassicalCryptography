@@ -1,19 +1,19 @@
 ﻿using System.Text;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 class BaseXXXXEncoding
 {
-    private int BITS_PER_CHAR;
-    private int BITS_PER_BYTE;
+    private readonly int BITS_PER_CHAR;
+    private readonly int BITS_PER_BYTE;
     private readonly string[] pairStrings;
     private readonly Dictionary<int, List<char>> lookupE = new();
     private readonly Dictionary<int, (int, int)> lookupD = new();
-    public BaseXXXXEncoding(int charBits, int byteBits, string[] pairStrings)
+    public BaseXXXXEncoding(int charBits, int byteBits, string[] pairStrs)
     {
         BITS_PER_CHAR = charBits;
         BITS_PER_BYTE = byteBits;
-        this.pairStrings = pairStrings;
+        pairStrings = pairStrs;
         for (int r = 0; r < pairStrings.Length; r++)
         {
             string pairString = pairStrings[r];
@@ -50,7 +50,7 @@ class BaseXXXXEncoding
             // Take most significant bit first
             for (int j = BITS_PER_BYTE - 1; j >= 0; j--)
             {
-                int bit = (uint8 >> j) & 1;
+                int bit = uint8 >> j & 1;
 
                 z = (z << 1) + bit;
                 numZBits++;
@@ -106,7 +106,7 @@ class BaseXXXXEncoding
             // Take most significant bit first
             for (int j = numZBits - 1; j >= 0; j--)
             {
-                int bit = (z >> j) & 1;
+                int bit = z >> j & 1;
 
                 uint8 = (byte)((uint8 << 1) + bit);
                 numUint8Bits++;
@@ -124,7 +124,7 @@ class BaseXXXXEncoding
         // Final padding bits! Requires special consideration!
         // Remember how we always pad with 1s?
         // Note: there could be 0 such bits, check still works though
-        if (uint8 != ((1 << numUint8Bits) - 1))
+        if (uint8 != (1 << numUint8Bits) - 1)
         {
             throw new Exception("Padding mismatch");
         }

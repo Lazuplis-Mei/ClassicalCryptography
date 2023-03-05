@@ -1,4 +1,4 @@
-﻿namespace ClassicalCryptography.Encoder;
+﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// from <see href="https://github.com/qntm/base2048"/>

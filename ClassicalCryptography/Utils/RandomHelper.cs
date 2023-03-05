@@ -97,7 +97,7 @@ internal static class RandomHelper
     /// 产生不大于<paramref name="maxValue"/>的随机数
     /// </summary>
     /// <param name="maxValue">最大值</param>
-    [SkipLocalsInit]
+    [SkipLocalsInit, Obsolete("使用RandomBigInteger")]
     public static BigInteger RandomBigInt(BigInteger maxValue)
     {
         if (maxValue < int.MaxValue)
@@ -109,6 +109,22 @@ internal static class RandomHelper
         buffer[0] = RandomByte(firstBit);
         Random.Shared.NextBytes(buffer[1..]);
         return new BigInteger(buffer, true, true);
+    }
+
+    /// <summary>
+    ///  Generate a random bigInteger ∈ [min,max]
+    /// <para>see https://github.com/mikolajtr/dotnetprime/blob/master/MillerRabin/Helpers/PrimeGeneratorHelpers.cs#L8 </para>
+    /// </summary>
+    /// <param name="min">min value</param>
+    /// <param name="max">max value</param>
+    public static BigInteger RandomBigInteger(BigInteger min, BigInteger max)
+    {
+        byte[] bytes = max.ToByteArray();
+
+        Random.Shared.NextBytes(bytes);
+        bytes[^1] &= 0x7F; // force sign bit to positive
+        var value = new BigInteger(bytes);
+        return (value % (max - min + 1)) + min;
     }
 
     /// <summary>

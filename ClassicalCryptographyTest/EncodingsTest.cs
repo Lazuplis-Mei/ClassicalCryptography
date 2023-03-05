@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Encoder;
+using ClassicalCryptography.Encoder.BaseEncodings;
 using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Replacement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
