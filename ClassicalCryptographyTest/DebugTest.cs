@@ -11,7 +11,7 @@ namespace ClassicalCryptographyTest
         [TestMethod]
         public void Test()
         {
-            BaseEncoding.ToPYBytes("是");
+            PLEncoding.JJEncode("alert(\"Hello, JavaScript\")");
         }
     }
 }

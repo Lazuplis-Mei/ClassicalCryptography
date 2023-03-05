@@ -120,6 +120,14 @@ internal static class RandomHelper
     }
 
     /// <summary>
+    /// 随机的列表项目
+    /// </summary>
+    public static T RandomItem<T>(this T[] arr)
+    {
+        return arr[Random.Shared.Next(arr.Length)];
+    }
+
+    /// <summary>
     /// 返回并移除随机的列表项目
     /// </summary>
     public static T PopRandomItem<T>(this List<T> list)
