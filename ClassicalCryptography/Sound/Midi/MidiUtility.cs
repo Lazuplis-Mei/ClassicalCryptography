@@ -15,6 +15,7 @@ static partial class MidiUtility
     /// <returns>The string note</returns>
     public static string NoteIdToNote(byte noteId, bool withOctave = true)
     {
+        noteId -= 12;//这可能引起争议
         noteId = unchecked((byte)(noteId & 0x7F));
         if (withOctave)
             return _Notes.Substring((noteId % 12) * 2, 2).TrimEnd() + ((int)(noteId / 12)).ToString();
@@ -57,6 +58,7 @@ static partial class MidiUtility
             if (10 < oct)
                 throw new ArgumentException("Note a valid note", nameof(note));
         }
+        oct++;//这可能引起争议
         return unchecked((byte)(12 * oct + (j / 2)));
     }
     /// <summary>
