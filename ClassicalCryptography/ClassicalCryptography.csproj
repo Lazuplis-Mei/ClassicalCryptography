@@ -42,9 +42,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Update="Plugsound Piano.sf2">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
 	  <None Update="TIMIDITY.CFG">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>

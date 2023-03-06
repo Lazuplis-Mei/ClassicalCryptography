@@ -1,8 +1,13 @@
-﻿using ClassicalCryptography.Utils;
+﻿using ClassicalCryptography.Encoder.PLEncodings;
+using ClassicalCryptography.Utils;
+using Microsoft.VisualBasic;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
+using ZXing;
 using static ClassicalCryptography.Encoder.PLEncodings.Constants;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -230,27 +235,76 @@ public static partial class PLEncoding
     /// <summary>
     /// JotherEncode
     /// </summary>
-    public static string JotherEncode(string jsocde)
-    {
-        return "";
-    }
-
+    public static string JotherEncode(string jsocde) => Jother.ToScript(jsocde);
 
     /// <summary>
-    /// jsfuck
+    /// JotherEncodeString
     /// </summary>
-    public static string JSFuckEncode(string jsocde)
-    {
-        return "";
-    }
+    public static string JotherEncodeString(string str) => Jother.ToStr(str);
 
 
     /// <summary>
-    /// BrainfuckEncode
+    /// BrainfuckEncode from https://github.com/splitbrain/ook/blob/master/util.php
     /// </summary>
     public static string BrainfuckEncode(string text)
     {
-        return "";
+        static string str_repeat(char c, int count) => string.Concat(Enumerable.Repeat(c, count));
+
+        int value = 0;
+        var result = new StringBuilder();
+        for (int t = 0; t < text.Length; t++)
+        {
+            /* ordinal difference between current char and the one we want to have */
+            var diff = text[t] - value;
+            /* it's easier like this than always computing this value - saves some cpu cycles*/
+            value = text[t];
+            /* repeat current character */
+            if (diff == 0)
+            {
+                result.Append(">.<");
+                continue;
+            }
+
+            /* is it worth making a loop?
+               No. A bunch of + or - consume less space than the loop. */
+            if (Math.Abs(diff) < 10)
+            {
+                result.Append('>');
+
+                /* output a bunch of + or - */
+                if (diff > 0)
+                    result.Append(str_repeat('+', diff));
+                else if (diff < 0)
+                    result.Append(str_repeat('-', Math.Abs(diff)));
+            }/* Yes, create a loop. This will make the resulting code more compact. */
+            else
+            {
+                /*  we strictly use ints, as PHP has some bugs with floating point operations
+                    (even if no division is involved) */
+                var loop = (int)Math.Sqrt(Math.Abs(diff));
+
+                /* set loop counter */
+                result.Append(str_repeat('+', loop));
+
+                /* execute loop, then add reminder */
+                if (diff > 0)
+                {
+                    result.Append("[->" + str_repeat('+', loop) + "<]");
+                    result.Append(">" + str_repeat('+', diff - (int)Math.Pow(loop, 2)));
+                }
+                else if (diff < 0)
+                {
+                    result.Append("[->" + str_repeat('-', loop) + "<]");
+                    result.Append(">" + str_repeat('-', Math.Abs(diff) - (int)Math.Pow(loop, 2)));
+                }
+            }/* end: if loop */
+
+            result.Append(".<");
+        }/* end: for */
+
+        /* cleanup */
+        result.Replace("<>", string.Empty);
+        return result.ToString();
     }
 
     /// <summary>
@@ -258,7 +312,7 @@ public static partial class PLEncoding
     /// </summary>
     public static string BrainfuckDecode(string bfcode)
     {
-        return "";
+        return Brainfuck.RunFile(bfcode);
     }
 
 
