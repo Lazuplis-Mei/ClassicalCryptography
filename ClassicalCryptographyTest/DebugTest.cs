@@ -1,12 +1,14 @@
-﻿using ClassicalCryptography.Calculation.CustomRSAPK;
+﻿using ClassicalCryptography.Calculation.CustomRSAPrivateKey;
 using ClassicalCryptography.Encoder;
+using ClassicalCryptography.Encoder.BaseEncodings;
+using ClassicalCryptography.Encoder.PLEncodings;
+using ClassicalCryptography.Image;
 using ClassicalCryptography.Replacement;
 using ClassicalCryptography.Sound;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Diagnostics;
-using System.Numerics;
-using static ClassicalCryptography.Encoder.PLEncodings.Constants;
+using System.Drawing;
+using System.Runtime.Versioning;
 
 namespace ClassicalCryptographyTest
 {
@@ -14,10 +16,10 @@ namespace ClassicalCryptographyTest
     public class DebugTest
     {
         [TestMethod]
+        [SupportedOSPlatform("windows")]
         public void Test()
         {
-            var bf = PLEncoding.BrainfuckEncode("good job!");
-            var str = PLEncoding.BrainfuckDecode(bf);
+            
 
         }
     }

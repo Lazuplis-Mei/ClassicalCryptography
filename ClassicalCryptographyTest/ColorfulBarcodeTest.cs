@@ -19,8 +19,13 @@ namespace ClassicalCryptographyTest
         {
             var plainText = RandomString.Generate(100);
 
-            var bitmap = ColorfulBarcode.Encrypt(plainText);
-            var text = ColorfulBarcode.Decrypt(bitmap);
+            var bitmap = ColorfulBarcode.Encode(plainText);
+            var text = ColorfulBarcode.Recognize(bitmap);
+
+            Assert.AreEqual(plainText, text);
+
+            bitmap = ColorfulBarcode.EncodeSixColor(plainText);
+            text = ColorfulBarcode.RecognizeSixColor(bitmap);
 
             Assert.AreEqual(plainText, text);
         }

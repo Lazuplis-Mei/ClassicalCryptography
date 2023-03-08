@@ -1,17 +1,20 @@
-﻿using System.Text;
+﻿using ClassicalCryptography.Interfaces;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// encoding optimised for UTF-16-encoded text <see href="https://github.com/qntm/base32768">Base32768</see>
+/// <para>Base32768编码</para>
+/// <see href="https://github.com/qntm/base32768"/>
 /// </summary>
+[Introduction("Base32768编码", "https://github.com/qntm/base32768")]
+[TranslatedFrom("JavaScript")]
 public static class Base32768Encoding
 {
-    private const int BITS_PER_CHAR = 15; // Base32768 is a 15-bit encoding
+    private const int BITS_PER_CHAR = 15;
     private const int BITS_PER_BYTE = 8;
     private static readonly string[] pairStrings =
     {
-        "ҠҿԀԟڀڿݠޟ߀ߟကဟႠႿᄀᅟᆀᆟᇠሿበቿዠዿጠጿᎠᏟᐠᙟᚠᛟកសᠠᡟᣀᣟᦀᦟ᧠᧿ᨠᨿᯀᯟᰀᰟᴀᴟ⇠⇿⋀⋟⍀⏟␀␟─❟➀➿⠀⥿⦠⦿⨠⩟⪀⪿⫠⭟ⰀⰟⲀⳟⴀⴟⵀⵟ⺠⻟㇀㇟㐀䶟䷀龿ꀀꑿ꒠꒿ꔀꗿꙀꙟꚠꛟ꜀ꝟꞀꞟꡀꡟ",
+        Properties.Resources.Base32768PairString,
         "ƀƟɀʟ"
     };
 

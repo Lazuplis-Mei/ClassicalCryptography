@@ -3,7 +3,7 @@
 /// <summary>
 /// SH5结构的等级
 /// </summary>
-public enum SH5Level : byte
+public enum SH5Level
 {
     /// <summary>
     /// 仅一组

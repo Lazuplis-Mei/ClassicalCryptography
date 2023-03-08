@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using static ClassicalCryptography.Utils.BaseConverter;
 using static ClassicalCryptography.Utils.GlobalTables;
+using static System.Net.WebRequestMethods;
 
 namespace ClassicalCryptography.Calculation.ShortHide5;
 
@@ -12,7 +13,8 @@ namespace ClassicalCryptography.Calculation.ShortHide5;
 public partial class SH5 : IEnumerable<int>
 {
     /// <summary>
-    /// 1组SH5的字母表(推荐的)
+    /// <para>1组SH5的字母表(推荐的)</para>
+    /// <see href="https://www.bilibili.com/read/cv15676311"/>
     /// </summary>
     public static readonly string AlphaBetS = "EADIHTNORFS";
     /// <summary>

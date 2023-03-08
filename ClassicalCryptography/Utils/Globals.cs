@@ -13,6 +13,11 @@ public static class GlobalTables
     public static readonly string Digits = "0123456789";
 
     /// <summary>
+    /// 小写16进制字符
+    /// </summary>
+    public static readonly string HexString = "0123456789abcdef";
+
+    /// <summary>
     /// 日语片假名
     /// </summary>
     public static readonly string Hiragana = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";

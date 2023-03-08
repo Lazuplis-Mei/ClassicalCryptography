@@ -32,9 +32,9 @@ public static partial class PigpenCipher
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
         int t = 0;
-        for (int y = posPadding; y < negPadding; y += checkStep / 2)
+        for (int y = PADDING; y < NEGATIVE_PADDING; y += CHECK_STEP / 2)
         {
-            for (int x = posPadding; x < negPadding; x += checkStep / 2)
+            for (int x = PADDING; x < NEGATIVE_PADDING; x += CHECK_STEP / 2)
             {
                 color = bitmap.GetPixel(startX + x, startY + y);
                 tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -48,15 +48,15 @@ public static partial class PigpenCipher
     private static bool CheckDot(Bitmap bitmap, int startX, int startY)
     {
         int tA = 0, tR = 0, tG = 0, tB = 0;
-        Color color = bitmap.GetPixel(startX + midPosition - 2, startY + midPosition);
+        Color color = bitmap.GetPixel(startX + CENTER_POSITION - 2, startY + CENTER_POSITION);
         tA += color.A; tR += color.R; tG += color.G; tB += color.B;
-        color = bitmap.GetPixel(startX + midPosition, startY + midPosition - 2);
+        color = bitmap.GetPixel(startX + CENTER_POSITION, startY + CENTER_POSITION - 2);
         tA += color.A; tR += color.R; tG += color.G; tB += color.B;
-        color = bitmap.GetPixel(startX + midPosition + 2, startY + midPosition);
+        color = bitmap.GetPixel(startX + CENTER_POSITION + 2, startY + CENTER_POSITION);
         tA += color.A; tR += color.R; tG += color.G; tB += color.B;
-        color = bitmap.GetPixel(startX + midPosition, startY + midPosition + 2);
+        color = bitmap.GetPixel(startX + CENTER_POSITION, startY + CENTER_POSITION + 2);
         tA += color.A; tR += color.R; tG += color.G; tB += color.B;
-        color = bitmap.GetPixel(startX + midPosition, startY + midPosition);
+        color = bitmap.GetPixel(startX + CENTER_POSITION, startY + CENTER_POSITION);
         tA += color.A; tR += color.R; tG += color.G; tB += color.B;
         color = Color.FromArgb(tA / 5, tR / 5, tG / 5, tB / 5);
         return color.GetBrightness() <= 0.1f;
@@ -67,7 +67,7 @@ public static partial class PigpenCipher
         int x, y;
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
-        for (x = y = posPadding; y < negPadding; y += checkStep, x += checkStep / 2)
+        for (x = y = PADDING; y < NEGATIVE_PADDING; y += CHECK_STEP, x += CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x + 2, startY + y + 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -78,7 +78,7 @@ public static partial class PigpenCipher
             return false;
 
         tA = tR = tG = tB = 0;
-        for (x = negPadding, y = posPadding; y < negPadding; y += checkStep, x -= checkStep / 2)
+        for (x = NEGATIVE_PADDING, y = PADDING; y < NEGATIVE_PADDING; y += CHECK_STEP, x -= CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x - 2, startY + y + 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -93,7 +93,7 @@ public static partial class PigpenCipher
         int x, y;
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
-        for (x = negPadding, y = posPadding; x > posPadding; x -= checkStep, y += checkStep / 2)
+        for (x = NEGATIVE_PADDING, y = PADDING; x > PADDING; x -= CHECK_STEP, y += CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x - 2, startY + y + 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -104,7 +104,7 @@ public static partial class PigpenCipher
             return false;
 
         tA = tR = tG = tB = 0;
-        for (x = y = negPadding; x > posPadding; x -= checkStep, y -= checkStep / 2)
+        for (x = y = NEGATIVE_PADDING; x > PADDING; x -= CHECK_STEP, y -= CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x - 2, startY + y - 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -119,7 +119,7 @@ public static partial class PigpenCipher
         int x, y;
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
-        for (x = y = posPadding; x < negPadding; x += checkStep, y += checkStep / 2)
+        for (x = y = PADDING; x < NEGATIVE_PADDING; x += CHECK_STEP, y += CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x + 2, startY + y + 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -130,7 +130,7 @@ public static partial class PigpenCipher
             return false;
 
         tA = tR = tG = tB = 0;
-        for (x = posPadding, y = negPadding; x < negPadding; x += checkStep, y -= checkStep / 2)
+        for (x = PADDING, y = NEGATIVE_PADDING; x < NEGATIVE_PADDING; x += CHECK_STEP, y -= CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x + 2, startY + y - 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -145,7 +145,7 @@ public static partial class PigpenCipher
         int x, y;
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
-        for (x = posPadding, y = negPadding; y > posPadding; y -= checkStep, x += checkStep / 2)
+        for (x = PADDING, y = NEGATIVE_PADDING; y > PADDING; y -= CHECK_STEP, x += CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x + 2, startY + y - 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -156,7 +156,7 @@ public static partial class PigpenCipher
             return false;
 
         tA = tR = tG = tB = 0;
-        for (x = y = negPadding; y > posPadding; y -= checkStep, x -= checkStep / 2)
+        for (x = y = NEGATIVE_PADDING; y > PADDING; y -= CHECK_STEP, x -= CHECK_STEP / 2)
         {
             color = bitmap.GetPixel(startX + x - 2, startY + y - 2);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -172,7 +172,7 @@ public static partial class PigpenCipher
         int x, y;
         int tA = 0, tR = 0, tG = 0, tB = 0;
         Color color;
-        for (x = y = posPadding; y < negPadding; y += checkStep)
+        for (x = y = PADDING; y < NEGATIVE_PADDING; y += CHECK_STEP)
         {
             color = bitmap.GetPixel(startX + x, startY + y);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -182,7 +182,7 @@ public static partial class PigpenCipher
 
 
         tA = tR = tG = tB = 0;
-        for (x = y = posPadding; x < negPadding; x += checkStep)
+        for (x = y = PADDING; x < NEGATIVE_PADDING; x += CHECK_STEP)
         {
             color = bitmap.GetPixel(startX + x, startY + y);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -192,7 +192,7 @@ public static partial class PigpenCipher
 
 
         tA = tR = tG = tB = 0;
-        for (x = negPadding, y = posPadding; y < negPadding; y += checkStep)
+        for (x = NEGATIVE_PADDING, y = PADDING; y < NEGATIVE_PADDING; y += CHECK_STEP)
         {
             color = bitmap.GetPixel(startX + x, startY + y);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;
@@ -202,7 +202,7 @@ public static partial class PigpenCipher
 
 
         tA = tR = tG = tB = 0;
-        for (x = posPadding, y = negPadding; x < negPadding; x += checkStep)
+        for (x = PADDING, y = NEGATIVE_PADDING; x < NEGATIVE_PADDING; x += CHECK_STEP)
         {
             color = bitmap.GetPixel(startX + x, startY + y);
             tA += color.A; tR += color.R; tG += color.G; tB += color.B;

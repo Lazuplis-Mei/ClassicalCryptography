@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using ClassicalCryptography.Interfaces;
+using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace ClassicalCryptography.Utils;
 
@@ -107,5 +109,20 @@ internal static class StringExtension
             result[i] = converter(self.Substring(i * length, length));
         }
         return result;
+    }
+
+    /// <summary>
+    /// 以重复的字符生成字符串
+    /// </summary>
+    /// <param name="character">重复的字符</param>
+    /// <param name="count">重复次数</param>
+    [SkipLocalsInit]
+    public static string Repeat(this char character, int count)
+    {
+        Span<char> span = count <= StackLimit.MaxCharSize
+            ? stackalloc char[count] : new char[count];
+        for (int i = 0; i < count; i++)
+            span[i] = character;
+        return new(span);
     }
 }

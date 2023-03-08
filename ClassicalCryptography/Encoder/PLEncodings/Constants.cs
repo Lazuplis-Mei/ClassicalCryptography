@@ -1,168 +1,15 @@
 ﻿namespace ClassicalCryptography.Encoder.PLEncodings;
 
-internal static class Constants
+internal static partial class Constants
 {
-    public static class Jother
-    {
-        public static readonly string[] bbase = new[]
-        {
-            "[]",          //空,相当于""
-	        "{}",          //[object Object]
-	        "![]",         //false
-	        "!![]",        //true
-	        "~[]",         //-1
-	        "+{}",         //NaN
-	        "{}[[]]",       //undefined
-            "(+(+!![]+(!![]+[])[!![]+!![]+!![]]+(+!![]+[])+(+[]+[])+(+[]+[])+(+[]+[])+[])+[])",
-        };
 
-        public static readonly string[] nums = new[]
-        {
-            "+[]",                                             //0
-            "+!![]",                                           //1
-            "!![]+!![]",                                       //2
-            "!![]+!![]+!![]",                                  //3
-            "!![]+!![]+!![]+!![]",                             //4
-            "!![]+!![]+!![]+!![]+!![]",                        //5
-            "!![]+!![]+!![]+!![]+!![]+!![]",                   //6
-            "!![]+!![]+!![]+!![]+!![]+!![]+!![]",              //7
-            "!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]",         //8
-            "!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]+!![]"     //9
-        };
-
-
-        public static readonly Dictionary<char, string> chars;
-
-        public static readonly string f;
-        public static readonly string localstr;
-        static Jother()
-        {
-            //Infinity=(+!![])/(+[])=1e+1000
-            //bbase[7] = Q1(Q3(nums[1] + Q4(Q1("!![]") + Q2(nums[3])) + Q3(nums[1]) + Q3(nums[0]) + Q3(nums[0]) + Q3(nums[0])));
-            chars = new()
-            {
-                {'0', Q1(nums[0]) },
-                {'1', Q1(nums[1]) },
-                {'2', Q1(nums[2]) },
-                {'3', Q1(nums[3]) },
-                {'4', Q1(nums[4]) },
-                {'5', Q1(nums[5]) },
-                {'6', Q1(nums[6]) },
-                {'7', Q1(nums[7]) },
-                {'8', Q1(nums[8]) },
-                {'9', Q1(nums[9]) },
-                {'a', Q1(bbase[2]) + Q2(nums[1]) },
-                {'b', Q1(bbase[1]) + Q2(nums[2]) },
-                {'c', Q1(bbase[1]) + Q2(nums[5]) },
-                {'d', Q1(bbase[6]) + Q2(nums[2]) },
-                {'e', Q1(bbase[3]) + Q2(nums[3]) },
-                {'f', Q1(bbase[2]) + Q2(nums[0]) },
-                {'i', Q1(bbase[6]) + Q2(nums[5]) },
-                {'j', Q1(bbase[1]) + Q2(nums[3]) },
-                {'l', Q1(bbase[2]) + Q2(nums[2]) },
-                {'n', Q1(bbase[6]) + Q2(nums[1]) },
-                {'o', Q1(bbase[1]) + Q2(nums[1]) },
-                {'r', Q1(bbase[3]) + Q2(nums[1]) },
-                {'s', Q1(bbase[2]) + Q2(nums[3]) },
-                {'t', Q1(bbase[3]) + Q2(nums[0]) },
-                {'u', Q1(bbase[6]) + Q2(nums[0]) },
-                {'y', Q1(bbase[7]) + Q2(nums[7]) },
-                {'I', Q1(bbase[7]) + Q2(nums[0]) },
-                {'N', Q1(bbase[5]) + Q2(nums[0]) },
-                {'O', Q1(bbase[1]) + Q2(nums[8]) },
-                {' ', Q1(bbase[1]) + Q2(nums[7]) },
-                {'[', Q1(bbase[1]) + Q2(nums[0]) },
-                {']', Q1(bbase[1]) + Q2(nums[7] + Q4(nums[7])) },
-                {'-', Q1(bbase[4]) + Q2(nums[0]) },
-                {'+', Q1(Q3(nums[1] + Q4(Q1(bbase[3]) + Q2(nums[3])) + Q3(nums[1]) + Q3(nums[0]) + Q3(nums[0]))) + Q2(nums[2]) }//1e+100
-            };
-
-            f = $"[][{ToStr("sort")}][{ToStr("constructor")}]";
-            localstr = $"[]+{ToScript("return location")}";
-            chars['h'] = Q5(localstr) + Q2(nums[0]);
-            chars['p'] = Q5(localstr) + Q2(nums[3]);
-            chars[':'] = Q5(localstr) + Q2(nums[4]);
-            chars['/'] = Q5(localstr) + Q2(nums[6]);
-            rc_unescape = ToScript("return unescape");
-            rc_escape = ToScript("return escape");
-            chars['%'] = $"{rc_escape}({ToStr("[")}){Q2(nums[0])}";
-        }
-        public static readonly string rc_unescape;
-        public static readonly string rc_escape;
-        public static string Q1(string s) => $"({s}+[])";
-        public static string Q2(string s) => $"[{s}]";
-        public static string Q3(string s) => $"+({s}+[])";
-        public static string Q4(string s) => $"+{s}";
-        public static string Q5(string s) => $"({s})";
-        public static string ToScript(string script) => $"{f}({ToStr(script)})()";
-        public static string ToUnescape(int charCode) => $"{rc_unescape}({ToStr("%" + ToHex(charCode, 2))})";
-        public static string ToHexs(int charCode) => ToStr($"\\x{ToHex(charCode, 2)}");
-        public static string ToUnicode(int charCode) => ToStr($"\\u{ToHex(charCode, 4)}");
-        public static string ToHex(int num, int d)
-        {
-            var hex = num.ToString("x");
-            while (hex.Length < d)
-                hex = $"0{hex}";
-            return hex;
-        }
-        public static string ToChar(char ch)
-        {
-            int charCode = ch;
-            string unis, unes, hexs;
-            if (chars.TryGetValue(ch, out string? value))
-                return value;
-
-            if ((ch == '\\') || (ch == 'x'))
-            {
-                chars[ch] = ToUnescape(charCode);
-                return chars[ch];
-            }
-            unis = ToUnicode(charCode);
-            if (charCode < 128)
-            {
-                unes = ToUnescape(charCode);
-                if (unis.Length > unes.Length)
-                    unis = unes;
-                hexs = ToHexs(charCode);
-                if (unis.Length > hexs.Length)
-                    unis = hexs;
-            }
-            chars[ch] = unis;
-            return unis;
-        }
-
-        public static string ToStr(string str)
-        {
-            var s = string.Empty;
-            for (var i = 0; i < str.Length; i++)
-            {
-                if (i > 0)
-                    s += '+';
-                s += ToChar(str[i]);
-            }
-            return s;
-        }
-
-    }
-
-    public static readonly string jjcode = "{0}=~[];{0}={{___:++{0},$$$$:(![]+" +
-        "\"\")[{0}],__$:++{0},$_$_:(![]+\"\")[{0}],_$_:++{0},$_$$:({{}}+\"\")" +
-        "[{0}],$$_$:({0}[{0}]+\"\")[{0}],_$$:++{0},$$$_:(!\"\"+\"\")[{0}],$__:" +
-        "++{0},$_$:++{0},$$__:({{}}+\"\")[{0}],$$_:++{0},$$$:++{0},$___:++{0}," +
-        "$__$:++{0}}};{0}.$_=({0}.$_={0}+\"\")[{0}.$_$]+({0}._$={0}.$_[{0}.__$])" +
-        "+({0}.$$=({0}.$+\"\")[{0}.__$])+((!{0})+\"\")[{0}._$$]+({0}.__={0}.$_" +
-        "[{0}.$$_])+({0}.$=(!\"\"+\"\")[{0}.__$])+({0}._=(!\"\"+\"\")[{0}._$_])" +
-        "+{0}.$_[{0}.$_$]+{0}.__+{0}._$+{0}.$;{0}.$$={0}.$+(!\"\"+\"\")[{0}._$$]" +
-        "+{0}.__+{0}._+{0}.$+{0}.$$;{0}.$=({0}.___)[{0}.$_][{0}.$_];{0}.$({0}.$" +
-        "({0}.$$+\"\\\"\"+{1}\"\\\"\")())();";
-
-    public static readonly string[] jjcodes = new[]
+    public static readonly string[] jjCodes = new[]
     {
         "___", "__$", "_$_", "_$$", "$__", "$_$", "$$_", "$$$",
         "$___", "$__$", "$_$_", "$_$$", "$$__", "$$_$", "$$$_", "$$$$"
     };
 
-    public static readonly string[] aacodes = new[]
+    public static readonly string[] aaCodes = new[]
     {
         "(c^_^o)",
         "(ﾟΘﾟ)",
@@ -182,30 +29,7 @@ internal static class Constants
         "(ﾟДﾟ) [ﾟΘﾟ]"
     };
 
-
-    public static readonly string aacode = "ﾟωﾟﾉ= /｀ｍ´）ﾉ ~┻━┻   //*´∇｀*/ ['_']; o=(ﾟｰﾟ)  =_=3; c=(ﾟΘﾟ) =(ﾟｰﾟ)-(ﾟｰﾟ); " +
-    "(ﾟДﾟ) =(ﾟΘﾟ)= (o^_^o)/ (o^_^o);" +
-    "(ﾟДﾟ)={ﾟΘﾟ: '_' ,ﾟωﾟﾉ : ((ﾟωﾟﾉ==3) +'_') [ﾟΘﾟ] " +
-    ",ﾟｰﾟﾉ :(ﾟωﾟﾉ+ '_')[o^_^o -(ﾟΘﾟ)] " +
-    ",ﾟДﾟﾉ:((ﾟｰﾟ==3) +'_')[ﾟｰﾟ] }; (ﾟДﾟ) [ﾟΘﾟ] =((ﾟωﾟﾉ==3) +'_') [c^_^o];" +
-    "(ﾟДﾟ) ['c'] = ((ﾟДﾟ)+'_') [ (ﾟｰﾟ)+(ﾟｰﾟ)-(ﾟΘﾟ) ];" +
-    "(ﾟДﾟ) ['o'] = ((ﾟДﾟ)+'_') [ﾟΘﾟ];" +
-    "(ﾟoﾟ)=(ﾟДﾟ) ['c']+(ﾟДﾟ) ['o']+(ﾟωﾟﾉ +'_')[ﾟΘﾟ]+ ((ﾟωﾟﾉ==3) +'_') [ﾟｰﾟ] + " +
-    "((ﾟДﾟ) +'_') [(ﾟｰﾟ)+(ﾟｰﾟ)]+ ((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+" +
-    "((ﾟｰﾟ==3) +'_') [(ﾟｰﾟ) - (ﾟΘﾟ)]+(ﾟДﾟ) ['c']+" +
-    "((ﾟДﾟ)+'_') [(ﾟｰﾟ)+(ﾟｰﾟ)]+ (ﾟДﾟ) ['o']+" +
-    "((ﾟｰﾟ==3) +'_') [ﾟΘﾟ];(ﾟДﾟ) ['_'] =(o^_^o) [ﾟoﾟ] [ﾟoﾟ];" +
-    "(ﾟεﾟ)=((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+ (ﾟДﾟ) .ﾟДﾟﾉ+" +
-    "((ﾟДﾟ)+'_') [(ﾟｰﾟ) + (ﾟｰﾟ)]+((ﾟｰﾟ==3) +'_') [o^_^o -ﾟΘﾟ]+" +
-    "((ﾟｰﾟ==3) +'_') [ﾟΘﾟ]+ (ﾟωﾟﾉ +'_') [ﾟΘﾟ]; " +
-    "(ﾟｰﾟ)+=(ﾟΘﾟ); (ﾟДﾟ)[ﾟεﾟ]='\\\\'; " +
-    "(ﾟДﾟ).ﾟΘﾟﾉ=(ﾟДﾟ+ ﾟｰﾟ)[o^_^o -(ﾟΘﾟ)];" +
-    "(oﾟｰﾟo)=(ﾟωﾟﾉ +'_')[c^_^o];" +
-    "(ﾟДﾟ) [ﾟoﾟ]='\\\"';" +
-    "(ﾟДﾟ) ['_'] ( (ﾟДﾟ) ['_'] (ﾟεﾟ+(ﾟДﾟ)[ﾟoﾟ]+ ";
-
-
-    public static readonly string[] ppwords = new[]
+    public static readonly string[] ppWords = new[]
     {
         "abs", "accept", "alarm", "and", "bind", "binmode", "bless", "caller",
         "chdir", "chmod", "chomp", "chop", "chown", "chr", "chroot", "close",
@@ -239,7 +63,7 @@ internal static class Constants
         "warn", "while", "write", "x", "xor", "y" };
 
     //但它就是这样......
-    public static readonly string[][] ppcodes = new string[][]
+    public static readonly string[][] ppCodes = new string[][]
     {
         new[]{"8182","8282","798182"},
         new[]{"75755479817C","75755479811E","61817C"},

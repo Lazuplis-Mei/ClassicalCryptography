@@ -82,10 +82,58 @@ namespace ClassicalCryptography.Replacement
             new(UL_Letters, "QWFPGJLUYARSTDHNEIOZXCVBKMqwfpgjluyarstdhneiozxcvbkm");
 
         /// <summary>
+        /// LIIGOL键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher LIIGOLLayout =
+            new(UL_Letters, "QWLFKJYUPASTNRDIEOHZXCVBGMqwlfkjyupastnrdieohzxcvbgm");
+
+        /// <summary>
         /// AZERTY键盘布局
         /// </summary>
         public static readonly SingleReplacementCipher AZERTY =
             new(UL_Letters, "AZERTYUIOPQSDFGHJKLMWXCVBNazertyuiopqsdfghjklmwxcvbn");
+
+        /// <summary>
+        /// Asset键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Asset =
+            new(UL_Letters, "QWJFGYPULASETDHNIORZXCVBKMqwjfgypulasetdhniorzxcvbkm");
+
+        /// <summary>
+        /// Carpalx键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Carpalx =
+            new(UL_Letters, "QFMLWYUOBJDSTNRIAEHZVGCXPKqfmlwyuobjdstnriaehzvgcxpk");
+
+        /// <summary>
+        /// Minimak4Keys键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Minimak4Keys =
+            new(UL_Letters, "QWDRKYUIOPASTFGHJELZXCVBNMqwdrkyuiopastfghjelzxcvbnm");
+
+        /// <summary>
+        /// Minimak8Keys键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Minimak8Keys =
+            new(UL_Letters, "QWDRKYUILPASTFGHNEOZXCVBJMqwdrkyuilpastfghneozxcvbjm");
+
+        /// <summary>
+        /// Minimak12Keys键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Minimak12Keys =
+            new(UL_Letters, "QWDFKYUILASTRGHNEOPZXCVBJMqwdfkyuilastrghneopzxcvbjm");
+
+        /// <summary>
+        /// Norman键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Norman =
+            new(UL_Letters, "QWDFKJURLASETGYNIOHZXCVBPMqwdfkjurlasetgyniohzxcvbpm");
+
+        /// <summary>
+        /// Workman键盘布局
+        /// </summary>
+        public static readonly SingleReplacementCipher Workman =
+            new(UL_Letters, "QDRWBJFUPASHTGYNEOIZXMCVKLqdrwbjfupashtgyneoizxmcvkl");
 
         /// <summary>
         /// 我曾用过的密码表，可以由<see cref="TakeTranslateCipher"/>得到
@@ -108,7 +156,7 @@ namespace ClassicalCryptography.Replacement
         /// <summary>
         /// 易经八卦和Base64
         /// </summary>
-        public static readonly SingleReplacementCipher IChingHexagramsBase64 =
+        public static readonly SingleReplacementCipher IChingEightTrigramsBase64 =
             new(Base64, "䷁䷗䷆䷒䷎䷣䷭䷊䷏䷲䷧䷵䷽䷶䷟䷡䷇䷂䷜䷻䷦䷾䷯䷄䷬䷐䷮䷹䷞䷰䷛䷪䷖䷚䷃䷨䷳䷕䷑䷙䷢䷔䷿䷥䷷䷝䷱䷍䷓䷩䷺䷼䷴䷤䷸䷈䷋䷘䷅䷉䷠䷌䷫䷀☯");
 
 

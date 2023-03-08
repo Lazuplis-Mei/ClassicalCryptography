@@ -46,7 +46,6 @@ public static partial class WeaveCipher
     public static BitMatrix EncryptBits(BitArray bits1, BitArray bits2)
     {
         var matrix = new BitMatrix(bits1.Size + 1, bits2.Size + 1);
-        //matrix[0, 0] = RandomHelper.TrueOrFalse;
 
         for (int x = 1; x < matrix.Width; x++)
             matrix[x, 0] = bits1[x - 1] ? !matrix[x - 1, 0] : matrix[x - 1, 0];
@@ -108,7 +107,7 @@ public static partial class WeaveCipher
     }
 
     /// <summary>
-    /// 加密为图像(UTF8)
+    /// 加密为图像
     /// </summary>
     public static void Encrypt(string text, string filePath)
     {

@@ -1,127 +1,133 @@
-﻿using ClassicalCryptography.Utils;
+﻿using ClassicalCryptography.Interfaces;
+using ClassicalCryptography.Utils;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// copy from <see href="https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008">Base32 Decoding</see>
+/// <para>Base32编码，使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567</para>
+/// <para>代码参考</para>
+/// <see href="https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008"/>
+/// <para>在线工具</para>
+/// <see href="https://www.qqxiuzi.cn/bianma/base.php"/>
 /// </summary>
 public static class Base32Encoding
 {
 
     /// <summary>
-    /// to bytes
+    /// 解码Base32
     /// </summary>
-    public static byte[] ToBytes(string input)
+    /// <param name="base32String">Base32字符串</param>
+    public static byte[] Decode(string base32String)
     {
-        if (string.IsNullOrEmpty(input))
-            throw new ArgumentNullException(nameof(input));
+        if (string.IsNullOrEmpty(base32String))
+            throw new ArgumentNullException(nameof(base32String));
 
-        input = input.TrimEnd('='); //remove padding characters
-        int byteCount = input.Length * 5 / 8; //this must be TRUNCATED
-        byte[] returnArray = new byte[byteCount];
+        var base32Span = base32String;
+        base32Span = base32Span.TrimEnd('=');
+        int byteCount = (base32Span.Length * 5) >> 3;
+        var bytes = new byte[byteCount];
 
-        byte curByte = 0, bitsRemaining = 8;
+        byte currentByte = 0, bitsRemaining = 8;
         int arrayIndex = 0;
 
-        foreach (char c in input)
+        foreach (char character in base32Span)
         {
-            int cValue = CharToValue(c);
+            int characterValue = CharToValue(character);
             int mask;
             if (bitsRemaining > 5)
             {
-                mask = cValue << bitsRemaining - 5;
-                curByte = (byte)(curByte | mask);
+                mask = characterValue << bitsRemaining - 5;
+                currentByte = (byte)(currentByte | mask);
                 bitsRemaining -= 5;
             }
             else
             {
-                mask = cValue >> 5 - bitsRemaining;
-                curByte = (byte)(curByte | mask);
-                returnArray[arrayIndex++] = curByte;
-                curByte = (byte)(cValue << 3 + bitsRemaining);
+                mask = characterValue >> 5 - bitsRemaining;
+                currentByte = (byte)(currentByte | mask);
+                bytes[arrayIndex++] = currentByte;
+                currentByte = (byte)(characterValue << 3 + bitsRemaining);
                 bitsRemaining += 3;
             }
         }
 
-        //if we didn't end with a full byte
         if (arrayIndex != byteCount)
-            returnArray[arrayIndex] = curByte;
+            bytes[arrayIndex] = currentByte;
 
-        return returnArray;
+        return bytes;
     }
 
     /// <summary>
-    /// from bytes
+    /// 编码Base32
     /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentNullException"></exception>
-    public static string ToString(byte[] input)
+    /// <param name="bytes"></param>
+    /// <returns>base32字符串</returns>
+    [SkipLocalsInit]
+    public static string Encode(byte[] bytes)
     {
-        if (input == null || input.Length == 0)
-            throw new ArgumentNullException(nameof(input));
+        if (bytes is null || bytes.Length == 0)
+            throw new ArgumentNullException(nameof(bytes));
 
-        int charCount = (int)Math.Ceiling(input.Length / 5d) * 8;
-        char[] returnArray = new char[charCount];
+        int spanCount = (int)Math.Ceiling(bytes.Length / 5.0) * 8;
+        Span<char> span = spanCount <= StackLimit.MaxCharSize
+            ? stackalloc char[spanCount] : new char[spanCount];
 
-        byte nextChar = 0, bitsRemaining = 5;
+        byte nextCharacterCode = 0, bitsRemaining = 5;
         int arrayIndex = 0;
 
-        foreach (byte b in input)
+        foreach (byte b in bytes)
         {
-            nextChar = (byte)(nextChar | b >> 8 - bitsRemaining);
-            returnArray[arrayIndex++] = ValueToChar(nextChar);
+            nextCharacterCode = (byte)(nextCharacterCode | b >> 8 - bitsRemaining);
+            span[arrayIndex++] = ValueToChar(nextCharacterCode);
 
             if (bitsRemaining < 4)
             {
-                nextChar = (byte)(b >> 3 - bitsRemaining & 31);
-                returnArray[arrayIndex++] = ValueToChar(nextChar);
+                nextCharacterCode = (byte)(b >> 3 - bitsRemaining & 31);
+                span[arrayIndex++] = ValueToChar(nextCharacterCode);
                 bitsRemaining += 5;
             }
 
             bitsRemaining -= 3;
-            nextChar = (byte)(b << bitsRemaining & 31);
+            nextCharacterCode = (byte)(b << bitsRemaining & 31);
         }
 
-        //if we didn't end with a full char
-        if (arrayIndex != charCount)
+        if (arrayIndex != spanCount)
         {
-            returnArray[arrayIndex++] = ValueToChar(nextChar);
-            while (arrayIndex != charCount) returnArray[arrayIndex++] = '='; //padding
+            span[arrayIndex++] = ValueToChar(nextCharacterCode);
+            while (arrayIndex != spanCount)
+                span[arrayIndex++] = '=';
         }
 
-        return new string(returnArray);
+        return new(span);
     }
 
-    private static int CharToValue(char c)
+    private static int CharToValue(char character)
     {
-        //this can be change
-        //return GlobalTables.Base32_RFC3548.IndexOf(c);
+        if (Debugger.IsAttached)
+        {
+            int value = GlobalTables.Base32_RFC3548.IndexOf(character);
+            if (value == -1)
+                throw new ArgumentException("非Base32字符", nameof(character));
+            return value;
+        }
+        else
+        {
+            int value = character;
 
-        int value = c;
-
-        //65-90 == uppercase letters
-        if (value < 91 && value > 64)
-            return value - 65;
-        //50-55 == numbers 2-7
-        if (value < 56 && value > 49)
-            return value - 24;
-        //97-122 == lowercase letters
-        if (value < 123 && value > 96)
-            return value - 97;
-
-        throw new ArgumentException("Character is not a Base32 character.", nameof(c));
+            return value switch
+            {
+                >= 'A' and <= 'Z' => value - 'A',
+                >= '2' and <= '7' => value - '2' + 26,
+                >= 'a' and <= 'z' => value - 'a',
+                _ => throw new ArgumentException("非Base32字符", nameof(character))
+            };
+        }
     }
 
-    private static char ValueToChar(byte b)
+    private static char ValueToChar(byte byteCode)
     {
-        //this can be change
-        //return GlobalTables.Base32_RFC3548[b];
-        if (b < 26)
-            return (char)(b + 65);
-        if (b < 32)
-            return (char)(b + 24);
-        throw new ArgumentException("Byte is not a value Base32 value.", nameof(b));
+        return GlobalTables.Base32_RFC3548[byteCode];
     }
 
 }

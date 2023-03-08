@@ -61,12 +61,57 @@ namespace ClassicalCryptography.Properties {
         }
         
         /// <summary>
+        ///   查找类似 ﾟωﾟﾉ= /｀ｍ´）ﾉ ~┻━┻   //*´∇｀*/ [&apos;_&apos;]; o=(ﾟｰﾟ)  =_=3; c=(ﾟΘﾟ) =(ﾟｰﾟ)-(ﾟｰﾟ); (ﾟДﾟ) =(ﾟΘﾟ)= (o^_^o)/ (o^_^o);(ﾟДﾟ)={ﾟΘﾟ: &apos;_&apos; ,ﾟωﾟﾉ : ((ﾟωﾟﾉ==3) +&apos;_&apos;) [ﾟΘﾟ] ,ﾟｰﾟﾉ :(ﾟωﾟﾉ+ &apos;_&apos;)[o^_^o -(ﾟΘﾟ)] ,ﾟДﾟﾉ:((ﾟｰﾟ==3) +&apos;_&apos;)[ﾟｰﾟ] }; (ﾟДﾟ) [ﾟΘﾟ] =((ﾟωﾟﾉ==3) +&apos;_&apos;) [c^_^o];(ﾟДﾟ) [&apos;c&apos;] = ((ﾟДﾟ)+&apos;_&apos;) [ (ﾟｰﾟ)+(ﾟｰﾟ)-(ﾟΘﾟ) ];(ﾟДﾟ) [&apos;o&apos;] = ((ﾟДﾟ)+&apos;_&apos;) [ﾟΘﾟ];(ﾟoﾟ)=(ﾟДﾟ) [&apos;c&apos;]+(ﾟДﾟ) [&apos;o&apos;]+(ﾟωﾟﾉ +&apos;_&apos;)[ﾟΘﾟ]+ ((ﾟωﾟﾉ==3) +&apos;_&apos;) [ﾟｰﾟ] + ((ﾟДﾟ) +&apos;_&apos;) [(ﾟｰﾟ)+(ﾟｰﾟ)]+ ((ﾟｰﾟ==3) +&apos;_&apos;) [ﾟΘﾟ]+((ﾟｰﾟ==3) +&apos;_&apos;) [(ﾟｰﾟ) - (ﾟΘﾟ)]+(ﾟДﾟ) [&apos;c&apos;]+((ﾟДﾟ)+&apos;_&apos;) [ [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        /// </summary>
+        internal static string AAEncodingString {
+            get {
+                return ResourceManager.GetString("AAEncodingString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 89AZazÆÆÐÐØØÞßææððøøþþĐđĦħııĸĸŁłŊŋŒœŦŧƀƟƢƮƱǃǝǝǤǥǶǷȜȝȠȥȴʯͰͳͶͷͻͽͿͿΑΡΣΩαωϏϏϗϯϳϳϷϸϺϿЂЂЄІЈЋЏИКикяђђєіјћџѵѸҁҊӀӃӏӔӕӘәӠӡӨөӶӷӺԯԱՖաֆאתװײؠءاؿفي٠٩ٮٯٱٴٹڿہہۃےەەۮۼۿۿܐܐܒܯݍޥޱޱ߀ߪࠀࠕࡀࡘࡠࡪࢠࢴࢶࢽऄनपरलळवहऽऽॐॐॠॡ०९ॲঀঅঌএঐওনপরললশহঽঽৎৎৠৡ০ৱ৴৹ৼৼਅਊਏਐਓਨਪਰਲਲਵਵਸਹੜੜ੦੯ੲੴઅઍએઑઓનપરલળવહઽઽૐૐૠૡ૦૯ૹૹଅଌଏଐଓନପରଲଳଵହଽଽୟୡ୦୯ୱ୷ஃஃஅஊஎஐஒஓககஙசஜஜஞடணதநபமஹௐௐ௦௲అఌఎఐఒనపహఽఽౘౚౠౡ౦౯౸౾ಀಀಅಌಎಐಒನಪಳವಹಽಽೞೞೠೡ೦೯ೱೲഅഌഎഐഒഺഽഽൎൎൔൖ൘ൡ൦൸ൺൿඅඖකනඳරලලවෆ෦෯กะาาเๅ๐๙ກຂຄຄງຈຊຊຍຍດທນຟມຣລລວວສຫອະາາຽຽເໄ໐໙ໞໟༀༀ༠༳ཀགངཇཉཌཎདནབམཛཝཨཪཬྈྌကဥဧဪဿ၉ၐၕ 的本地化字符串。
+        /// </summary>
+        internal static string Base2048PairString {
+            get {
+                return ResourceManager.GetString("Base2048PairString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ҠҿԀԟڀڿݠޟ߀ߟကဟႠႿᄀᅟᆀᆟᇠሿበቿዠዿጠጿᎠᏟᐠᙟᚠᛟកសᠠᡟᣀᣟᦀᦟ᧠᧿ᨠᨿᯀᯟᰀᰟᴀᴟ⇠⇿⋀⋟⍀⏟␀␟─❟➀➿⠀⥿⦠⦿⨠⩟⪀⪿⫠⭟ⰀⰟⲀⳟⴀⴟⵀⵟ⺠⻟㇀㇟㐀䶟䷀龿ꀀꑿ꒠꒿ꔀꗿꙀꙟꚠꛟ꜀ꝟꞀꞟꡀꡟ 的本地化字符串。
+        /// </summary>
+        internal static string Base32768PairString {
+            get {
+                return ResourceManager.GetString("Base32768PairString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 ⠀⢀⠠⢠⠐⢐⠰⢰⠈⢈⠨⢨⠘⢘⠸⢸⡀⣀⡠⣠⡐⣐⡰⣰⡈⣈⡨⣨⡘⣘⡸⣸⠄⢄⠤⢤⠔⢔⠴⢴⠌⢌⠬⢬⠜⢜⠼⢼⡄⣄⡤⣤⡔⣔⡴⣴⡌⣌⡬⣬⡜⣜⡼⣼⠂⢂⠢⢢⠒⢒⠲⢲⠊⢊⠪⢪⠚⢚⠺⢺⡂⣂⡢⣢⡒⣒⡲⣲⡊⣊⡪⣪⡚⣚⡺⣺⠆⢆⠦⢦⠖⢖⠶⢶⠎⢎⠮⢮⠞⢞⠾⢾⡆⣆⡦⣦⡖⣖⡶⣶⡎⣎⡮⣮⡞⣞⡾⣾⠁⢁⠡⢡⠑⢑⠱⢱⠉⢉⠩⢩⠙⢙⠹⢹⡁⣁⡡⣡⡑⣑⡱⣱⡉⣉⡩⣩⡙⣙⡹⣹⠅⢅⠥⢥⠕⢕⠵⢵⠍⢍⠭⢭⠝⢝⠽⢽⡅⣅⡥⣥⡕⣕⡵⣵⡍⣍⡭⣭⡝⣝⡽⣽⠃⢃⠣⢣⠓⢓⠳⢳⠋⢋⠫⢫⠛⢛⠻⢻⡃⣃⡣⣣⡓⣓⡳⣳⡋⣋⡫⣫⡛⣛⡻⣻⠇⢇⠧⢧⠗⢗⠷⢷⠏⢏⠯⢯⠟⢟⠿⢿⡇⣇⡧⣧⡗⣗⡷⣷⡏⣏⡯⣯⡟⣟⡿⣿ 的本地化字符串。
+        /// </summary>
+        internal static string BrailleEncodingString {
+            get {
+                return ResourceManager.GetString("BrailleEncodingString", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
         internal static byte[] CC {
             get {
                 object obj = ResourceManager.GetObject("CC", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0}=~[];{0}={{___:++{0},$$$$:(![]+&quot;&quot;)[{0}],__$:++{0},$_$_:(![]+&quot;&quot;)[{0}],_$_:++{0},$_$$:({{}}+&quot;&quot;)[{0}],$$_$:({0}[{0}]+&quot;&quot;)[{0}],_$$:++{0},$$$_:(!&quot;&quot;+&quot;&quot;)[{0}],$__:++{0},$_$:++{0},$$__:({{}}+&quot;&quot;)[{0}],$$_:++{0},$$$:++{0},$___:++{0},$__$:++{0}}};{0}.$_=({0}.$_={0}+&quot;&quot;)[{0}.$_$]+({0}._$={0}.$_[{0}.__$])+({0}.$$=({0}.$+&quot;&quot;)[{0}.__$])+((!{0})+&quot;&quot;)[{0}._$$]+({0}.__={0}.$_[{0}.$$_])+({0}.$=(!&quot;&quot;+&quot;&quot;)[{0}.__$])+({0}._=(!&quot;&quot;+&quot;&quot;)[{0}._$_])+{0}.$_[{0}.$_$]+{0}.__+{0}._$+{0}.$;{0}.$$={0}.$+(!&quot;&quot;+&quot;&quot;)[{0}._$$]+{0}.__+{0}._+{0}.$+{0} [字符串的其余部分被截断]&quot;; 的本地化字符串。
+        /// </summary>
+        internal static string JJEncodngString {
+            get {
+                return ResourceManager.GetString("JJEncodngString", resourceCulture);
             }
         }
     }

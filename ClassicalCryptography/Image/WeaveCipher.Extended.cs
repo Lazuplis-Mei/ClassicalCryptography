@@ -9,16 +9,16 @@ namespace ClassicalCryptography.Image;
 public static partial class WeaveCipher
 {
 
-    private static readonly Point p0 = Point.Empty;
-    private static readonly Point p1 = new(0, blockSize);
-    private static readonly Point p2 = new(blockSize, 0);
-    private static readonly Point p3 = new(blockSize, blockSize);
+    private static readonly Point pointLT = Point.Empty;
+    private static readonly Point pointLB = new(0, blockSize);
+    private static readonly Point pointRT = new(blockSize, 0);
+    private static readonly Point pointRB = new(blockSize, blockSize);
     private static readonly Point[][] trigs = new[]
     {
-        new[] { p0, p1, p3 },
-        new[] { p0, p2, p3 },
-        new[] { p0, p1, p2 },
-        new[] { p1, p2, p3 }
+        new[] { pointLT, pointLB, pointRB },
+        new[] { pointLT, pointRT, pointRB },
+        new[] { pointLT, pointLB, pointRT },
+        new[] { pointLB, pointRT, pointRB }
     };
 
     /// <summary>
@@ -68,7 +68,7 @@ public static partial class WeaveCipher
     }
 
     /// <summary>
-    /// 加密为图像(UTF8)
+    /// 加密为图像
     /// </summary>
     public static void EncryptExtend(string text, string filePath)
     {

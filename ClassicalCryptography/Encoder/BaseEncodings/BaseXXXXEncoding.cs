@@ -1,7 +1,13 @@
-﻿using System.Text;
+﻿using ClassicalCryptography.Interfaces;
+using System.Text;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
+/// <summary>
+/// <see href="https://github.com/qntm/base32768"/>
+/// </summary>
+[Introduction("Base32768编码", "https://github.com/qntm/base32768")]
+[TranslatedFrom("JavaScript")]
 class BaseXXXXEncoding
 {
     private readonly int BITS_PER_CHAR;

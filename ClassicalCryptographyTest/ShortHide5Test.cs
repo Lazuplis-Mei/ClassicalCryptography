@@ -1,4 +1,5 @@
-﻿using ClassicalCryptography.Calculation.ShortHide5;
+﻿using ClassicalCryptography.Calculation.CustomRSAPrivateKey;
+using ClassicalCryptography.Calculation.ShortHide5;
 using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition2D;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,5 +22,19 @@ namespace ClassicalCryptographyTest
 
             Assert.AreEqual(plainText, cipher.Decrypt(cipherText));
         }
+
+        [TestMethod]
+        public void TestShortHide5()
+        {
+            var cipher = new ShortHide5();
+            for (int i = 0; i < 10; i++)
+            {
+                var text = RandomString.Generate(10);
+                var cipherText = cipher.Encrypt(text);
+                var result = cipher.Decrypt(cipherText);
+                Assert.AreEqual(text, result);
+            }
+        }
+
     }
 }

@@ -6,7 +6,8 @@ using static ClassicalCryptography.Calculation.ShortHide5.SH5;
 namespace ClassicalCryptography.Calculation.ShortHide5;
 
 /// <summary>
-/// ShortHide5密码
+/// <para>ShortHide5密码</para>
+/// <see href="https://www.bilibili.com/read/cv15660906"/>
 /// </summary>
 [Introduction("ShortHide5密码", "一种自创的英文文本加密方法。")]
 public class ShortHide5 : ICipher<string, string>

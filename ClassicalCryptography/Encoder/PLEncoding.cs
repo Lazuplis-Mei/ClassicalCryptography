@@ -1,13 +1,10 @@
 ﻿using ClassicalCryptography.Encoder.PLEncodings;
+using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Utils;
-using Microsoft.VisualBasic;
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using ZXing;
 using static ClassicalCryptography.Encoder.PLEncodings.Constants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -16,118 +13,110 @@ namespace ClassicalCryptography.Encoder;
 /// </summary>
 public static partial class PLEncoding
 {
-    [GeneratedRegex("\\\\x[0-9a-f]")]
+    [GeneratedRegex(@"\\x[0-9a-f]{2}")]
     private static partial Regex PYHexRegex();
 
 
     /// <summary>
-    /// 转换为python bytes
+    /// 转换为python bytes的格式
     /// </summary>
-    public static string ToPYBytes(string input, Encoding? encoding = null)
+    public static string ToPythonBytes(string input)
     {
-        encoding ??= Encoding.Default;
-        var bytes = encoding.GetBytes(input);
-        var str = new StringBuilder(bytes.Length * 4);
-        foreach (var b in bytes)
+        var bytes = Encoding.UTF8.GetBytes(input);
+        var result = new StringBuilder(bytes.Length << 2);
+        foreach (var code in bytes)
         {
-            str.Append(@"\x");
-            str.Append(b.ToString("x2"));
+            result.Append(@"\x").Append(code.ToString("x2"));
         }
-        return str.ToString();
+        return result.ToString();
     }
 
     /// <summary>
     /// 从python bytes转换
     /// </summary>
-    public static string FromPYBytes(string input, Encoding? encoding = null)
+    public static string FromPythonBytes(string input)
     {
-        encoding ??= Encoding.Default;
         var matches = PYHexRegex().Matches(input);
-        var bytes = new byte[matches.Count];
+        Span<byte> bytes = matches.Count <= StackLimit.MaxByteSize
+            ? stackalloc byte[matches.Count] : new byte[matches.Count];
         for (int i = 0; i < matches.Count; i++)
         {
-            Match match = matches[i];
-            bytes[i++] = Convert.ToByte(match.Value[2..], 16);
+            bytes[i] = Convert.ToByte(matches[i].Value[2..], 16);
         }
-        return encoding.GetString(bytes);
+        return Encoding.UTF8.GetString(bytes);
     }
 
+    private static readonly IdnMapping idnMapping = new();
+
     /// <summary>
-    /// To Punycode
+    /// 转换成Punycode编码
     /// </summary>
-    public static string ToPunycode(string input)
-    {
-        var mapping = new IdnMapping();
-        return mapping.GetAscii(input);
-    }
+    public static string ToPunycode(string input) => idnMapping.GetAscii(input);
 
     /// <summary>
-    /// From Punycode
+    /// 从Punycode编码转换
     /// </summary>
-    public static string FromPunycode(string input)
-    {
-        var mapping = new IdnMapping();
-        return mapping.GetUnicode(input);
-    }
+    public static string FromPunycode(string input) => idnMapping.GetUnicode(input);
 
 
     /// <summary>
-    /// a subset of Perl who restricts source code to have only Perl keywords
+    /// Perl的一个子集，限制了源代码只能有Perl的关键字
     /// </summary>
     public static string PPEncode(string code)
     {
-        static void character(int c, StringBuilder strBuilder)
+        static void AppendCharacter(int character, StringBuilder strBuilder)
         {
-            if (c > 255)
+            if (character > 255)
                 return;
-            var p = ppcodes[c].RandomItem();
-            for (var i = 0; i < p.Length; i += 2)
+            var code = ppCodes[character].RandomItem();
+            for (var i = 0; i < code.Length; i += 2)
             {
-                strBuilder.Append(ppwords[Convert.ToInt32(p.Substring(i, 2), 16)]);
+                strBuilder.Append(ppWords[Convert.ToInt32(code.Substring(i, 2), 16)]);
                 strBuilder.Append(' ');
             }
         }
+
         var result = new StringBuilder();
         result.AppendLine("#!/usr/bin/perl -w");
-        character(Random.Shared.Next(1, 10), result);
+        AppendCharacter(Random.Shared.Next(1, 10), result);
         for (var i = 0; i < code.Length; i++)
         {
             result.Append("and print chr ");
-            character(code[i], result);
+            AppendCharacter(code[i], result);
         }
         result.AppendLine();
         return result.ToString();
     }
 
     /// <summary>
-    /// Encode any JavaScript program to Japanese style emoticons
+    /// 编码JavaScript代码为颜文字
     /// </summary>
-    public static string AAEncode(string jscode)
+    /// <param name="jsCode">js代码</param>
+    [TranslatedFrom("JavaScript")]
+    public static string AAEncode(string jsCode)
     {
         var result = new StringBuilder();
-        result.Append(aacode);
+        result.Append(Properties.Resources.AAEncodingString);
 
-        for (int i = 0; i < jscode.Length; i++)
+        for (int i = 0; i < jsCode.Length; i++)
         {
-            int c = jscode[i];
+            int character = jsCode[i];
             result.Append("(ﾟДﾟ)[ﾟεﾟ]+");
-            if (c <= 127)
+            if (character <= 0x7F)
             {
-                var m = Convert.ToString(c, 8);
-                for (int k = 0; k < m.Length; k++)
+                var octStrng = Convert.ToString(character, 8);
+                for (int j = 0; j < octStrng.Length; j++)
                 {
-                    result.Append(aacodes[m[k] - '0']);
-                    result.Append("+ ");
+                    result.Append(aaCodes[octStrng[j] - '0']).Append("+ ");
                 }
             }
             else
             {
-                var m = c.ToString("x4");
+                var hexString = character.ToString("x4");
                 result.Append("(oﾟｰﾟo)+ ");
-                for (int k = 0; k < m.Length; k++)
+                for (int j = 0; j < hexString.Length; j++)
                 {
-                    result.Append(aacodes["0123456789abcdef".IndexOf(m[k])]);
-                    result.Append("+ ");
+                    result.Append(aaCodes[GlobalTables.HexString.IndexOf(hexString[j])]).Append("+ ");
                 }
             }
         }
@@ -136,184 +125,123 @@ public static partial class PLEncoding
     }
 
     /// <summary>
-    /// Encode any JavaScript program using only symbols
+    /// 编码JavaScript代码
     /// </summary>
-    public static string JJEncode(string jscode, string gv = "DeJS")
+    /// <param name="jsCode">js代码</param>
+    /// <param name="varName">变量名</param>
+    [TranslatedFrom("JavaScript")]
+    public static string JJEncode(string jsCode, string varName = "DeJS")
     {
         var result = new StringBuilder();
-        var str = new StringBuilder();
-        for (var i = 0; i < jscode.Length; i++)
+        var tempString = new StringBuilder();
+        for (var i = 0; i < jsCode.Length; i++)
         {
-            int c = jscode[i];
-            switch (c)
+            int character = jsCode[i];
+            switch (character)
             {
                 case 0x22:
-                case 0x5c:
-                    str.Append($@"\\\{jscode[i]}");
+                case 0x5C:
+                    tempString.Append($@"\\\{jsCode[i]}");
                     break;
-                case >= 0x21 and <= 0x2f:
+                case >= 0x21 and <= 0x2F:
                 case >= 0x3A and <= 0x40:
-                case >= 0x5b and <= 0x60:
-                case >= 0x7b and <= 0x7f:
-                    //}else if( (0x20 <= n && n <= 0x2f) || (0x3A <= n == 0x40) || ( 0x5b <= n && n <= 0x60 ) || ( 0x7b <= n && n <= 0x7f ) ){
-                    str.Append(jscode[i]);
+                case >= 0x5B and <= 0x60:
+                case >= 0x7B and <= 0x7F:
+                    tempString.Append(jsCode[i]);
                     break;
                 case >= 0x30 and <= 0x39:
                 case >= 0x61 and <= 0x66:
-                    if (str.Length > 0)
-                        result.Append($@"""{str}""+");
-                    result.Append($"{gv}.{jjcodes[c < 0x40 ? c - 0x30 : c - 0x57]}+");
-                    str.Clear();
+                    if (tempString.Length > 0)
+                        result.Append($@"""{tempString}""+");
+                    result.Append($"{varName}.{jjCodes[character < 0x40
+                        ? character - 0x30 : character - 0x57]}+");
+                    tempString.Clear();
                     break;
-                case 0x6c:
-                    if (str.Length > 0)
-                        result.Append($@"""{str}""+");
-                    result.Append($@"(![]+"""")[{gv}._$_]+");
-                    str.Clear();
+                case 0x6C:
+                    if (tempString.Length > 0)
+                        result.Append($@"""{tempString}""+");
+                    result.Append($@"(![]+"""")[{varName}._$_]+");
+                    tempString.Clear();
                     break;
-                case 0x6f:
-                    if (str.Length > 0)
-                        result.Append($@"""{str}""+");
-                    result.Append($"{gv}._$+");
-                    str.Clear();
+                case 0x6F:
+                    if (tempString.Length > 0)
+                        result.Append($@"""{tempString}""+");
+                    result.Append($"{varName}._$+");
+                    tempString.Clear();
                     break;
                 case 0x74:
-                    if (str.Length > 0)
-                        result.Append($@"""{str}""+");
-                    result.Append($"{gv}.__+");
-                    str.Clear();
+                    if (tempString.Length > 0)
+                        result.Append($@"""{tempString}""+");
+                    result.Append($"{varName}.__+");
+                    tempString.Clear();
                     break;
                 case 0x75:
-                    if (str.Length > 0)
-                        result.Append($@"""{str}""+");
-                    result.Append($"{gv}._+");
-                    str.Clear();
+                    if (tempString.Length > 0)
+                        result.Append($@"""{tempString}""+");
+                    result.Append($"{varName}._+");
+                    tempString.Clear();
                     break;
-                case < 128:
+                case < 0x80:
                 {
-                    if (str.Length > 0)
-                        result.Append($@"""{str}");
-                    else
-                        result.Append('"');
+                    result.Append('"');
+                    if (tempString.Length > 0)
+                        result.Append(tempString);
                     result.Append(@"\\""+");
 
-                    var m = Convert.ToString(c, 8);
-                    for (int k = 0; k < m.Length; k++)
-                    {
-                        result.Append($"{gv}.{jjcodes[m[k] - '0']}+");
-                    }
-                    str.Clear();
+                    var octString = Convert.ToString(character, 8);
+                    for (int j = 0; j < octString.Length; j++)
+                        result.Append($"{varName}.{jjCodes[octString[j] - '0']}+");
+                    tempString.Clear();
                     break;
                 }
 
                 default:
                 {
-                    if (str.Length > 0)
-                        result.Append($"\"{str}");
-                    else
-                        result.Append('"');
-                    result.Append($@"\\""+{gv}._+");
-                    var m = c.ToString("x4");
-                    for (int k = 0; k < m.Length; k++)
+                    result.Append('"');
+                    if (tempString.Length > 0)
+                        result.Append(tempString);
+                    result.Append($@"\\""+{varName}._+");
+                    var hexString = character.ToString("x4");
+                    for (int j = 0; j < hexString.Length; j++)
                     {
-                        result.Append(jjcodes["0123456789abcdef".IndexOf(m[k])]);
+                        result.Append(jjCodes["0123456789abcdef".IndexOf(hexString[j])]);
                         result.Append('+');
                     }
 
-                    str.Clear();
+                    tempString.Clear();
                     break;
                 }
             }
         }
 
-        if (str.Length > 0)
-            result.Append($@"""{str}""+");
+        if (tempString.Length > 0)
+            result.Append($@"""{tempString}""+");
 
-        return string.Format(jjcode, gv, result);
+        return string.Format(Properties.Resources.JJEncodngString, varName, result);
     }
 
     /// <summary>
-    /// JotherEncode
+    /// 使用Jother编码JavaScript代码
     /// </summary>
-    public static string JotherEncode(string jsocde) => Jother.ToScript(jsocde);
+    /// <param name="jscode">js代码</param>
+    public static string JotherEncode(string jscode) => Jother.ToScript(jscode);
 
     /// <summary>
-    /// JotherEncodeString
+    /// 使用Jother编码JavaScript字符串
     /// </summary>
-    public static string JotherEncodeString(string str) => Jother.ToStr(str);
+    /// <param name="text">字符串</param>
+    public static string JotherEncodeString(string text) => Jother.ToString(text);
 
 
     /// <summary>
-    /// BrainfuckEncode from https://github.com/splitbrain/ook/blob/master/util.php
+    /// 编码为brainfuck代码
     /// </summary>
-    public static string BrainfuckEncode(string text)
-    {
-        static string str_repeat(char c, int count) => string.Concat(Enumerable.Repeat(c, count));
-
-        int value = 0;
-        var result = new StringBuilder();
-        for (int t = 0; t < text.Length; t++)
-        {
-            /* ordinal difference between current char and the one we want to have */
-            var diff = text[t] - value;
-            /* it's easier like this than always computing this value - saves some cpu cycles*/
-            value = text[t];
-            /* repeat current character */
-            if (diff == 0)
-            {
-                result.Append(">.<");
-                continue;
-            }
-
-            /* is it worth making a loop?
-               No. A bunch of + or - consume less space than the loop. */
-            if (Math.Abs(diff) < 10)
-            {
-                result.Append('>');
-
-                /* output a bunch of + or - */
-                if (diff > 0)
-                    result.Append(str_repeat('+', diff));
-                else if (diff < 0)
-                    result.Append(str_repeat('-', Math.Abs(diff)));
-            }/* Yes, create a loop. This will make the resulting code more compact. */
-            else
-            {
-                /*  we strictly use ints, as PHP has some bugs with floating point operations
-                    (even if no division is involved) */
-                var loop = (int)Math.Sqrt(Math.Abs(diff));
-
-                /* set loop counter */
-                result.Append(str_repeat('+', loop));
-
-                /* execute loop, then add reminder */
-                if (diff > 0)
-                {
-                    result.Append("[->" + str_repeat('+', loop) + "<]");
-                    result.Append(">" + str_repeat('+', diff - (int)Math.Pow(loop, 2)));
-                }
-                else if (diff < 0)
-                {
-                    result.Append("[->" + str_repeat('-', loop) + "<]");
-                    result.Append(">" + str_repeat('-', Math.Abs(diff) - (int)Math.Pow(loop, 2)));
-                }
-            }/* end: if loop */
-
-            result.Append(".<");
-        }/* end: for */
-
-        /* cleanup */
-        result.Replace("<>", string.Empty);
-        return result.ToString();
-    }
+    /// <param name="text">要编码的字符串</param>
+    public static string BrainfuckEncode(string text) => Brainfuck.GenerateCode(text);
 
     /// <summary>
-    /// BrainfuckDecode
+    /// 解释Brainfuck代码
     /// </summary>
-    public static string BrainfuckDecode(string bfcode)
-    {
-        return Brainfuck.RunFile(bfcode);
-    }
-
+    public static string BrainfuckDecode(string bfcode) => Brainfuck.Interpret(bfcode);
 
 }

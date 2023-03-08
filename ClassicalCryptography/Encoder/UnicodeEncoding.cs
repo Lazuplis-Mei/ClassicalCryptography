@@ -29,7 +29,7 @@ public partial class UnicodeEncoding
     }
 
     /// <summary>
-    /// 转义字符(这可能存在问题)
+    /// 转义字符
     /// </summary>
     public static string Unescape(string str) => Regex.Unescape(str);
 

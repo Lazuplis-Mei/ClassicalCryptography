@@ -42,26 +42,26 @@ public static partial class PigpenCipher
     /// </summary>
     public static Brush Extraground { get; set; } = Brushes.White;
 
-    private const int lineWidth = 5;
-    private const int figureSize = 60;
-    private const int posPadding = 7;
-    private const int negPadding = figureSize - posPadding;
-    private const int checkStep = (negPadding - posPadding) / 5;
-    private const int midPosition = figureSize / 2;
-    private const int dotSize = 10;
-    private const int dotPosition = midPosition - dotSize / 2;
-    private static readonly Point LT = new(posPadding, posPadding);
-    private static readonly Point RT = new(negPadding, posPadding);
-    private static readonly Point LB = new(posPadding, negPadding);
-    private static readonly Point RB = new(negPadding, negPadding);
-    private static readonly Point ML = new(posPadding, midPosition);
-    private static readonly Point MT = new(midPosition, posPadding);
-    private static readonly Point MR = new(negPadding, midPosition);
-    private static readonly Point MB = new(midPosition, negPadding);
+    private const int LINE_WIDTH = 5;
+    private const int FIGURE_SIZE = 60;
+    private const int PADDING = 7;
+    private const int NEGATIVE_PADDING = FIGURE_SIZE - PADDING;
+    private const int CHECK_STEP = (NEGATIVE_PADDING - PADDING) / 5;
+    private const int CENTER_POSITION = FIGURE_SIZE / 2;
+    private const int DOT_SIZE = 10;
+    private const int DOT_POSITION = CENTER_POSITION - DOT_SIZE / 2;
+    private static readonly Point LT = new(PADDING, PADDING);
+    private static readonly Point RT = new(NEGATIVE_PADDING, PADDING);
+    private static readonly Point LB = new(PADDING, NEGATIVE_PADDING);
+    private static readonly Point RB = new(NEGATIVE_PADDING, NEGATIVE_PADDING);
+    private static readonly Point ML = new(PADDING, CENTER_POSITION);
+    private static readonly Point MT = new(CENTER_POSITION, PADDING);
+    private static readonly Point MR = new(NEGATIVE_PADDING, CENTER_POSITION);
+    private static readonly Point MB = new(CENTER_POSITION, NEGATIVE_PADDING);
     private static readonly Rectangle rect = Rectangle.FromLTRB(
-    posPadding, posPadding, negPadding, negPadding);
+    PADDING, PADDING, NEGATIVE_PADDING, NEGATIVE_PADDING);
     private static readonly Rectangle dotRect = new(
-        dotPosition, dotPosition, dotSize, dotSize);
+        DOT_POSITION, DOT_POSITION, DOT_SIZE, DOT_SIZE);
     private static readonly Font font = new("Consolas", 26);
     private static readonly StringFormat format = new()
     {
@@ -130,9 +130,9 @@ public static partial class PigpenCipher
         plainText = Purify(plainText, out int line);
         int length = Math.Min(LetterPerLine, plainText.Length);
         line += plainText.Length.DivCeil(LetterPerLine);
-        var bitmap = new Bitmap(figureSize * length, figureSize * line);
+        var bitmap = new Bitmap(FIGURE_SIZE * length, FIGURE_SIZE * line);
         using var graphics = Graphics.FromImage(bitmap);
-        using var pen = new Pen(Foreground, lineWidth);
+        using var pen = new Pen(Foreground, LINE_WIDTH);
         graphics.SmoothingMode = SmoothingMode.AntiAlias;
         if (Background.HasValue)
             graphics.Clear(Background.Value);
@@ -162,9 +162,9 @@ public static partial class PigpenCipher
                     graphics.FillRectangle(Foreground, rect);
                     graphics.DrawString(plainText[i].ToString(), font, Extraground, rect, format);
                 }
-                graphics.TranslateTransform(figureSize, 0);
+                graphics.TranslateTransform(FIGURE_SIZE, 0);
             }
-            graphics.TranslateTransform(-graphics.Transform.OffsetX, figureSize);
+            graphics.TranslateTransform(-graphics.Transform.OffsetX, FIGURE_SIZE);
         }
         return bitmap;
     }
@@ -185,9 +185,9 @@ public static partial class PigpenCipher
     {
         var strBuilder = new StringBuilder();
 
-        for (int y = 0; y < bitmap.Height; y += figureSize)
+        for (int y = 0; y < bitmap.Height; y += FIGURE_SIZE)
         {
-            for (int x = 0; x < bitmap.Width; x += figureSize)
+            for (int x = 0; x < bitmap.Width; x += FIGURE_SIZE)
             {
                 if (CheckBlackBox(bitmap, x, y))
                 {
