@@ -589,7 +589,7 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 //如果你希望能够编码为Wav，你需要提供soundfont文件，在TIMIDITY.CFG中编辑
 ```
 
-> [MorseMoonlight.mid](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Sound/MorseMoonlight.mid)
+> [MorseMoonlight.mid](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/Sound/MorseMoonlight.mid)
 
 ## Encoder
 
