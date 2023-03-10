@@ -65,10 +65,9 @@ public static partial class MorseMoonlight
     public static async void ExportWav(string morseCode, string filePath, string timidityPath = "timidity.exe")
     {
         var temp = Path.GetTempPath();
-        var midPath = Path.Combine(temp, Path.GetFileNameWithoutExtension(filePath) + ".mid");
+        var midPath = Path.Combine(temp, $"{morseCode.GetHashCode()}.mid");
         ExportMidi(morseCode, midPath);
         await Process.Start(timidityPath, $@"""{midPath}"" -Ow -o ""{filePath}""").WaitForExitAsync();
-        File.Delete(midPath);
     }
 
     /// <summary>

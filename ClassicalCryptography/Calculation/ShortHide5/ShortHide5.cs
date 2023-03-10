@@ -20,16 +20,16 @@ public class ShortHide5 : ICipher<string, string>
         Span<char> span = stackalloc char[25];
 
         sGroups = new string[26];
-        int slen = AlphaBetS.Length;
+        int length = AlphaBetS.Length;
         for (int u1 = 1; u1 <= 26; u1++)
         {
             for (int i = 0; i < 5; i++)
-                span[i] = AlphaBetS[(u1 * i + u1 / slen) % slen];
+                span[i] = AlphaBetS[(u1 * i + u1 / length) % length];
             sGroups[u1 - 1] = new(span[..5]);
         }
 
         dGroups = new string[25, 25];
-        slen = AlphaBetD.Length;
+        length = AlphaBetD.Length;
 
         for (int u1 = 1; u1 <= 25; u1++)
         {
@@ -37,7 +37,7 @@ public class ShortHide5 : ICipher<string, string>
             {
                 for (int i = 0; i < 5; i++)
                     for (int j = 0; j < 5; j++)
-                        span[i + (i << 2) + j] = AlphaBetD[(u1 * i + u2 * j) % slen];
+                        span[i + (i << 2) + j] = AlphaBetD[(u1 * i + u2 * j) % length];
                 dGroups[u1 - 1, u2 - 1] = new(span);
             }
         }
@@ -77,8 +77,7 @@ public class ShortHide5 : ICipher<string, string>
     /// <param name="plainText">纯英文单词</param>
     public static SH5 EncryptSH5(string plainText)
     {
-        if (plainText.Length - GetPrefixCount(plainText) > 28)
-            throw new ArgumentException("字符串太长", nameof(plainText));
+        Guard.HasSizeLessThanOrEqualTo(plainText, GetPrefixCount(plainText) + 28);
         var results = EncryptSingles(plainText);
         if (results.Count > 0)
             return results.Count == 1 ? results[0] : results.RandomItem();
@@ -116,40 +115,37 @@ public class ShortHide5 : ICipher<string, string>
 
     private static SH5 EncryptTrible(string plainText, HashSet<char> set)
     {
-        if (set.IsSubsetOf(AlphaBetT))
+        Guard.IsTrue(set.IsSubsetOf(AlphaBetT));
+
+        char[] group = new char[125];
+        int u1 = 0, u2 = 0, u3 = 0;
+        while (!set.IsSubsetOf(group))
         {
-            char[] group = new char[125];
-            int u1 = 0, u2 = 0, u3 = 0;
-            while (!set.IsSubsetOf(group))
-            {
-                u1 = Random.Shared.Next(26) + 1;
-                u2 = Random.Shared.Next(26) + 1;
-                u3 = Random.Shared.Next(26) + 1;
-                int p = 0;
-                for (int i = 0; i < 5; i++)
-                    for (int j = 0; j < 5; j++)
-                        for (int k = 0; k < 5; k++)
-                            group[p++] = AlphaBetT[(i * u1 + j * u2 + k * u3) % 64];
-            }
-
-            ulong v1 = 0, v2 = 0, v3 = 0;
-            ulong b = 1;
-            for (int i = plainText.Length - 1; i >= 0; i--)
-            {
-                checked
-                {
-                    var t = group.FindAll(plainText[i]).RandomItem();
-                    v1 += (ulong)(t / 25) * b;
-                    v2 += (ulong)((t % 25) / 5) * b;
-                    v3 += (ulong)(t % 5) * b;
-
-                    b += b << 2;//base *= 5;
-                }
-            }
-            return new(u1, v1, u2, v2, u3, v3);
+            u1 = Random.Shared.Next(26) + 1;
+            u2 = Random.Shared.Next(26) + 1;
+            u3 = Random.Shared.Next(26) + 1;
+            int p = 0;
+            for (int i = 0; i < 5; i++)
+                for (int j = 0; j < 5; j++)
+                    for (int k = 0; k < 5; k++)
+                        group[p++] = AlphaBetT[(i * u1 + j * u2 + k * u3) % 64];
         }
 
-        throw new ArgumentOutOfRangeException(nameof(plainText), "无法加密指定的内容");
+        ulong v1 = 0, v2 = 0, v3 = 0;
+        ulong b = 1;
+        for (int i = plainText.Length - 1; i >= 0; i--)
+        {
+            checked
+            {
+                var t = group.FindAll(plainText[i]).RandomItem();
+                v1 += (ulong)(t / 25) * b;
+                v2 += (ulong)((t % 25) / 5) * b;
+                v3 += (ulong)(t % 5) * b;
+
+                b += b << 2;//base *= 5;
+            }
+        }
+        return new(u1, v1, u2, v2, u3, v3);
     }
 
     /// <summary>

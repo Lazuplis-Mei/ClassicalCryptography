@@ -31,7 +31,7 @@ public static class Base100Encoding
             emojiBytes[j++] = 0x9F;
             (int quotient, int remainder) = int.DivRem((bytes[i] + 55), 0x40);
             emojiBytes[j++] = (byte)(quotient + 0x8F);
-            emojiBytes[j++] = (byte)(remainder + 0x80);
+            emojiBytes[j] = (byte)(remainder + 0x80);
         }
         return Encoding.UTF8.GetString(emojiBytes);
     }
@@ -43,16 +43,14 @@ public static class Base100Encoding
     public static byte[] Decode(string emojiString)
     {
         var emojiBytes = Encoding.UTF8.GetBytes(emojiString);
-
-        if ((emojiBytes.Length & 0B11) != 0)
-            throw new ArgumentException("字符串的字节数应为4的倍数", nameof(emojiString));
+        Guard.IsEqualTo(emojiBytes.Length & 0B11, 0);
 
         var bytes = new byte[emojiBytes.Length >> 2];
 
         for (int i = 0, temp = 0; i < emojiBytes.Length; i++)
         {
             if ((i & 0B11) == 2)
-                temp = ((emojiBytes[i] - 0x8F) * 0x40) % 0x100;
+                temp = ((emojiBytes[i] - 0x8F) << 6) % 0x100;
             else if ((i & 0B11) == 3)
                 bytes[i >> 2] = (byte)(emojiBytes[i] - 0xB7 + temp);
         }

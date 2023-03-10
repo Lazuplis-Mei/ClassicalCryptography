@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using ClassicalCryptography.Utils;
+using System.Collections;
 using System.Text;
 using System.Text.RegularExpressions;
 using static ClassicalCryptography.Utils.BaseConverter;
 using static ClassicalCryptography.Utils.GlobalTables;
-using static System.Net.WebRequestMethods;
 
 namespace ClassicalCryptography.Calculation.ShortHide5;
 
@@ -71,7 +71,7 @@ public partial class SH5 : IEnumerable<int>
         3 => "XXX",
         4 => "XXXX",
         5 => "XXXXX",
-        _ => string.Concat(Enumerable.Repeat('X', PrefixCount)),
+        _ => 'X'.Repeat(PrefixCount),
     };
 
     /// <summary>
@@ -133,15 +133,14 @@ public partial class SH5 : IEnumerable<int>
     {
         var matches = SH5GroupRegex().Matches(str);
         Level = (SH5Level)matches.Count;
-        if (!Enum.IsDefined(Level))
-            throw new FormatException("不正确的SH5格式");
+        Guard.IsTrue(Enum.IsDefined(Level));
 
         ReadOnlySpan<char> vstr;
         switch (Level)
         {
             case SH5Level.Single:
                 vstr = matches[0].ValueSpan;
-                Pair1.U = U_Letters.IndexOf(vstr[0]) + 1;
+                Pair1.U = vstr[0].LetterNumber() + 1;
                 Pair1.V = FromBase36(vstr[1..]);
                 break;
             case SH5Level.Double:
@@ -155,15 +154,13 @@ public partial class SH5 : IEnumerable<int>
                 break;
             case SH5Level.Trible:
                 vstr = matches[0].ValueSpan;
-                Pair1.U = U_Letters.IndexOf(vstr[0]) + 1;
+                Pair1.U = vstr[0].LetterNumber() + 1;
                 Pair1.V = FromBase36(vstr[1..]);
-
                 vstr = matches[1].ValueSpan;
-                Pair2.U = U_Letters.IndexOf(vstr[0]) + 1;
+                Pair2.U = vstr[0].LetterNumber() + 1;
                 Pair2.V = FromBase36(vstr[1..]);
-
                 vstr = matches[2].ValueSpan;
-                Pair3.U = U_Letters.IndexOf(vstr[0]) + 1;
+                Pair3.U = vstr[0].LetterNumber() + 1;
                 Pair3.V = FromBase36(vstr[1..]);
                 break;
         }
@@ -183,20 +180,16 @@ public partial class SH5 : IEnumerable<int>
                 break;
             case SH5Level.Double:
                 result.Append(Prefix);
-
                 result.Append(AlphaBetD[Pair1.U]);
                 result.Append(ToBase36(Pair1.V));
-
                 result.Append(AlphaBetD[Pair2.U]);
                 result.Append(ToBase36(Pair2.V));
                 break;
             case SH5Level.Trible:
                 result.Append(U_Letters[Pair1.U - 1]);
                 result.Append(ToBase36(Pair1.V));
-
                 result.Append(U_Letters[Pair2.U - 1]);
                 result.Append(ToBase36(Pair2.V));
-
                 result.Append(U_Letters[Pair3.U - 1]);
                 result.Append(ToBase36(Pair3.V));
                 break;

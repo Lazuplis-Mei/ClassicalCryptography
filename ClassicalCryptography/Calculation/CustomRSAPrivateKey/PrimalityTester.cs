@@ -38,6 +38,18 @@ public static class MillerRabinPrimalityTester
     public const int TEST_REPEAT_COUNT = 18;
 
     /// <summary>
+    /// 求指定数的下一个质数
+    /// </summary>
+    public static BigInteger NextPrime(this BigInteger number)
+    {
+        if (number.IsEven)
+            number--;
+        while (!number.IsPrime())
+            number += 2;
+        return number;
+    }
+
+    /// <summary>
     /// 获得指定重复次数下进行质数检测的准确率
     /// </summary>
     /// <param name="testRepeatCount">测试过程的重复次数</param>

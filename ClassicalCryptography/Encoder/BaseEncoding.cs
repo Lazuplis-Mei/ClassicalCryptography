@@ -133,6 +133,22 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
+    /// 转换为Base85
+    /// </summary>
+    public static string ToBase85(string input)
+    {
+        return Base85Encoding.Encode(Encoding.GetBytes(input));
+    }
+
+    /// <summary>
+    /// 从Base85转换
+    /// </summary>
+    public static string FromBase85(string input)
+    {
+        return Encoding.GetString(Base85Encoding.Decode(input));
+    }
+
+    /// <summary>
     /// 使用指定表(如<see cref="Utils.GlobalTables.Base36"/>等)编码
     /// </summary>
     public static string ToBase(string input, string table)

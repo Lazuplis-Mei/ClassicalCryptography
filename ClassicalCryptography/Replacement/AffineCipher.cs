@@ -15,9 +15,9 @@ namespace ClassicalCryptography.Replacement
         public AffineCipher(int a, int b)
         {
             if (a <= 0 || a >= 26 || b < 0 || b >= 26)
-                throw new ArgumentException($"{nameof(a)}和{nameof(b)}的范围应该是[0,26)");
+                throw new ArgumentException("a和b的范围应该是[0,26)");
             if (a % 2 == 0 || a == 13)
-                throw new ArgumentException($"{nameof(a)}应该是{{1,3,5,7,9,11,15,17,19,21,23,25}}中的一个", nameof(a));
+                throw new ArgumentException("a应该是{1,3,5,7,9,11,15,17,19,21,23,25}中的一个", nameof(a));
 
             var arr = new ushort[26];
             for (int i = 0; i < 26; i++)

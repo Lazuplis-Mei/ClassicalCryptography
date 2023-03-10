@@ -13,7 +13,7 @@ namespace ClassicalCryptographyTest
         [TestMethod]
         public void TestRotatingGrilles()
         {
-            string @plainText = "meetmeattwelvepm";
+            string plainText = "meetmeattwelvepm";
             string cipherText = "tmmveeewepeatlmt";
             var qArr = new QuaterArray(4);
             qArr[0] = 2;

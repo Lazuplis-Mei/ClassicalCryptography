@@ -1,7 +1,9 @@
 ﻿using ClassicalCryptography.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -16,16 +18,19 @@ public partial class UnicodeEncoding
     /// <summary>
     /// 转换成\u字符串
     /// </summary>
-    public static string EncodeUnicode(string str, bool upperCase = false)
+    [SkipLocalsInit]
+    public static string Encode(string str)
     {
-        var patten = upperCase ? "\\u{0:X2}{1:X2}" : "\\u{0:x2}{1:x2}";
-        var strbuilder = new StringBuilder();
-        foreach (var c in str)
+        int size = str.Length * 6;
+        Span<char> span = size <= StackLimit.MaxCharSize
+            ? stackalloc char[size] : new char[size];
+        var orignalSpan = span;
+        for (int i = 0; i < str.Length; i++)
         {
-            var bytes = Encoding.Unicode.GetBytes(c.ToString());//也许有更好的方法...
-            strbuilder.AppendFormat(patten, bytes.Length == 2 ? bytes[1] : 0, bytes[0]);
+            @$"\u{(int)str[i]:x4}".CopyTo(span);
+            span = span[6..];
         }
-        return strbuilder.ToString();
+        return new string(orignalSpan);
     }
 
     /// <summary>
@@ -36,23 +41,21 @@ public partial class UnicodeEncoding
     /// <summary>
     /// 从\u字符串转换
     /// </summary>
-    public static string DecodeUnicode(string str)
+    [SkipLocalsInit]
+    public static string Decode(string str)
     {
         var matches = UnicodeRegex().Matches(str);
-        int size = matches.Count << 1;
-        Span<byte> bytes = size <= StackLimit.MaxByteSize
-            ? stackalloc byte[size] : new byte[size];
+        Span<char> span = matches.Count <= StackLimit.MaxCharSize
+            ? stackalloc char[matches.Count] : new char[matches.Count];
 
-        int i = 0;
-        foreach (var match in matches.Cast<Match>())
+        for (int i = 0; i < matches.Count; i++)
         {
-            var code = Convert.ToInt16(match.Value[2..], 16);
-            bytes[i++] = (byte)(code & 0xff);
-            bytes[i++] = (byte)(code >> 8);
+            var code = Convert.ToInt16(matches[i].Value[2..], 16);
+            span[i] = (char)code;
         }
-        return Encoding.Unicode.GetString(bytes);
+        return new string(span);
     }
 
-    [GeneratedRegex(@"\\u[0-9A-Fa-f]{2,4}")]
+    [GeneratedRegex(@"\\u[0-9A-Fa-f]{1,4}")]
     private static partial Regex UnicodeRegex();
 }

@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Encoder;
 using ClassicalCryptography.Encoder.BaseEncodings;
+using ClassicalCryptography.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -49,6 +50,23 @@ namespace ClassicalCryptographyTest
         {
             Assert.AreEqual(encodingText, BaseEncoding.ToBase65536(text));
             Assert.AreEqual(text, BaseEncoding.FromBase65536(encodingText));
+        }
+
+        [TestMethod]
+        [DataRow("GOOD很好", "51NEyzu5kapWnp")]
+        public void TestBase58(string text, string encodingText)
+        {
+            Assert.AreEqual(encodingText, BaseEncoding.ToBase(text, GlobalTables.Base58));
+            Assert.AreEqual(text, BaseEncoding.FromBase(encodingText, GlobalTables.Base58));
+        }
+
+        [TestMethod]
+        [DataRow("NICETRY", ":.[fA<)Qj")]
+        [DataRow("是的", "k*W@8RY1")]
+        public void TestBase85(string text, string encodingText)
+        {
+            Assert.AreEqual(encodingText, BaseEncoding.ToBase85(text));
+            Assert.AreEqual(text, BaseEncoding.FromBase85(encodingText));
         }
 
     }

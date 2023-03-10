@@ -6,7 +6,7 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 /// <summary>
 /// <see href="https://github.com/qntm/base32768"/>
 /// </summary>
-[Introduction("Base32768编码", "https://github.com/qntm/base32768")]
+[Introduction("Base编码", "https://github.com/qntm/base32768")]
 [TranslatedFrom("JavaScript")]
 class BaseXXXXEncoding
 {

@@ -13,6 +13,28 @@ namespace ClassicalCryptography.Calculation.CustomRSAPrivateKey;
 [Introduction("RSA隐写术", "以指定的前缀字节生成质数并计算RSA私钥")]
 public static class CustomRSA
 {
+    /// <summary>
+    /// RSA密钥长度
+    /// </summary>
+    public enum RSAKeySize
+    {
+        /// <summary>
+        /// 1024位RSA
+        /// </summary>
+        RSA1024 = 64,
+        /// <summary>
+        /// 2048位RSA
+        /// </summary>
+        RSA2048 = 128,
+        /// <summary>
+        /// 3072位RSA
+        /// </summary>
+        RSA3072 = 192,
+        /// <summary>
+        /// 4096位RSA
+        /// </summary>
+        RSA4096 = 256,
+    }
 
     #region 常数
 
@@ -67,18 +89,12 @@ public static class CustomRSA
     /// <param name="rsaKeySize">密钥长度</param>
     /// <returns>质数</returns>
     [SkipLocalsInit]
-    public static BigInteger GeneratePrime(Span<byte> prefix, int rsaKeySize)
+    public static BigInteger GeneratePrime(Span<byte> prefix, RSAKeySize rsaKeySize)
     {
-        if (rsaKeySize != RSA_KEYSIZE_SHORT &&
-            rsaKeySize != RSA_KEYSIZE_MEDIUM &&
-            rsaKeySize != RSA_KEYSIZE_LONG &&
-            rsaKeySize != RSA_KEYSIZE_VERYLONG)
-            throw new ArgumentException("不支持的密钥长度", nameof(rsaKeySize));
-
-        int bytesCount = rsaKeySize >> 4;
-
-        if (prefix.Length > bytesCount - REMAIN_BYTECOUNT)
-            throw new ArgumentException("开始字节太长，请修改尺寸", nameof(prefix));
+        Guard.IsTrue(Enum.IsDefined(rsaKeySize));
+        int bytesCount = (int)rsaKeySize;
+        Guard.HasSizeLessThanOrEqualTo(prefix, bytesCount - REMAIN_BYTECOUNT);
+        Guard.IsFalse(prefix.Contains((byte)0));
 
         Span<byte> bigintBytes = bytesCount <= StackLimit.MaxByteSize
             ? stackalloc byte[bytesCount] : new byte[bytesCount];
@@ -88,12 +104,7 @@ public static class CustomRSA
         Random.Shared.NextBytes(bigintBytes[(prefix.Length + 1)..]);
         bigintBytes[prefix.Length + 1] >>= 1;
 
-        var number = new BigInteger(bigintBytes, true, true);
-        if (number.IsEven)
-            number--;
-        while (!number.IsPrime())
-            number += 2;
-        return number;
+        return new BigInteger(bigintBytes, true, true).NextPrime();
     }
 
     /// <summary>
@@ -148,7 +159,6 @@ public static class CustomRSA
     public static (byte[], byte[]) GetPrifix(string privateKey)
     {
         var xmlDocument = new XmlDocument();
-
         try
         {
             xmlDocument.LoadXml(privateKey);
@@ -159,14 +169,13 @@ public static class CustomRSA
         }
 
         var keyValueNode = xmlDocument.FirstChild;
-        if (keyValueNode is null || keyValueNode.Name != "RSAKeyValue")
-            throw new ArgumentException("没有找到RSAKeyValue", nameof(privateKey));
+        Guard.IsNotNull(keyValueNode);
+        Guard.IsEqualTo(keyValueNode.Name, "RSAKeyValue");
 
         string? base64P = keyValueNode.SelectSingleNode("P")?.InnerText;
         string? base64Q = keyValueNode.SelectSingleNode("Q")?.InnerText;
-
-        if (base64P is null || base64Q is null)
-            throw new ArgumentException("无法读取因数", nameof(privateKey));
+        Guard.IsNotNull(base64P);
+        Guard.IsNotNull(base64Q);
 
         byte[] pBytes = Convert.FromBase64String(base64P);
         byte[] qBytes = Convert.FromBase64String(base64Q);
@@ -181,12 +190,17 @@ public static class CustomRSA
     /// 从密钥中获得文本前缀
     /// </summary>
     /// <param name="privateKey">RSA私钥</param>
+    [SkipLocalsInit]
     public static string GetTextFrom(string privateKey)
     {
         var (prifixP, prifixQ) = GetPrifix(privateKey);
-        var prifix = new byte[prifixP.Length + prifixQ.Length];
-        prifixP.CopyTo(prifix, 0);
-        Array.Copy(prifixQ, 0, prifix, prifixP.Length, prifixQ.Length);
+        int length = prifixP.Length + prifixQ.Length;
+        Span<byte> prifix = length <= StackLimit.MaxByteSize
+            ? stackalloc byte[length] : new byte[length];
+        var spanP = prifixP.AsSpan();
+        var spanQ = prifixQ.AsSpan();
+        spanP.CopyTo(prifix);
+        spanQ.CopyTo(prifix[spanP.Length..]);
         return Encoding.GetString(prifix);
     }
 
@@ -200,10 +214,10 @@ public static class CustomRSA
         int length = Math.Max(prefix1.Length, prefix2.Length) + REMAIN_BYTECOUNT;
         var rsaKeySize = (length << 4) switch
         {
-            < RSA_KEYSIZE_SHORT => RSA_KEYSIZE_SHORT,
-            >= RSA_KEYSIZE_SHORT and < RSA_KEYSIZE_MEDIUM => RSA_KEYSIZE_MEDIUM,
-            >= RSA_KEYSIZE_MEDIUM and < RSA_KEYSIZE_LONG => RSA_KEYSIZE_LONG,
-            >= RSA_KEYSIZE_LONG and < RSA_KEYSIZE_VERYLONG => RSA_KEYSIZE_VERYLONG,
+            < RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
+            >= RSA_KEYSIZE_SHORT and < RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
+            >= RSA_KEYSIZE_MEDIUM and < RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
+            >= RSA_KEYSIZE_LONG and < RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
             _ => throw new ArgumentException("前缀长度过长"),
         };
 

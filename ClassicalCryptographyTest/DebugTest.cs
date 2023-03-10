@@ -19,7 +19,6 @@ namespace ClassicalCryptographyTest
         [SupportedOSPlatform("windows")]
         public void Test()
         {
-            
 
         }
     }

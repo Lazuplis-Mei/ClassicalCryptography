@@ -1,5 +1,4 @@
 ﻿using ClassicalCryptography.Interfaces;
-using System.Diagnostics;
 using System.Drawing;
 using System.Text;
 using ZXing.Common;
@@ -10,9 +9,9 @@ public static partial class WeaveCipher
 {
 
     private static readonly Point pointLT = Point.Empty;
-    private static readonly Point pointLB = new(0, blockSize);
-    private static readonly Point pointRT = new(blockSize, 0);
-    private static readonly Point pointRB = new(blockSize, blockSize);
+    private static readonly Point pointLB = new(0, BLOCK_SIZE);
+    private static readonly Point pointRT = new(BLOCK_SIZE, 0);
+    private static readonly Point pointRB = new(BLOCK_SIZE, BLOCK_SIZE);
     private static readonly Point[][] trigs = new[]
     {
         new[] { pointLT, pointLB, pointRB },
@@ -22,32 +21,12 @@ public static partial class WeaveCipher
     };
 
     /// <summary>
-    /// 转换为图像
-    /// </summary>
-    public static void BitsToImageExtend(BitMatrix matrix, string filePath)
-    {
-        using var bitmap = BitsToImage4d(matrix);
-        bitmap.Save(filePath, ImgFormat);
-    }
-
-
-    /// <summary>
     /// 加密为图像
     /// </summary>
-    public static void EncryptExtend(byte[] bytes1, byte[] bytes2, byte[] bytes3, byte[] bytes4, string filePath)
+    public static Bitmap EncryptExtend(Span<byte> bytes1, Span<byte> bytes2, Span<byte> bytes3, Span<byte> bytes4)
     {
-        EncryptExtend(bytes1.AsSpan(), bytes2.AsSpan(), bytes3.AsSpan(), bytes4.AsSpan(), filePath);
-    }
-
-    /// <summary>
-    /// 加密为图像
-    /// </summary>
-    public static void EncryptExtend(Span<byte> bytes1, Span<byte> bytes2, Span<byte> bytes3, Span<byte> bytes4, string filePath)
-    {
-        if (bytes1.Length != bytes3.Length)
-            throw new ArgumentException("参数1和参数3的长度应该相同");
-        if (bytes2.Length != bytes4.Length)
-            throw new ArgumentException("参数2和参数4的长度应该相同");
+        Guard.HasSizeEqualTo(bytes3, bytes1.Length);
+        Guard.HasSizeEqualTo(bytes4, bytes2.Length);
 
         var bits1 = new BitArray();
         var bits2 = new BitArray();
@@ -64,13 +43,13 @@ public static partial class WeaveCipher
             bits2.appendBits(bytes2[i], 8);
             bits4.appendBits(bytes4[i], 8);
         }
-        BitsToImageExtend(EncryptBitsExtend(bits1, bits2, bits3, bits4), filePath);
+        return BitsToImageExtend(EncryptBitsExtend(bits1, bits2, bits3, bits4));
     }
 
     /// <summary>
     /// 加密为图像
     /// </summary>
-    public static void EncryptExtend(string text, string filePath)
+    public static Bitmap EncryptExtend(string text)
     {
         var bytes = Encoding.UTF8.GetBytes(text).AsSpan();
         int h = (bytes.Length + bytes.Length % 2) / 2;
@@ -81,18 +60,16 @@ public static partial class WeaveCipher
         var bytes2 = bytes[(h / 2)..h];
         var bytes3 = bytes.Slice(h, h / 2);
         bytes[(h + h / 2)..].CopyTo(bytes4);
-        EncryptExtend(bytes1, bytes2, bytes3, bytes4, filePath);
+        return EncryptExtend(bytes1, bytes2, bytes3, bytes4);
     }
 
     /// <summary>
     /// 核心加密代码
     /// </summary>
-    public static BitMatrix EncryptBitsExtend(BitArray bits1, BitArray bits2, BitArray bits3, BitArray bits4)
+    internal static BitMatrix EncryptBitsExtend(BitArray bits1, BitArray bits2, BitArray bits3, BitArray bits4)
     {
-        if (bits1.Size != bits3.Size)
-            throw new ArgumentException("参数1和参数3的长度应该相同");
-        if (bits2.Size != bits4.Size)
-            throw new ArgumentException("参数2和参数4的长度应该相同");
+        Guard.IsEqualTo(bits3.Size, bits1.Size);
+        Guard.IsEqualTo(bits4.Size, bits2.Size);
 
         var matrix = new BitMatrix((bits1.Size + 1) * 2, bits2.Size + 1);
 
@@ -151,9 +128,9 @@ public static partial class WeaveCipher
         return matrix;
     }
 
-    internal static Bitmap BitsToImage4d(BitMatrix matrix)
+    internal static Bitmap BitsToImageExtend(BitMatrix matrix)
     {
-        var bitmap = new Bitmap((matrix.Width / 2) * blockSize, matrix.Height * blockSize);
+        var bitmap = new Bitmap((matrix.Width / 2) * BLOCK_SIZE, matrix.Height * BLOCK_SIZE);
         using var graphics = Graphics.FromImage(bitmap);
         for (int y = 0; y < matrix.Height; y++)
         {
@@ -162,13 +139,14 @@ public static partial class WeaveCipher
                 int k = 2 * (y % 2);
                 graphics.FillPolygon(matrix[x, y] ? Foreground : Background, trigs[k]);
                 graphics.FillPolygon(matrix[x + 1, y] ? Foreground : Background, trigs[k + 1]);
-                graphics.TranslateTransform(blockSize, 0);
+                graphics.TranslateTransform(BLOCK_SIZE, 0);
                 graphics.FillPolygon(matrix[x + 2, y] ? Foreground : Background, trigs[2 - k]);
                 graphics.FillPolygon(matrix[x + 3, y] ? Foreground : Background, trigs[3 - k]);
-                graphics.TranslateTransform(blockSize, 0);
+                graphics.TranslateTransform(BLOCK_SIZE, 0);
             }
-            graphics.TranslateTransform(-graphics.Transform.OffsetX, blockSize);
+            graphics.TranslateTransform(-graphics.Transform.OffsetX, BLOCK_SIZE);
         }
         return bitmap;
     }
+
 }

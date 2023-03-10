@@ -9,12 +9,14 @@ namespace ClassicalCryptographyTest
     {
 
         [TestMethod]
-        [DataRow("98765", "X̅C̅V̅MMMDCCLXV")]
-        [DataRow("12345", "X̅MMCCCXLV")]
-        public void TestRomanNumerals(string text, string encodingText)
+        [DataRow(98765UL, "X̅C̅V̅MMMDCCLXV")]
+        [DataRow(12345UL, "X̅MMCCCXLV")]
+
+        [DataRow(9007199254740991UL, "M̅̅̅̅X̅̅̅̅̅V̅̅̅̅M̅̅̅M̅̅̅C̅̅̅X̅̅̅C̅̅̅M̅̅X̅̅̅C̅̅C̅̅L̅̅M̅V̅̅D̅C̅C̅X̅L̅CMXCI")]
+        public void TestRomanNumerals(ulong number, string encodingText)
         {
-            Assert.AreEqual(encodingText, RomanNumerals.ArabicToRoman(text));
-            Assert.AreEqual(text, RomanNumerals.RomanToArabic(encodingText));
+            Assert.AreEqual(encodingText, RomanNumerals.ArabicToRoman(number));
+            Assert.AreEqual(number, RomanNumerals.RomanToArabic(encodingText));
         }
 
         [TestMethod]

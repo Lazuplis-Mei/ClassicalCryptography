@@ -107,7 +107,7 @@ public static partial class PLEncoding
                 var octStrng = Convert.ToString(character, 8);
                 for (int j = 0; j < octStrng.Length; j++)
                 {
-                    result.Append(aaCodes[octStrng[j] - '0']).Append("+ ");
+                    result.Append(aaCodes[octStrng[j].HexCharNumber()]).Append("+ ");
                 }
             }
             else
@@ -116,7 +116,7 @@ public static partial class PLEncoding
                 result.Append("(oﾟｰﾟo)+ ");
                 for (int j = 0; j < hexString.Length; j++)
                 {
-                    result.Append(aaCodes[GlobalTables.HexString.IndexOf(hexString[j])]).Append("+ ");
+                    result.Append(aaCodes[hexString[j].HexCharNumber()]).Append("+ ");
                 }
             }
         }

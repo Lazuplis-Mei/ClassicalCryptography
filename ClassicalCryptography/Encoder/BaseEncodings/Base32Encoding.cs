@@ -21,8 +21,7 @@ public static class Base32Encoding
     /// <param name="base32String">Base32字符串</param>
     public static byte[] Decode(string base32String)
     {
-        if (string.IsNullOrEmpty(base32String))
-            throw new ArgumentNullException(nameof(base32String));
+        Guard.IsNotNullOrEmpty(base32String);
 
         var base32Span = base32String;
         base32Span = base32Span.TrimEnd('=');
@@ -66,8 +65,8 @@ public static class Base32Encoding
     [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
-        if (bytes is null || bytes.Length == 0)
-            throw new ArgumentNullException(nameof(bytes));
+        Guard.IsNotNull(bytes);
+        Guard.HasSizeGreaterThan(bytes, 0);
 
         int spanCount = (int)Math.Ceiling(bytes.Length / 5.0) * 8;
         Span<char> span = spanCount <= StackLimit.MaxCharSize

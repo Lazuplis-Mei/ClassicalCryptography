@@ -9,6 +9,31 @@ namespace ClassicalCryptography.Utils;
 /// </summary>
 internal static class StringExtension
 {
+
+    /// <summary>
+    /// 英文字母转换成对应的数字
+    /// </summary>
+    public static int LetterNumber(this char c)
+    {
+        if (c is >= 'A' and <= 'Z')
+            return c - 'A';
+        else if (c is >= 'a' and <= 'z')
+            return c - 'a';
+        throw new ArgumentOutOfRangeException(nameof(c));
+    }
+
+    /// <summary>
+    /// 16进制字符
+    /// </summary>
+    public static int HexCharNumber(this char c)
+    {
+        if (c is >= '0' and <= '9')
+            return c - '0';
+        else if (c is >= 'a' and <= 'f')
+            return c - 'a' + 10;
+        throw new ArgumentOutOfRangeException(nameof(c));
+    }
+
     /// <summary>
     /// 分解字符串为不重复的大写字母字符集合
     /// </summary>
@@ -33,14 +58,6 @@ internal static class StringExtension
     public static List<int> FindAll(this string str, char c)
     {
         var result = new List<int>();
-        /*
-        int si = str.IndexOf(c);
-        while (si != -1)
-        {
-            result.Add(si);
-            si = str.IndexOf(c, si + 1);
-        }
-        */
         for (int i = 0; i < str.Length; i++)
             if (str[i] == c)
                 result.Add(i);
@@ -55,14 +72,6 @@ internal static class StringExtension
     public static List<int> FindAll(this char[] str, char c)
     {
         var result = new List<int>();
-        /*
-        int si = str.IndexOf(c);
-        while (si != -1)
-        {
-            result.Add(si);
-            si = str.IndexOf(c, si + 1);
-        }
-        */
         for (int i = 0; i < str.Length; i++)
             if (str[i] == c)
                 result.Add(i);
@@ -70,17 +79,14 @@ internal static class StringExtension
     }
 
     /// <summary>
-    /// 默认编码
-    /// </summary>
-    public static readonly Encoding DefaultEncoding = Encoding.UTF8;
-
-    /// <summary>
     /// 中文按UTF-8转换成Base64字符串
     /// </summary>
     /// <param name="text">中文字符串</param>
-    public static string ToBase64(this string text)
+    /// <param name="encoding">默认编码UTF8</param>
+    public static string ToBase64(this string text, Encoding? encoding = null)
     {
-        var bytes = DefaultEncoding.GetBytes(text);
+        encoding ??= Encoding.UTF8;
+        var bytes = encoding.GetBytes(text);
         return Convert.ToBase64String(bytes);
     }
 
@@ -88,10 +94,12 @@ internal static class StringExtension
     /// Base64字符串按UTF-8转换成中文
     /// </summary>
     /// <param name="base64">中文字符串</param>
-    public static string FromBase64(this string base64)
+    /// <param name="encoding">默认编码UTF8</param>
+    public static string FromBase64(this string base64, Encoding? encoding = null)
     {
+        encoding ??= Encoding.UTF8;
         var bytes = Convert.FromBase64String(base64);
-        return DefaultEncoding.GetString(bytes);
+        return encoding.GetString(bytes);
     }
 
     public static bool IsPrintable(this char c) => c is >= ' ' and not (char)0x7F;
@@ -121,8 +129,7 @@ internal static class StringExtension
     {
         Span<char> span = count <= StackLimit.MaxCharSize
             ? stackalloc char[count] : new char[count];
-        for (int i = 0; i < count; i++)
-            span[i] = character;
+        span.Fill(character);
         return new(span);
     }
 }

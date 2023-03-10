@@ -56,8 +56,7 @@ public static partial class Base65536Encoding
     /// </summary>
     public static IEnumerable<int> ToCodePoints(this string str)
     {
-        if (str == null)
-            throw new ArgumentNullException(nameof(str));
+        Guard.IsNotNull(str);
 
         for (int i = 0; i < str.Length;)
         {

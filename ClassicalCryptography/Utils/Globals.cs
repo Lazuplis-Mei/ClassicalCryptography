@@ -113,7 +113,7 @@ public static class GlobalTables
     /// <summary>
     /// Ascii85
     /// </summary>
-    public static readonly string Ascii85 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.-:+=^!/*?&<>()[]{}@%$#";
+    public static readonly string Ascii85 = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu";
 
     /// <summary>
     /// Ascii85_Z85

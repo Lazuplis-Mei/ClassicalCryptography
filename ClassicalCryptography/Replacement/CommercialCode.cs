@@ -12,7 +12,7 @@ namespace ClassicalCryptography.Replacement;
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
 public static class CommercialCode
 {
-    private static readonly string charDATA = Encoding.Default.GetString(GZip.Decompress(Resources.CC));
+    private static readonly string charDATA = Encoding.Unicode.GetString(GZip.Decompress(Resources.CC));
 
     /// <summary>
     /// 解密中文电码串(4个数字一组)

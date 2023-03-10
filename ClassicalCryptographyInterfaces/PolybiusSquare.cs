@@ -38,7 +38,7 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     public PolybiusSquare(string padding, string alphabet)
     {
         if (alphabet.Length != padding.Length * padding.Length)
-            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}.Length 应为{nameof(padding)}.Length 的平方", nameof(alphabet));
+            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}长度应为{nameof(padding)}长度的平方", nameof(alphabet));
         keyValue = (padding, alphabet);
     }
 
