@@ -1,16 +1,11 @@
 ﻿using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Utils;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using System.Text;
-using System.Threading.Tasks;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Undefined;

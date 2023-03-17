@@ -80,7 +80,7 @@ public partial class SH5 : IEnumerable<int>
     public static int GetPrefixCount(string str)
     {
         int count = 0;
-        while (str[count] is 'X' or 'x')
+        while (str[count] is 'X' or 'x' && count < str.Length)
             count++;
         return count;
     }

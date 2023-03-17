@@ -16,6 +16,7 @@ namespace ClassicalCryptography.Replacement
         {
             ReflectionCharSet = $"{U_Letters[key..]}{U_Letters[..key]}";
             ReflectionCharSet += $"{L_Letters[key..]}{L_Letters[..key]}";
+            BuildMap();
         }
         /// <summary>
         /// 英文字母

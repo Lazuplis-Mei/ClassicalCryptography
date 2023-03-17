@@ -100,7 +100,7 @@ public static class CustomRSA
             ? stackalloc byte[bytesCount] : new byte[bytesCount];
 
         prefix.CopyTo(bigintBytes);
-        bigintBytes[prefix.Length] = 0;
+        bigintBytes[prefix.Length] = 0;//以0作为前缀字节的结尾标志
         Random.Shared.NextBytes(bigintBytes[(prefix.Length + 1)..]);
         bigintBytes[prefix.Length + 1] >>= 1;
 
@@ -181,7 +181,11 @@ public static class CustomRSA
         byte[] qBytes = Convert.FromBase64String(base64Q);
 
         int prifixEndofP = Array.IndexOf(pBytes, (byte)0);
+        if (prifixEndofP == -1)
+            prifixEndofP = pBytes.Length - REMAIN_BYTECOUNT;
         int prifixEndofQ = Array.IndexOf(qBytes, (byte)0);
+        if (prifixEndofQ == -1)
+            prifixEndofQ = qBytes.Length - REMAIN_BYTECOUNT;
 
         return (pBytes[..prifixEndofP], qBytes[..prifixEndofQ]);
     }
@@ -197,10 +201,8 @@ public static class CustomRSA
         int length = prifixP.Length + prifixQ.Length;
         Span<byte> prifix = length <= StackLimit.MaxByteSize
             ? stackalloc byte[length] : new byte[length];
-        var spanP = prifixP.AsSpan();
-        var spanQ = prifixQ.AsSpan();
-        spanP.CopyTo(prifix);
-        spanQ.CopyTo(prifix[spanP.Length..]);
+        prifixP.CopyTo(prifix);
+        prifixQ.CopyTo(prifix[prifixP.Length..]);
         return Encoding.GetString(prifix);
     }
 
@@ -214,10 +216,10 @@ public static class CustomRSA
         int length = Math.Max(prefix1.Length, prefix2.Length) + REMAIN_BYTECOUNT;
         var rsaKeySize = (length << 4) switch
         {
-            < RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
-            >= RSA_KEYSIZE_SHORT and < RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
-            >= RSA_KEYSIZE_MEDIUM and < RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
-            >= RSA_KEYSIZE_LONG and < RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
+            <= RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
+            > RSA_KEYSIZE_SHORT and <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
+            > RSA_KEYSIZE_MEDIUM and <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
+            > RSA_KEYSIZE_LONG and <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
             _ => throw new ArgumentException("前缀长度过长"),
         };
 
@@ -234,7 +236,6 @@ public static class CustomRSA
         using (var writer = XmlWriter.Create(xmlString, new()
         {
             Indent = true,
-            NewLineChars = Environment.NewLine,
             OmitXmlDeclaration = true
         }))
         {
@@ -280,7 +281,7 @@ public static class CustomRSA
             y = x - q * y;
             x = t;
         }
-        if (x.Sign == -1)
+        if (BigInteger.IsNegative(x))
             x += m;
         return x;
     }

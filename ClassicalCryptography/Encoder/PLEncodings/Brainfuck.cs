@@ -1,6 +1,5 @@
 ﻿using ClassicalCryptography.Utils;
 using System.Text;
-using static System.Net.WebRequestMethods;
 
 namespace ClassicalCryptography.Encoder.PLEncodings;
 
@@ -10,12 +9,17 @@ namespace ClassicalCryptography.Encoder.PLEncodings;
 /// <para>在线工具</para>
 /// <seealso href="https://www.splitbrain.org/services/ook"/>
 /// </summary>
-public class Brainfuck
+public static class Brainfuck
 {
     /// <summary>
     /// 内存空间大小
     /// </summary>
     public const int MEMORY_SIZE = 100;
+
+    /// <summary>
+    /// 字符编码
+    /// </summary>
+    public static Encoding Encoding { get; set; } = Encoding.UTF8;
 
     /// <summary>
     /// 解释执行brainfuck代码
@@ -26,12 +30,12 @@ public class Brainfuck
     /// <param name="input">输入</param>
     public static string Interpret(string brainfuckCode, string input = "")
     {
-        var result = new List<byte>();
+        var inputBytes = Encoding.GetBytes(input);
         Span<byte> memoryBuffer = stackalloc byte[MEMORY_SIZE];
         var stack = new Stack<int>();
         int memoryPointer = 0, inputPointer = 0;
-        if (Encoding.UTF8.GetByteCount(input) != input.Length)
-            throw new ArgumentException("输入必须是单字节字符", nameof(input));
+        var result = new List<byte>();
+
         for (int i = 0; i < brainfuckCode.Length; i++)
         {
             switch (brainfuckCode[i])
@@ -68,22 +72,21 @@ public class Brainfuck
                             break;
                         j++;
                     }
-                    if (k == 0)
-                        i = j;
-                    else
-                        throw new ArgumentException("语句块块不匹配", nameof(brainfuckCode));
+                    if (k != 0)
+                        throw new ArgumentException("语句块不匹配", nameof(brainfuckCode));
+                    i = j;
                     break;
                 case ']':
                     i = stack.Pop() - 1;
                     break;
                 case ',':
-                    memoryBuffer[memoryPointer] = (byte)input[inputPointer++];
+                    memoryBuffer[memoryPointer] = inputBytes[inputPointer++];
                     break;
                 default:
                     break;
             }
         }
-        return Encoding.UTF8.GetString(result.ToArray());
+        return Encoding.GetString(result.ToArray());
     }
 
     /// <summary>
@@ -96,7 +99,7 @@ public class Brainfuck
     public static string GenerateCode(string text)
     {
         int value = 0;
-        var bytes = Encoding.UTF8.GetBytes(text);
+        var bytes = Encoding.GetBytes(text);
         var result = new StringBuilder();
         for (int i = 0; i < bytes.Length; i++)
         {

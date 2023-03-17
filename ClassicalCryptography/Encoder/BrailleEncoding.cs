@@ -71,7 +71,6 @@ public class BrailleEncoding
     /// <summary>
     /// 解码盲文符号
     /// </summary>
-    [SkipLocalsInit]
     public static byte[] DecodeBytes(string brailles)
     {
         var bytes = new byte[brailles.Length];
@@ -83,7 +82,6 @@ public class BrailleEncoding
     /// <summary>
     /// 用Unicode顺序解码盲文符号
     /// </summary>
-    [SkipLocalsInit]
     public static byte[] DecodeWithUnicodeOrder(string brailles)
     {
         var bytes = new byte[brailles.Length];

@@ -29,7 +29,7 @@ public static class MillerRabinPrimalityTester
         /// <summary>
         /// 一定是质数
         /// </summary>
-        SURELY_PRIME,
+        IS_PRIME,
     }
 
     /// <summary>
@@ -38,8 +38,11 @@ public static class MillerRabinPrimalityTester
     public const int TEST_REPEAT_COUNT = 18;
 
     /// <summary>
-    /// 求指定数的下一个质数
+    /// <para>求指定数的下一个质数</para>
     /// </summary>
+    /// <returns>
+    /// 如果n-1是质数，它将返回n-1，否则为大于n的质数
+    /// </returns>
     public static BigInteger NextPrime(this BigInteger number)
     {
         if (number.IsEven)
@@ -73,7 +76,7 @@ public static class MillerRabinPrimalityTester
             /* 原则上，这只是代表它很有可能是质数
              * 你也可以计算在特定重试次数下的准确率
              */
-            TestResult.SURELY_PRIME => true,
+            TestResult.IS_PRIME => true,
             _ => false,
         };
     }
@@ -86,19 +89,18 @@ public static class MillerRabinPrimalityTester
     /// <returns>检测结果</returns>
     public static TestResult IsPrime(BigInteger number, int testRepeatCount)
     {
-        if (number.Sign == -1)
-            throw new ArgumentException("无法检测负数", nameof(number));
+        Guard.IsTrue(BigInteger.IsPositive(number));
 
         if (number < 1000000UL)
-            return IsPrimeUInt64((ulong)number) ? TestResult.SURELY_PRIME : TestResult.NOT_PRIME;
+            return IsPrime((ulong)number) ? TestResult.IS_PRIME : TestResult.NOT_PRIME;
 
         if (number.IsEven)
             return TestResult.NOT_PRIME;
 
-        if (number % 03 == 0 || number % 05 == 0 || number % 07 == 0 || 
-            number % 11 == 0 || number % 13 == 0 || number % 17 == 0 || 
-            number % 19 == 0 || number % 23 == 0 || number % 29 == 0 || 
-            number % 31 == 0 || number % 37 == 0 || number % 41 == 0 || 
+        if (number % 03 == 0 || number % 05 == 0 || number % 07 == 0 ||
+            number % 11 == 0 || number % 13 == 0 || number % 17 == 0 ||
+            number % 19 == 0 || number % 23 == 0 || number % 29 == 0 ||
+            number % 31 == 0 || number % 37 == 0 || number % 41 == 0 ||
             number % 43 == 0 || number % 47 == 0 || number % 53 == 0)
             return TestResult.NOT_PRIME;
 
@@ -106,11 +108,11 @@ public static class MillerRabinPrimalityTester
     }
 
     /// <summary>
-    /// 检测属于[0, 1000000)范围内的数是否为质数
+    /// 检测是否为质数
     /// </summary>
     /// <param name="number">待检测的数</param>
     /// <returns>检测结果</returns>
-    public static bool IsPrimeUInt64(ulong number)
+    public static bool IsPrime(ulong number)
     {
         ulong quotient, remainder, divisor;
 
@@ -150,7 +152,7 @@ public static class MillerRabinPrimalityTester
         }
 
         var testResult = TestResult.TRUSTED_PRIME;
-        for (int i = 0; i < testRepeatCount && testResult > 0; i++)
+        for (int i = 0; i < testRepeatCount && testResult != TestResult.NOT_PRIME; i++)
         {
             var x = RandomHelper.RandomBigInteger(1, m);
             testResult = MillerRabinInternal(number, x, q, k);

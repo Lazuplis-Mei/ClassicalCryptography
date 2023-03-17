@@ -18,7 +18,7 @@ public class WebEncoding
     /// </summary>
     public static string UrlEncode(string input, Encoding? encoding = null)
     {
-        encoding ??= Encoding.Default;
+        encoding ??= Encoding.UTF8;
         return HttpUtility.UrlEncode(input, encoding);
     }
 
@@ -27,7 +27,7 @@ public class WebEncoding
     /// </summary>
     public static string UrlDecode(string input, Encoding? encoding = null)
     {
-        encoding ??= Encoding.Default;
+        encoding ??= Encoding.UTF8;
         return HttpUtility.UrlDecode(input, encoding);
     }
 

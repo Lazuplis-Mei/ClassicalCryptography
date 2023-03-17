@@ -106,7 +106,7 @@ class BaseXXXXEncoding
 
             if (numZBits != BITS_PER_CHAR && i != length - 1)
             {
-                throw new Exception("Secondary character found before end of input at position " + i.ToString());
+                throw new Exception($"Secondary character found before end of input at position {i}");
             }
 
             // Take most significant bit first

@@ -9,6 +9,32 @@ namespace ClassicalCryptography.Utils;
 /// </summary>
 internal static class StringExtension
 {
+    /// <summary>
+    /// 移除最后一个字符
+    /// </summary>
+    /// <param name="stringBuilder"></param>
+    public static void RemoveLast(this StringBuilder stringBuilder)
+    {
+        if (stringBuilder.Length > 0)
+            stringBuilder.Remove(stringBuilder.Length - 1, 1);
+    }
+
+    /// <summary>
+    /// 查找字符列表中的子序列
+    /// </summary>
+    public static bool ContainsSubString(this List<char> list, string subString, out int[] positions)
+    {
+        positions = new int[subString.Length];
+        positions[^1] = -1;
+        if (list.Count < subString.Length)
+            return false;
+        for (int i = 0, j = 0; i < list.Count && j < positions.Length; i++)
+        {
+            if (list[i] == subString[j])
+                positions[j++] = i;
+        }
+        return positions[^1] >= 0;
+    }
 
     /// <summary>
     /// 英文字母转换成对应的数字
@@ -106,7 +132,11 @@ internal static class StringExtension
 
     public static string[] Partition(this string self, int length)
     {
-        return self.Partition(length, s => s);
+        var result = new string[self.Length.DivCeil(length)];
+        for (int i = 0; i < result.Length - 1; i++)
+            result[i] = self.Substring(i * length, length);
+        result[^1] = self[((result.Length - 1) * length)..];
+        return result;
     }
 
     public static T[] Partition<T>(this string self, int length, Func<string, T> converter)

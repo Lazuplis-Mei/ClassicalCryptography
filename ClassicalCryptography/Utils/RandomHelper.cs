@@ -97,7 +97,7 @@ internal static class RandomHelper
     /// 产生不大于<paramref name="maxValue"/>的随机数
     /// </summary>
     /// <param name="maxValue">最大值</param>
-    [SkipLocalsInit, Obsolete("使用RandomBigInteger")]
+    [SkipLocalsInit]
     public static BigInteger RandomBigInt(BigInteger maxValue)
     {
         if (maxValue < int.MaxValue)
@@ -122,7 +122,7 @@ internal static class RandomHelper
         byte[] bytes = max.ToByteArray();
 
         Random.Shared.NextBytes(bytes);
-        bytes[^1] &= 0x7F; // force sign bit to positive
+        bytes[^1] &= 0x7F;
         var value = new BigInteger(bytes);
         return (value % (max - min + 1)) + min;
     }

@@ -17,4 +17,8 @@
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="BidirectionalDictionary" Version="1.1.1" />
+	</ItemGroup>
+
 </Project>

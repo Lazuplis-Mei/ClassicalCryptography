@@ -24,6 +24,7 @@ namespace ClassicalCryptography.Replacement
                 arr[i] = (ushort)((a * i + b) % 26);
             ReflectionCharSet = arr.AssembleText(U_Letters);
             ReflectionCharSet += arr.AssembleText(L_Letters);
+            BuildMap();
         }
         /// <summary>
         /// 英文字母

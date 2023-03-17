@@ -81,7 +81,7 @@ public class Base85Encoding
     }
 
     /// <summary>
-    /// Decode Base85
+    /// Decode Base85 without Head and Tail
     /// </summary>
     /// <param name="text"></param>
     public static byte[] Decode(string text)
@@ -121,11 +121,25 @@ public class Base85Encoding
                 else
                 {
                     paddingCount = 5 - (ascii.Length - j);
-                    block = (paddingCount == 0) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] - ASCII_OFFSET) * 7225 + (uint)(ascii[j + 3] - ASCII_OFFSET) * 85 + (uint)(ascii[j + 4] - ASCII_OFFSET) :
-                            (paddingCount == 1) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] - ASCII_OFFSET) * 7225 + (uint)(ascii[j + 3] - ASCII_OFFSET) * 85 + (uint)(PADDING_ASCII - ASCII_OFFSET) :
-                            (paddingCount == 2) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] - ASCII_OFFSET) * 7225 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 + (uint)(PADDING_ASCII - ASCII_OFFSET) :
-                            (paddingCount == 3) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 7225 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 + (uint)(PADDING_ASCII - ASCII_OFFSET) :
-                                                  (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 614125 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 7225 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 + (uint)(PADDING_ASCII - ASCII_OFFSET);
+                    block = (paddingCount == 0) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 +
+                        (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] -
+                        ASCII_OFFSET) * 7225 + (uint)(ascii[j + 3] - ASCII_OFFSET) * 85 +
+                        (uint)(ascii[j + 4] - ASCII_OFFSET) :
+                            (paddingCount == 1) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 +
+                            (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] -
+                            ASCII_OFFSET) * 7225 + (uint)(ascii[j + 3] - ASCII_OFFSET) * 85 +
+                            (PADDING_ASCII - ASCII_OFFSET) :
+                            (paddingCount == 2) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 +
+                            (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(ascii[j + 2] -
+                            ASCII_OFFSET) * 7225 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 +
+                            (PADDING_ASCII - ASCII_OFFSET) :
+                            (paddingCount == 3) ? (uint)(ascii[j] - ASCII_OFFSET) * 52200625 +
+                            (uint)(ascii[j + 1] - ASCII_OFFSET) * 614125 + (uint)(PADDING_ASCII -
+                            ASCII_OFFSET) * 7225 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 +
+                            (PADDING_ASCII - ASCII_OFFSET) :
+                            (uint)(ascii[j] - ASCII_OFFSET) * 52200625 + (uint)(PADDING_ASCII -
+                            ASCII_OFFSET) * 614125 + (uint)(PADDING_ASCII - ASCII_OFFSET) * 7225 + 
+                            (uint)(PADDING_ASCII - ASCII_OFFSET) * 85 + (PADDING_ASCII - ASCII_OFFSET);
                 }
                 result.Add((byte)((block & 0xff000000) >> 24));
                 if (!isLastLoop || paddingCount <= 2)

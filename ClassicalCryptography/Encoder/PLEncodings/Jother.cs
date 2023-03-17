@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Encoder.PLEncodings;
+﻿using System.Text;
+
+namespace ClassicalCryptography.Encoder.PLEncodings;
 
 internal static partial class Constants
 {
@@ -74,7 +76,9 @@ internal static partial class Constants
                 {'[', $"({jotherBase[1]}+[])" + $"[{jotherDigits[0]}]" },
                 {']', $"({jotherBase[1]}+[])" + Q2(jotherDigits[7] + Q4(jotherDigits[7])) },
                 {'-', $"({jotherBase[4]}+[])" + $"[{jotherDigits[0]}]" },
-                {'+', Q1(Q3(jotherDigits[1] + Q4($"({jotherBase[3]}+[])" + $"[{jotherDigits[3]}]") + Q3(jotherDigits[1]) + Q3(jotherDigits[0]) + Q3(jotherDigits[0]))) + Q2(jotherDigits[2]) }//1e+100
+                {'+', Q1(Q3(jotherDigits[1] + Q4($"({jotherBase[3]}+[])" +
+                $"[{jotherDigits[3]}]") + Q3(jotherDigits[1]) + Q3(jotherDigits[0]) +
+                Q3(jotherDigits[0]))) + Q2(jotherDigits[2]) }//1e+100
             };
 
             function = $"[][{ToString("sort")}][{ToString("constructor")}]";
@@ -87,13 +91,14 @@ internal static partial class Constants
             rc_escape = ToScript("return escape");
             characterMap['%'] = $"{rc_escape}({ToString("[")}){Q2(jotherDigits[0])}";
         }
+
         public static readonly string rc_unescape;
         public static readonly string rc_escape;
-        public static string Q1(string s) => $"({s}+[])";
-        public static string Q2(string s) => $"[{s}]";
-        public static string Q3(string s) => $"+({s}+[])";
-        public static string Q4(string s) => $"+{s}";
-        public static string Q5(string s) => $"({s})";
+        public static string Q1(string str) => $"({str}+[])";
+        public static string Q2(string str) => $"[{str}]";
+        public static string Q3(string str) => $"+({str}+[])";
+        public static string Q4(string str) => $"+{str}";
+        public static string Q5(string str) => $"({str})";
         public static string ToScript(string script) => $"{function}({ToString(script)})()";
         public static string ToUnescape(int charCode) => $"{rc_unescape}({ToString("%" + ToHex(charCode, 2))})";
         public static string ToHexs(int charCode) => ToString($"\\x{ToHex(charCode, 2)}");
@@ -105,17 +110,17 @@ internal static partial class Constants
                 hex = $"0{hex}";
             return hex;
         }
-        public static string ToChar(char ch)
+        public static string ToChar(char character)
         {
-            int charCode = ch;
+            int charCode = character;
             string unis, unes, hexs;
-            if (characterMap.TryGetValue(ch, out string? value))
+            if (characterMap.TryGetValue(character, out string? value))
                 return value;
 
-            if ((ch == '\\') || (ch == 'x'))
+            if ((character == '\\') || (character == 'x'))
             {
-                characterMap[ch] = ToUnescape(charCode);
-                return characterMap[ch];
+                characterMap[character] = ToUnescape(charCode);
+                return characterMap[character];
             }
             unis = ToUnicode(charCode);
             if (charCode < 128)
@@ -127,20 +132,20 @@ internal static partial class Constants
                 if (unis.Length > hexs.Length)
                     unis = hexs;
             }
-            characterMap[ch] = unis;
+            characterMap[character] = unis;
             return unis;
         }
 
         public static string ToString(string text)
         {
-            var result = string.Empty;
+            var result = new StringBuilder();
             for (var i = 0; i < text.Length; i++)
             {
                 if (i > 0)
-                    result += '+';
-                result += ToChar(text[i]);
+                    result.Append('+');
+                result.Append(ToChar(text[i]));
             }
-            return result;
+            return result.ToString();
         }
 
     }

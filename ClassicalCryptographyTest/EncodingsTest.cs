@@ -1,6 +1,5 @@
 ﻿using ClassicalCryptography.Encoder;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace ClassicalCryptographyTest
 {

@@ -24,10 +24,37 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
+    /// 转换为Base64URL编码
+    /// </summary>
+    public static string ToBase64URL(string input)
+    {
+        var str = Convert.ToBase64String(Encoding.GetBytes(input));
+        return str.Replace('+', '-').Replace('/', '_').TrimEnd('=');
+    }
+
+    /// <summary>
     /// 从Base64编码转换
     /// </summary>
     public static string FromBase64(string input)
     {
+        return Encoding.GetString(Convert.FromBase64String(input));
+    }
+
+    /// <summary>
+    /// 从Base64URL编码转换
+    /// </summary>
+    public static string FromBase64URL(string input)
+    {
+        input = input.Replace('_', '/').Replace('-', '+');
+        switch (input.Length % 4)
+        {
+            case 2:
+                input += "==";
+                break;
+            case 3:
+                input += "=";
+                break;
+        }
         return Encoding.GetString(Convert.FromBase64String(input));
     }
 

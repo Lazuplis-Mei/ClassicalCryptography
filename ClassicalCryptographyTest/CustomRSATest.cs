@@ -12,7 +12,7 @@ namespace ClassicalCryptographyTest
     public class CustomRSATest
     {
         [TestMethod]
-        [DataRow(100), DataRow(200)/*, DataRow(300), DataRow(400)*/]
+        [DataRow(100), DataRow(200), DataRow(300)/*, DataRow(400)*/]
         public void TestCustomRSA(int textCount)
         {
             var text = RandomString.Generate(textCount);

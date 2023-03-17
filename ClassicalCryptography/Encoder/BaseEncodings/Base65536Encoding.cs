@@ -27,7 +27,7 @@ public static partial class Base65536Encoding
 
         for (var i = 0; i < bytes.Length; i += 2)
         {
-            var blockStart = i + 1 < bytes.Length ? EncodeMap[bytes[i + 1]] : PaddingBlockStart;
+            var blockStart = i + 1 < bytes.Length ? Map[bytes[i + 1]] : PaddingBlockStart;
             var codePoint = blockStart + bytes[i];
 
             if (codePoint < BmpThreshold)
@@ -100,7 +100,7 @@ public static partial class Base65536Encoding
             }
             else
             {
-                if (DecodeMap.TryGetValue(blockStart, out int point2))
+                if (Map.Inverse.TryGetValue(blockStart, out int point2))
                 {
                     if (done) throw new ArgumentException("Base65536序列已结束");
 

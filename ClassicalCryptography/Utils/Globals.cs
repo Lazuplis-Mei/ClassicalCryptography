@@ -86,7 +86,7 @@ public static class GlobalTables
     public static readonly string Base32_Crockford = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
     /// <summary>
-    /// another Base36
+    /// Base36 但先字母后数字
     /// </summary>
     public static readonly string Base36_LD = "abcdefghijklmnopqrstuvwxyz0123456789";
 

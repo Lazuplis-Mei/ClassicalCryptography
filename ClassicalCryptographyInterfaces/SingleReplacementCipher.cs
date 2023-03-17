@@ -24,6 +24,16 @@ public class SingleReplacementCipher : ICipher<string, string>
     {
         SupposedCharSet = supposedCharSet;
         ReflectionCharSet = reflectionCharSet;
+        BuildMap();
+    }
+
+    /// <summary>
+    /// 创建映射
+    /// </summary>
+    protected void BuildMap()
+    {
+        for (int i = 0; i < SupposedCharSet.Length; i++)
+            map[SupposedCharSet[i]] = ReflectionCharSet[i];
     }
 
     /// <summary>
@@ -41,8 +51,7 @@ public class SingleReplacementCipher : ICipher<string, string>
     /// </summary>
     public virtual string ReflectionCharSet { get; }
 
-    private Dictionary<char, char> dict = null!;
-    private Dictionary<char, char> refDict = null!;
+    private readonly BidirectionalDictionary<char, char> map = new();
 
     /// <summary>
     /// 解密文本
@@ -50,27 +59,16 @@ public class SingleReplacementCipher : ICipher<string, string>
     [SkipLocalsInit]
     public string Decrypt(string cipherText)
     {
-        Span<char> result = cipherText.Length <= StackLimit.MaxCharSize 
+        Span<char> result = cipherText.Length <= StackLimit.MaxCharSize
             ? stackalloc char[cipherText.Length] : new char[cipherText.Length];
-        
-        refDict ??= BuildReflectionDict();
         for (int i = 0; i < cipherText.Length; i++)
         {
-            if (refDict.ContainsKey(cipherText[i]))
-                result[i] = refDict[cipherText[i]];
+            if (map.Inverse.ContainsKey(cipherText[i]))
+                result[i] = map.Inverse[cipherText[i]];
             else
                 result[i] = cipherText[i];
         }
         return result.ToString();
-    }
-
-    private Dictionary<char, char> BuildReflectionDict()
-    {
-        refDict = new();
-        for (int i = 0; i < ReflectionCharSet.Length; i++)
-            refDict[ReflectionCharSet[i]] = SupposedCharSet[i];
-
-        return refDict;
     }
 
     /// <summary>
@@ -82,22 +80,13 @@ public class SingleReplacementCipher : ICipher<string, string>
         Span<char> result = plainText.Length <= StackLimit.MaxCharSize
             ? stackalloc char[plainText.Length] : new char[plainText.Length];
 
-        dict ??= BuildDict();
         for (int i = 0; i < plainText.Length; i++)
         {
-            if (dict.ContainsKey(plainText[i]))
-                result[i] = dict[plainText[i]];
+            if (map.ContainsKey(plainText[i]))
+                result[i] = map[plainText[i]];
             else
                 result[i] = plainText[i];
         }
         return result.ToString();
-    }
-
-    private Dictionary<char,char> BuildDict()
-    {
-        dict = new();
-        for (int i = 0; i < SupposedCharSet.Length; i++)
-            dict[SupposedCharSet[i]] = ReflectionCharSet[i];
-        return dict;
     }
 }
