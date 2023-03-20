@@ -1,5 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 using static ClassicalCryptography.Replacement.CommonTables;
 
 namespace ClassicalCryptography.Replacement;
@@ -14,14 +13,15 @@ public class TapCodeCipher : ICipher<string, string>
     /// 替换密码
     /// </summary>
     public CipherType Type => CipherType.Substitution;
- 
+
     /// <summary>
     /// 解密敲击码
     /// </summary>
+    [SkipLocalsInit]
     public string Decrypt(string cipherText)
     {
         int size = cipherText.Length >> 1;
-        Span<char> result = size <= StackLimit.MaxCharSize
+        Span<char> result = size.CanAllocateString()
             ? stackalloc char[size] : new char[size];
 
         for (int i = 0; i < cipherText.Length; i++)

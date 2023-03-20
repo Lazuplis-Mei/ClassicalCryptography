@@ -1,16 +1,14 @@
-﻿using ClassicalCryptography.Utils;
-using System.Numerics;
-
-namespace ClassicalCryptography.Calculation.CustomRSAPrivateKey;
+﻿namespace ClassicalCryptography.Calculation.RSASteganograph;
 
 /// <summary>
-/// <para>使用MillerRabin算法检测质数</para>
-/// <seealso href="https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test"/>
-/// <para>参考的代码片段</para>
-/// <seealso href="https://github.com/CharlesWilliams127/MillerRabinAlgorithm/blob/master/MillerRabinAlgorithm/Program.cs"/>
-/// <para>在线的工具</para>
-/// <seealso href="https://planetcalc.com/8995/"/>
+/// 使用<a href="https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test">
+/// MillerRabin算法
+/// </a>检测质数<br/>
 /// </summary>
+/// <remarks>
+/// <a href="https://planetcalc.com/8995/">在线工具</a>
+/// </remarks>
+[ReferenceFrom("https://github.com/CharlesWilliams127/MillerRabinAlgorithm/blob/master/MillerRabinAlgorithm/Program.cs")]
 public static class MillerRabinPrimalityTester
 {
     /// <summary>
@@ -38,15 +36,12 @@ public static class MillerRabinPrimalityTester
     public const int TEST_REPEAT_COUNT = 18;
 
     /// <summary>
-    /// <para>求指定数的下一个质数</para>
+    /// 求大于<paramref name="number"/>的下一个质数
     /// </summary>
-    /// <returns>
-    /// 如果n-1是质数，它将返回n-1，否则为大于n的质数
-    /// </returns>
     public static BigInteger NextPrime(this BigInteger number)
     {
         if (number.IsEven)
-            number--;
+            number++;
         while (!number.IsPrime())
             number += 2;
         return number;
@@ -56,26 +51,21 @@ public static class MillerRabinPrimalityTester
     /// 获得指定重复次数下进行质数检测的准确率
     /// </summary>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
-    /// <returns>质数检测的准确率</returns>
-    public static double GetProbability(int testRepeatCount = TEST_REPEAT_COUNT)
+    public static double GetProbability(int testRepeatCount)
     {
-        return 1 - (1 / Math.Pow(4, testRepeatCount));
+        return 1 - 1 / Math.Pow(4, testRepeatCount);
     }
 
     /// <summary>
     /// 检测数值是否为质数
     /// </summary>
     /// <param name="number">待检测的数</param>
-    /// <returns>检测结果</returns>
     public static bool IsPrime(this BigInteger number)
     {
         return IsPrime(number, TEST_REPEAT_COUNT) switch
         {
             TestResult.NOT_PRIME => false,
             TestResult.TRUSTED_PRIME => true,
-            /* 原则上，这只是代表它很有可能是质数
-             * 你也可以计算在特定重试次数下的准确率
-             */
             TestResult.IS_PRIME => true,
             _ => false,
         };
@@ -86,12 +76,11 @@ public static class MillerRabinPrimalityTester
     /// </summary>
     /// <param name="number">待检测的数</param>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
-    /// <returns>检测结果</returns>
     public static TestResult IsPrime(BigInteger number, int testRepeatCount)
     {
         Guard.IsTrue(BigInteger.IsPositive(number));
 
-        if (number < 1000000UL)
+        if (number < 100_0000UL)
             return IsPrime((ulong)number) ? TestResult.IS_PRIME : TestResult.NOT_PRIME;
 
         if (number.IsEven)
@@ -111,7 +100,6 @@ public static class MillerRabinPrimalityTester
     /// 检测是否为质数
     /// </summary>
     /// <param name="number">待检测的数</param>
-    /// <returns>检测结果</returns>
     public static bool IsPrime(ulong number)
     {
         ulong quotient, remainder, divisor;
@@ -129,20 +117,17 @@ public static class MillerRabinPrimalityTester
     }
 
     /// <summary>
-    /// miller-rabin算法的概率性质数测试
+    /// MillerRabin算法的概率性质数测试
     /// </summary>
     /// <param name="number">待检测的数</param>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
-    /// <returns>检测结果</returns>
-    internal static TestResult MillerRabin(BigInteger number, int testRepeatCount)
+    public static TestResult MillerRabin(BigInteger number, int testRepeatCount)
     {
         var m = number - 1;
 
-        // 进行费马检验
         if (!BigInteger.ModPow(210, m, number).IsOne)
             return TestResult.NOT_PRIME;
 
-        //寻找奇数 q 使得 m = 2^k * q
         BigInteger q = m;
         int k = 0;
         while (q.IsEven)
@@ -179,5 +164,4 @@ public static class MillerRabinPrimalityTester
 
         return TestResult.NOT_PRIME;
     }
-
 }

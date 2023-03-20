@@ -6,8 +6,7 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 /// <summary>
 /// <see href="https://github.com/qntm/base32768"/>
 /// </summary>
-[Introduction("Base编码", "https://github.com/qntm/base32768")]
-[TranslatedFrom("JavaScript")]
+[ReferenceFrom("https://github.com/qntm/base32768", ProgramingLanguage.JavaScript, License.MIT)]
 class BaseXXXXEncoding
 {
     private readonly int BITS_PER_CHAR;
@@ -53,7 +52,6 @@ class BaseXXXXEncoding
         {
             byte uint8 = uint8Array[i];
 
-            // Take most significant bit first
             for (int j = BITS_PER_BYTE - 1; j >= 0; j--)
             {
                 int bit = uint8 >> j & 1;
@@ -86,8 +84,6 @@ class BaseXXXXEncoding
     {
         int length = str.Length;
 
-        // This length is a guess. There's a chance we allocate one more byte here
-        // than we actually need. But we can count and slice it off later
         var uint8Array = new byte[(length * BITS_PER_CHAR / BITS_PER_BYTE)];
         int numUint8s = 0;
         byte uint8 = 0;
@@ -99,7 +95,7 @@ class BaseXXXXEncoding
 
             if (!lookupD.ContainsKey(chr))
             {
-                throw new Exception($"Unrecognised {GetType().Name} character: ${chr}");
+                throw new Exception($"Unrecognised character: ${chr}");
             }
 
             var (numZBits, z) = lookupD[chr];
@@ -109,7 +105,6 @@ class BaseXXXXEncoding
                 throw new Exception($"Secondary character found before end of input at position {i}");
             }
 
-            // Take most significant bit first
             for (int j = numZBits - 1; j >= 0; j--)
             {
                 int bit = z >> j & 1;
@@ -127,9 +122,6 @@ class BaseXXXXEncoding
             }
         }
 
-        // Final padding bits! Requires special consideration!
-        // Remember how we always pad with 1s?
-        // Note: there could be 0 such bits, check still works though
         if (uint8 != (1 << numUint8Bits) - 1)
         {
             throw new Exception("Padding mismatch");

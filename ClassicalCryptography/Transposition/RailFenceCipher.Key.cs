@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Transposition;
+﻿namespace ClassicalCryptography.Transposition;
 
 
 public partial class RailFenceCipher

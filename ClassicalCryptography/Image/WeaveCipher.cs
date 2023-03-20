@@ -1,19 +1,18 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.Versioning;
-using System.Text;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Image;
 
 /// <summary>
-/// <para>编织图形密码</para>
-/// <see href="https://tieba.baidu.com/p/7814788182"/>
-/// <para>注意对于扩展的(带有三角形的)图形的实现，我没有完全根据天青的设想</para>
-/// <para>它的正式名称应该是Hitomezashi Stitch Patterns(一目刺し)，请参考</para>
-/// <see href="https://www.felissimo.co.jp/couturier/blog/categorylist/japanese-handicraft/sashiko/post-14871/"/>
+/// <a href="https://tieba.baidu.com/p/7814788182">编织图形密码</a>
 /// </summary>
+/// <remarks>
+/// 注意对于扩展的(带有三角形的)图形的实现，我没有完全根据天青的设想<br/>
+/// 它的正式名称应该是Hitomezashi Stitch Patterns(一目刺し)，请参考<br/>
+/// <a href="https://www.felissimo.co.jp/couturier/blog/categorylist/japanese-handicraft/sashiko/post-14871/">japanese-handicraft</a>
+/// </remarks>
 [Introduction("编织图形密码", "https://tieba.baidu.com/p/7814788182")]
 [SupportedOSPlatform("windows")]
 public static partial class WeaveCipher
@@ -42,9 +41,6 @@ public static partial class WeaveCipher
     public const int BLOCK_SIZE = 16;
     private const int MID_POINT = BLOCK_SIZE / 2;
 
-    /// <summary>
-    /// 核心加密代码
-    /// </summary>
     internal static BitMatrix EncryptBits(BitArray bits1, BitArray bits2)
     {
         var matrix = new BitMatrix(bits1.Size + 1, bits2.Size + 1);

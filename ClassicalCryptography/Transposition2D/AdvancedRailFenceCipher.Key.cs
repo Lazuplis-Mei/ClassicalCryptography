@@ -1,8 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Numerics;
-
-namespace ClassicalCryptography.Transposition2D;
+﻿namespace ClassicalCryptography.Transposition2D;
 
 public partial class AdvancedRailFenceCipher
 {

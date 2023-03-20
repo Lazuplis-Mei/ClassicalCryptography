@@ -14,8 +14,8 @@ namespace ClassicalCryptographyTest
         [DataRow("中文", "xunar-myruv-kahem-lyxox")]
         public void TestBubbleBabble(string plainText, string cipherText)
         {
-            Assert.AreEqual(cipherText, BubbleBabble.Encode(plainText));
-            Assert.AreEqual(plainText, BubbleBabble.Decode(cipherText));
+            Assert.AreEqual(cipherText, BubbleBabble.EncodeString(plainText));
+            Assert.AreEqual(plainText, BubbleBabble.DecodeString(cipherText));
         }
     }
 }

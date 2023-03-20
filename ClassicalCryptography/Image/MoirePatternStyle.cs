@@ -1,9 +1,9 @@
 ﻿namespace ClassicalCryptography.Image;
 
 /// <summary>
-/// 摩尔条纹的类型(用于为单个字符串绘制条纹)
+/// 摩尔条纹的样式(用于为单个字符串绘制条纹)
 /// </summary>
-public static class MoirePatternTypes
+public static class MoirePatternStyle
 {
     /// <summary>
     /// 没有条纹

@@ -1,11 +1,8 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
-using System.Text;
 
 namespace ClassicalCryptography.Image;
 
@@ -215,7 +212,7 @@ public static partial class PigpenCipher
     [SkipLocalsInit]
     private static string Purify(string text, out int line)
     {
-        Span<char> str = text.Length <= StackLimit.MaxCharSize
+        Span<char> str = text.Length <= StackLimit.MAX_CHAR_SIZE
             ? stackalloc char[text.Length] : new char[text.Length];
         int count = 0;
         line = 0;

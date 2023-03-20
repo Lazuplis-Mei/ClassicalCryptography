@@ -1,13 +1,10 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Properties;
-using ClassicalCryptography.Utils;
+﻿using ClassicalCryptography.Properties;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace ClassicalCryptography.Replacement;
 
 /// <summary>
-/// 中文电码<see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">MorseCode.Chinese</see>
+/// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">中文电码</see>
 /// </summary>
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
 public static class CommercialCode
@@ -28,7 +25,7 @@ public static class CommercialCode
     [SkipLocalsInit]
     public static string FromCodes(params short[] codes)
     {
-        Span<char> span = codes.Length <= StackLimit.MaxCharSize
+        Span<char> span = codes.Length.CanAllocateString()
             ? stackalloc char[codes.Length] : new char[codes.Length];
         for (int i = 0; i < span.Length; i++)
             span[i] = charDATA[codes[i]];
@@ -53,10 +50,11 @@ public static class CommercialCode
     /// <summary>
     /// 转换成中文电码串
     /// </summary>
+    [SkipLocalsInit]
     public static string ToCodesString(string text)
     {
         int len = text.Length << 2;
-        Span<char> span = len <= StackLimit.MaxCharSize
+        Span<char> span = len.CanAllocateString()
             ? stackalloc char[len] : new char[len];
 
         for (int i = 0; i < text.Length; i++)
@@ -72,6 +70,7 @@ public static class CommercialCode
     /// <summary>
     /// 加密中文摩斯密码(使用<see cref="MorseCode.ShortDigit"/>)
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToMorse(string text)
     {
         return MorseCode.ShortDigit.ToMorse(ToCodesString(text));
@@ -80,6 +79,7 @@ public static class CommercialCode
     /// <summary>
     /// 解密中文摩斯密码(使用<see cref="MorseCode.ShortDigit"/>)
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string FromMorse(string morse)
     {
         return FromCodeString(MorseCode.ShortDigit.FromMorse(morse));

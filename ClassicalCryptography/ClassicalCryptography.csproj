@@ -17,7 +17,9 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <PackageReference Include="CHTCHSConv" Version="1.0.0" />
 	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
+	  <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
 	  <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	  <PackageReference Include="ZXing.Net" Version="0.16.8" />
 	  <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />
@@ -52,7 +54,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Using Include="ClassicalCryptography.Attributes" />
+	  <Using Include="ClassicalCryptography.Interfaces" />
+	  <Using Include="ClassicalCryptography.Utils" />
 	  <Using Include="CommunityToolkit.Diagnostics" />
+	  <Using Include="System.Numerics" />
+	  <Using Include="System.Text" />
+	  <Using Include="System.Text.RegularExpressions" />
 	</ItemGroup>
 
 </Project>

@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Transposition2D;
+﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
 /// <para>数字华容道密码</para>

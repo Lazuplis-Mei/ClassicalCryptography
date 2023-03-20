@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -16,7 +14,7 @@ public partial class UnicodeEncoding
     public static string Encode(string str)
     {
         int size = str.Length * 6;
-        Span<char> span = size <= StackLimit.MaxCharSize
+        Span<char> span = size <= StackLimit.MAX_CHAR_SIZE
             ? stackalloc char[size] : new char[size];
         var orignalSpan = span;
         for (int i = 0; i < str.Length; i++)
@@ -39,7 +37,7 @@ public partial class UnicodeEncoding
     public static string Decode(string str)
     {
         var matches = UnicodeRegex().Matches(str);
-        Span<char> span = matches.Count <= StackLimit.MaxCharSize
+        Span<char> span = matches.Count <= StackLimit.MAX_CHAR_SIZE
             ? stackalloc char[matches.Count] : new char[matches.Count];
 
         for (int i = 0; i < matches.Count; i++)

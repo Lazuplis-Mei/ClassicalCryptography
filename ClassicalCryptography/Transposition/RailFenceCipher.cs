@@ -1,7 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-
-namespace ClassicalCryptography.Transposition;
+﻿namespace ClassicalCryptography.Transposition;
 
 
 /// <summary>

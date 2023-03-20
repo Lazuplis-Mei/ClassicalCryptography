@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Numerics;
-using static ClassicalCryptography.Utils.GlobalTables;
+﻿using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Transposition;
 

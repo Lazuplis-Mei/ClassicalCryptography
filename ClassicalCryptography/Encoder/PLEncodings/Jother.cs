@@ -4,7 +4,7 @@ namespace ClassicalCryptography.Encoder.PLEncodings;
 
 internal static partial class Constants
 {
-    [TranslatedFrom("JavaScript")]
+    [ReferenceFrom("https://github.com/ezeeo/ctf-tools/blob/095808a84d34e7ebfa6bcbe063275da24563f092/Library/jotherencode/jother-1.0.rc.js", ProgramingLanguage.JavaScript)]
     public static class Jother
     {
         public static readonly string[] jotherBase = new[]

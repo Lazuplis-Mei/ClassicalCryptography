@@ -1,5 +1,4 @@
 ﻿using ClassicalCryptography.Calculation;
-using ClassicalCryptography.Calculation.CustomRSAPrivateKey;
 using ClassicalCryptography.Encoder;
 using ClassicalCryptography.Encoder.BaseEncodings;
 using ClassicalCryptography.Encoder.PLEncodings;
@@ -11,7 +10,9 @@ using ClassicalCryptography.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicalCryptographyTest
 {
@@ -22,7 +23,7 @@ namespace ClassicalCryptographyTest
         [SupportedOSPlatform("windows")]
         public void Test()
         {
-            
+
 
         }
     }

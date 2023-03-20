@@ -1,17 +1,20 @@
-﻿using ClassicalCryptography.Utils;
-using System.Collections;
+﻿using System.Collections;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace ClassicalCryptography.Calculation;
 
 /// <summary>
-/// 完美洗牌密码，天青留下的最后一个密码
+/// 完美洗牌密码，天青留下的最后一个密码<br/>
 /// </summary>
-public class PerfectShuffle
+/// <remarks>
+/// 对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果。<br/>
+/// 在线工具：<a href="http://erikdemaine.org/fonts/shuffle/">erikdemaine/shuffle</a>
+/// </remarks>
+[Introduction("完美洗牌密码", "对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果")]
+public static class PerfectShuffle
 {
 
-    private static readonly char[] separators = new char[] { ' ', ',', '.', ':', '"', '\'' };
+    private static readonly char[] separators = { ' ', ',', '.', ':', '"', '\'' };
 
     private const char INSIDE = '-';
     private const char OUTSIDE = '.';
@@ -58,14 +61,12 @@ public class PerfectShuffle
         throw new ArgumentException($"{character}不在指定范围中", nameof(character));
     }
 
-    /// <summary>
-    /// 解密内容
-    /// </summary>
+    /// <inheritdoc cref="ICipher{TP, TC}.Decrypt(TC)"/>
     [SkipLocalsInit]
     public static string Decrypt(string text)
     {
         var words = text.Split(WORD_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
-        Span<char> uLetters = GlobalTables.U_Letters.ToCharArray();
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
         Span<char> span = stackalloc char[26];
         var result = new StringBuilder();
         foreach (var word in words)
@@ -82,13 +83,18 @@ public class PerfectShuffle
             }
             result.Append(WORD_SEPARATOR);
         }
-        result.RemoveLast();
-        return result.ToString();
+        return result.RemoveLast().ToString();
     }
 
     /// <summary>
     /// 加密内容
     /// </summary>
+    /// <remarks>
+    /// 如果<paramref name="randomize"/>为<see langword="true"/>，则每个单词有50%的可能性插入1次额外的洗牌。<br/>
+    /// 如果插入了1次额外的洗牌，那么将有25%的可能性插入第2次。
+    /// </remarks>
+    /// <param name="text">要加密的文本</param>
+    /// <param name="randomize">是否启用随机性</param>
     [SkipLocalsInit]
     public static string Encrypt(string text, bool randomize = false)
     {
@@ -123,22 +129,27 @@ public class PerfectShuffle
             }
             result.Append(WORD_SEPARATOR);
         }
-        result.RemoveLast();
-        return result.ToString();
+        return result.RemoveLast().ToString();
     }
 
-
     /// <summary>
-    /// 加密内容以<paramref name="wordSplitCount"/>分割的最短长度，实际上它甚至有可能比简单方法更长
+    /// 加密内容
     /// </summary>
+    /// <remarks>
+    /// 对于每个单词，它会分成为<paramref name="wordSplitCount"/>组。<br/>
+    /// 每一组分别穷举以得到最短的表达形式(这并不意味着总体是最短的)
+    /// </remarks>
+    /// <param name="text">要加密的文本</param>
+    /// <param name="wordSplitCount">单词分割数</param>
     [SkipLocalsInit]
+    [Obsolete("这个方法的速度很慢，使用`EncryptShortInsert`方法代替")]
     public static string EncryptShort(string text, int wordSplitCount = 4)
     {
         var result = new StringBuilder();
         var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
-        Span<char> uLetters = GlobalTables.U_Letters.ToCharArray();
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
         Span<char> span = stackalloc char[26];
-        Span<char> orirginalSpan = stackalloc char[26];
+        Span<char> originalSpan = stackalloc char[26];
 
         var characterList = new List<char>();
         int[] minPositions = new int[] { int.MaxValue };
@@ -146,7 +157,7 @@ public class PerfectShuffle
 
         foreach (var word in words)
         {
-            uLetters.CopyTo(orirginalSpan);
+            uLetters.CopyTo(originalSpan);
             var repeatPosition = new List<int>();
             var subWords = FilterWord(word, repeatPosition).Partition(wordSplitCount);
             int repeatIndex = 0, characterCount = 0;
@@ -155,19 +166,19 @@ public class PerfectShuffle
                 string subWord = subWords[i];
                 if (subWord.Length == 1)
                 {
-                    minShuffling = FindShufflings(orirginalSpan, subWord[0]);
+                    minShuffling = FindShufflings(originalSpan, subWord[0]);
                     minPositions = new int[] { minShuffling.Length };
                 }
                 else
                 {
-                    int minCount = FindShufflings(orirginalSpan, subWord[0]).Length + subWord.Length - 1;
+                    int minCount = FindShufflings(originalSpan, subWord[0]).Length + subWord.Length - 1;
                     int maxCount = subWord.Length * 5;
                     for (int shuffeCount = minCount; shuffeCount <= maxCount; shuffeCount++)
                     {
                         for (int shuffeNumber = 0; shuffeNumber < (1 << shuffeCount); shuffeNumber++)
                         {
                             var shuffling = shuffeNumber.ToBinary(shuffeCount);
-                            orirginalSpan.CopyTo(span);
+                            originalSpan.CopyTo(span);
                             characterList.Add(span[0]);
                             foreach (bool inside in shuffling)
                             {
@@ -225,7 +236,7 @@ public class PerfectShuffle
 
                 if (i < subWords.Length - 1)
                     for (int j = 0; j < minShuffling.Length; j++)
-                        Shuffle(orirginalSpan, minShuffling[j]);
+                        Shuffle(originalSpan, minShuffling[j]);
                 minPositions[^1] = int.MaxValue;
             }
             result.Append(WORD_SEPARATOR);
@@ -248,6 +259,22 @@ public class PerfectShuffle
         return filteredWord.ToString();
     }
 
+    /// <summary>
+    /// 加密内容
+    /// </summary>
+    /// <remarks>
+    /// 对于每个单词，它会分成为<paramref name="wordSplitCount"/>组。<br/>
+    /// 穷举在这一组前面插入<paramref name="insertCount"/>次洗牌后的最短表达形式(这并不意味着总体是最短的)
+    /// </remarks>
+    /// <param name="text">要加密的文本</param>
+    /// <param name="insertCount">插入洗牌次数</param>
+    /// <param name="wordSplitCount">单词分割数</param>
+    public static string EncryptShortInsert(string text, int insertCount = 4, int wordSplitCount = 4)
+    {
+        throw new NotImplementedException();
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void Shuffle(Span<char> letterSpan, bool inside)
     {
         if (inside)
@@ -259,7 +286,7 @@ public class PerfectShuffle
     [SkipLocalsInit]
     private static void ShuffleInside(Span<char> letterSpan)
     {
-        Span<char> copy = stackalloc char[letterSpan.Length];
+        Span<char> copy = stackalloc char[26];
         int half = copy.Length >> 1;
         letterSpan.CopyTo(copy);
         for (int i = 0; i < half; i++)
@@ -271,7 +298,7 @@ public class PerfectShuffle
     [SkipLocalsInit]
     private static void ShuffleOutside(Span<char> letterSpan)
     {
-        Span<char> copy = stackalloc char[letterSpan.Length];
+        Span<char> copy = stackalloc char[26];
         int half = copy.Length >> 1;
         letterSpan.CopyTo(copy);
         for (int i = 0; i < half; i++)

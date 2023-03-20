@@ -1,13 +1,9 @@
-﻿using System.Text;
-using System.Text.RegularExpressions;
-
-namespace ClassicalCryptography.Encoder;
+﻿namespace ClassicalCryptography.Encoder;
 
 /// <summary>
-/// <para>大写罗马数字，代码请参考</para>
-/// <see href="https://github.com/qntm/big-roman"/>
+/// 大写罗马数字
 /// </summary>
-[TranslatedFrom("JavaScript")]
+[ReferenceFrom("https://github.com/qntm/big-roman/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
 public static partial class RomanNumerals
 {
     const char BAR_HAT = '\u0305';
@@ -49,7 +45,7 @@ public static partial class RomanNumerals
         var arabicString = arabicNumeral.ToString();
         int length = arabicString.Length;
         for (int i = 0; i < length; i++)
-            result.Append(ArabicToRoman(arabicString[i] - '0', length - i - 1));
+            result.Append(ArabicToRoman(arabicString[i].Base36Number(), length - i - 1));
 
         return result.ToString();
     }
@@ -59,8 +55,7 @@ public static partial class RomanNumerals
     /// </summary>
     public static ulong RomanToArabic(string romanNumeral)
     {
-        if (string.IsNullOrEmpty(romanNumeral))
-            throw new ArgumentException("Not a non-empty string", nameof(romanNumeral));
+        Guard.IsNotNullOrEmpty(romanNumeral);
 
         var romanSpan = romanNumeral.AsSpan();
 

@@ -1,14 +1,11 @@
-﻿using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <para>Base32768编码</para>
-/// <see href="https://github.com/qntm/base32768"/>
+/// <a href="https://github.com/qntm/base32768">Base32768编码</a>
 /// </summary>
 [Introduction("Base32768编码", "https://github.com/qntm/base32768")]
-[TranslatedFrom("JavaScript")]
-public static class Base32768Encoding
+[ReferenceFrom("https://github.com/qntm/base32768/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
+public class Base32768Encoding : IEncoding
 {
     private const int BITS_PER_CHAR = 15;
     private const int BITS_PER_BYTE = 8;
@@ -21,15 +18,11 @@ public static class Base32768Encoding
     private static readonly BaseXXXXEncoding base32768 = new(BITS_PER_CHAR, BITS_PER_BYTE, pairStrings);
 
 
-    /// <summary>
-    /// encode Base32768
-    /// </summary>
-    public static string Encode(byte[] uint8Array) => base32768.Encode(uint8Array);
+    /// <inheritdoc/>
+    public static string Encode(byte[] bytes) => base32768.Encode(bytes);
 
 
-    /// <summary>
-    /// decode Base32768
-    /// </summary>
-    public static byte[] Decode(string str) => base32768.Decode(str);
+    /// <inheritdoc/>
+    public static byte[] Decode(string encodeText) => base32768.Decode(encodeText);
 
 }

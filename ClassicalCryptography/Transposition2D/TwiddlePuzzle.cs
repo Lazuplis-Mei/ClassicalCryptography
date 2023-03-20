@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Transposition2D;
+﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
 /// <para>旋转阵列密码</para>

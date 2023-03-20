@@ -1,18 +1,12 @@
-﻿using ClassicalCryptography.Utils;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder;
 
 /// <summary>
-/// <para>参考资料</para>
-/// <see href="http://bohwaz.net/archives/web/Bubble_Babble.html "/>
-/// <para>代码参考</para>
-/// <see href="https://github.com/bohwaz/bubblebabble/blob/master/bubble_babble.php"/>
+/// <a href="http://bohwaz.net/archives/web/Bubble_Babble.html">Bubble Babble</a>
 /// </summary>
-[TranslatedFrom("php")]
-public static partial class BubbleBabble
+[ReferenceFrom("https://github.com/bohwaz/bubblebabble/blob/master/bubble_babble.php", ProgramingLanguage.PHP)]
+public partial class BubbleBabble : IEncoding
 {
     static readonly string vowels = "aeiouy";
 
@@ -24,14 +18,20 @@ public static partial class BubbleBabble
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
 
     /// <summary>
-    /// Encodes text in a babble string
+    /// 编码BubbleBabble
     /// </summary>
-    public static string Encode(string text)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string EncodeString(string text)
+    {
+        return Encode(Encoding.GetBytes(text));
+    }
+
+    /// <inheritdoc/>
+    public static string Encode(byte[] bytes)
     {
         var result = new StringBuilder();
         result.Append('x');
         int checksum = 1;
-        var bytes = Encoding.GetBytes(text);
         for (int i = 0; ; i++)
         {
             if (i >= bytes.Length)
@@ -59,6 +59,7 @@ public static partial class BubbleBabble
         return result.ToString();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static byte Decode2WayByte(int a1, int a2, int offset)
     {
         if (a1 > 16)
@@ -68,6 +69,7 @@ public static partial class BubbleBabble
         return (byte)(a1 << 4 | a2);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     static byte Decode3WayByte(int a1, int a2, int a3, int offset, int c)
     {
         var high2 = (a1 - c % 6 + 6) % 6;
@@ -100,10 +102,8 @@ public static partial class BubbleBabble
         return tuple[..3].ToArray();
     }
 
-    /// <summary>
-    /// Decode BubbleBabble
-    /// </summary>
-    public static string Decode(string text)
+    /// <inheritdoc/>
+    public static byte[] Decode(string text)
     {
         int checksum = 1;
 
@@ -146,11 +146,20 @@ public static partial class BubbleBabble
                 checksum = (checksum * 5 + byte1 * 7 + byte2) % 36;
             }
         }
-        return Encoding.GetString(byteList.ToArray());
+        return byteList.ToArray();
     }
 
     /// <summary>
-    /// Returns true if text seems to be a BubbleBabble encoded string
+    /// 解码BubbleBabble
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string DecodeString(string text)
+    {
+        return Encoding.GetString(Decode(text));
+    }
+
+    /// <summary>
+    /// 检查它是否可能是BubbleBabble字符串
     /// </summary>
     public static bool CheckString(string text)
     {

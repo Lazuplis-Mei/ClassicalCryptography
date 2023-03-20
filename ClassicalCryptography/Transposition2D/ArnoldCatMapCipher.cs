@@ -1,7 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-
-namespace ClassicalCryptography.Transposition2D;
+﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
 /// 猫映射变换密码

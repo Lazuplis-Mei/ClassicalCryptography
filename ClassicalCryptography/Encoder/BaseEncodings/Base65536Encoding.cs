@@ -1,26 +1,18 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Text;
+﻿using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <para>Base65536编码</para>
-/// <seealso href="https://github.com/qntm/base65536"/>
-/// <para>代码参考</para>
-/// <see href="https://github.com/cyberdot/base65536"/>
+/// <a href="https://github.com/qntm/base65536">Base65536编码</a>
 /// </summary>
 [Introduction("Base65536编码", "https://github.com/qntm/base65536")]
-public static partial class Base65536Encoding
+[ReferenceFrom("https://github.com/cyberdot/base65536", ProgramingLanguage.CSharp, License.MIT)]
+public partial class Base65536Encoding : IEncoding
 {
     private const int PaddingBlockStart = 5376;
     private const int BmpThreshold = 0x10000;
-    private const int High = 0xD800;
-    private const int Low = 0xDC00;
-    private const int Offset = 0x400;
 
-    /// <summary>
-    /// encode Base65536
-    /// </summary>
+    /// <inheritdoc/>
     public static string Encode(byte[] bytes)
     {
         var result = new StringBuilder(bytes.Length);
@@ -28,84 +20,75 @@ public static partial class Base65536Encoding
         for (var i = 0; i < bytes.Length; i += 2)
         {
             var blockStart = i + 1 < bytes.Length ? Map[bytes[i + 1]] : PaddingBlockStart;
-            var codePoint = blockStart + bytes[i];
-
-            if (codePoint < BmpThreshold)
-            {
-                result.Append(char.ConvertFromUtf32(codePoint));
-            }
-            else
-            {
-                var first = High + (codePoint - BmpThreshold) / Offset;
-                var second = Low + codePoint % Offset;
-                result.Append((char)first).Append((char)second);
-            }
+            //此处的原始代码完全可以被化简
+            result.Append(char.ConvertFromUtf32(blockStart + bytes[i]));
         }
         return result.ToString();
     }
 
-    private static int ConvertToCodePoint(string str, int i)
+    /*
+    //我知道原始代码的作者想正确的处理unicode代理项但无此必要
+    //而且这里的逻辑也存在问题
+    //代理项在正常情况下应该使用ConvertToUtf32，这里直接使用text[position]是为了解码Base65536的特殊情况
+    //而非代理项就可以直接text[position]，总而言之这个方法被弃用了
+    private static int ConvertToCodePoint(string text, int position)
     {
-        if (char.IsHighSurrogate(str[i]) || char.IsLowSurrogate(str[i]))
-            return str[i];
+        if (char.IsHighSurrogate(text[position]) || char.IsLowSurrogate(text[position]))
+            return text[position];
 
-        return char.ConvertToUtf32(str, i);
+        return char.ConvertToUtf32(text, position);
     }
-    /// <summary>
-    /// ToCodePoints
-    /// </summary>
-    public static IEnumerable<int> ToCodePoints(this string str)
+
+    public static IEnumerable<int> ToCodePoints(string text)
     {
-        Guard.IsNotNull(str);
+        Guard.IsNotNull(text);
 
-        for (int i = 0; i < str.Length;)
+        for (int i = 0; i < text.Length;)
         {
-            var first = ConvertToCodePoint(str, i++);
-
-            if (first is >= High and < (High + Offset))
-            {
-                var snd = ConvertToCodePoint(str, i++);
-
-                if (Low <= snd && snd < Low + Offset)
-                    yield return (first - High) * Offset + (snd - Low) + BmpThreshold;
-                else
-                    throw new ArgumentException("Invalid UTF 16");
-            }
-            else
-            {
-                yield return first;
-            }
+            int code = char.ConvertToUtf32(text, i++);
+            if (code >= BmpThreshold)
+                i++;
+            yield return code;
         }
     }
+    */
+
+    /// <inheritdoc/>
+    public static byte[] Decode(string encodeText) => Decode(encodeText, false);
 
     /// <summary>
-    /// decode Base65536
+    /// 字符串解码为字节数组
     /// </summary>
-    public static byte[] Decode(string data, bool ignoreGarbage = false)
+    /// <param name="encodeText">编码的字符串</param>
+    /// <param name="ignoreGarbage">忽略错误字符</param>
+    public static byte[] Decode(string encodeText, bool ignoreGarbage)
     {
-        var done = false;
-        var bytes = new List<byte>();
-
-        foreach (var codePoint in data.ToCodePoints())
+        bool sequenceEnded = false;
+        var bytes = new List<byte>(encodeText.Length << 1);
+        for (int i = 0; i < encodeText.Length;)
         {
+            int codePoint = char.ConvertToUtf32(encodeText, i++);
+            if (codePoint >= BmpThreshold) i++;
+
             var point1 = (byte)codePoint;
             var blockStart = codePoint - point1;
 
             if (blockStart == PaddingBlockStart)
             {
-                if (done) throw new ArgumentException("Base65536序列已结束");
+                if (sequenceEnded) throw new ArgumentException("Base65536序列已结束");
 
                 bytes.Add(point1);
-                done = true;
+                sequenceEnded = true;
+                if (ignoreGarbage) break;
             }
             else
             {
-                if (Map.Inverse.TryGetValue(blockStart, out int point2))
+                if (Map.Inverse.TryGetValue(blockStart, out byte point2))
                 {
-                    if (done) throw new ArgumentException("Base65536序列已结束");
+                    if (sequenceEnded) throw new ArgumentException("Base65536序列已结束");
 
                     bytes.Add(point1);
-                    bytes.Add((byte)point2);
+                    bytes.Add(point2);
                 }
                 else if (!ignoreGarbage)
                 {
@@ -113,7 +96,7 @@ public static partial class Base65536Encoding
                 }
             }
         }
+
         return bytes.ToArray();
     }
-
 }

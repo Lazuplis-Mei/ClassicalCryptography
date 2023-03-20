@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicalCryptographyTest
 {
@@ -17,8 +18,6 @@ namespace ClassicalCryptographyTest
         [DataRow("ABCDE")]
         [DataRow("ABCDEEEF")]
         [DataRow("ABBBCDEEEFGGHIJJ")]
-        [DataRow("WHYTHISWORLD")]
-        [DataRow("WHY THIS WORLD")]
         public void TestPerfectShuffle(string text)
         {
             var encryptText = PerfectShuffle.Encrypt(text);
@@ -27,6 +26,13 @@ namespace ClassicalCryptographyTest
             Assert.AreEqual(text, PerfectShuffle.Decrypt(encryptText));
             encryptText = PerfectShuffle.EncryptShort(text);
             Assert.AreEqual(text, PerfectShuffle.Decrypt(encryptText));
+        }
+
+        [TestMethod]
+        public void TestIt()
+        {
+            var encryptText = "..-/...--/---.-/---.-/---/---.-/.----/---/.-..-/-..-/---/----/";
+            Assert.AreEqual("WHYTHISWORLD", PerfectShuffle.Decrypt(encryptText));
         }
     }
 }

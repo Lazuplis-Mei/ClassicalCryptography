@@ -1,37 +1,33 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <para>Base32编码，使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567</para>
-/// <para>代码参考</para>
-/// <see href="https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008"/>
-/// <para>在线工具</para>
-/// <see href="https://www.qqxiuzi.cn/bianma/base.php"/>
+/// Base32编码，使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
 /// </summary>
-public static class Base32Encoding
+/// <remarks>
+/// 在线工具:<a href="https://www.qqxiuzi.cn/bianma/base.php">Base32</a>
+/// </remarks>
+[ReferenceFrom("https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008")]
+[Introduction("Base32编码", "使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")]
+public class Base32Encoding : IEncoding
 {
 
-    /// <summary>
-    /// 解码Base32
-    /// </summary>
-    /// <param name="base32String">Base32字符串</param>
-    public static byte[] Decode(string base32String)
+    /// <inheritdoc/>
+    public static byte[] Decode(string encodeText)
     {
-        Guard.IsNotNullOrEmpty(base32String);
+        Guard.IsNotNullOrEmpty(encodeText);
 
-        var base32Span = base32String;
-        base32Span = base32Span.TrimEnd('=');
-        int byteCount = (base32Span.Length * 5) >> 3;
+        var base32String = encodeText.TrimEnd('=');
+        int byteCount = base32String.Length;
+        byteCount += byteCount << 2;
+        byteCount >>= 3;
         var bytes = new byte[byteCount];
 
         byte currentByte = 0, bitsRemaining = 8;
-        int arrayIndex = 0;
+        int index = 0;
 
-        foreach (char character in base32Span)
+        foreach (char character in base32String)
         {
             int characterValue = CharToValue(character);
             int mask;
@@ -45,45 +41,41 @@ public static class Base32Encoding
             {
                 mask = characterValue >> 5 - bitsRemaining;
                 currentByte = (byte)(currentByte | mask);
-                bytes[arrayIndex++] = currentByte;
+                bytes[index++] = currentByte;
                 currentByte = (byte)(characterValue << 3 + bitsRemaining);
                 bitsRemaining += 3;
             }
         }
 
-        if (arrayIndex != byteCount)
-            bytes[arrayIndex] = currentByte;
+        if (index != byteCount)
+            bytes[index] = currentByte;
 
         return bytes;
     }
 
-    /// <summary>
-    /// 编码Base32
-    /// </summary>
-    /// <param name="bytes"></param>
-    /// <returns>base32字符串</returns>
+    /// <inheritdoc/>
     [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
         Guard.IsNotNull(bytes);
         Guard.HasSizeGreaterThan(bytes, 0);
 
-        int spanCount = (int)Math.Ceiling(bytes.Length / 5.0) * 8;
-        Span<char> span = spanCount <= StackLimit.MaxCharSize
-            ? stackalloc char[spanCount] : new char[spanCount];
+        int length = bytes.Length.DivCeil(5) << 3;
+        Span<char> span = length.CanAllocateString()
+            ? stackalloc char[length] : new char[length];
 
         byte nextCharacterCode = 0, bitsRemaining = 5;
-        int arrayIndex = 0;
+        int index = 0;
 
         foreach (byte b in bytes)
         {
             nextCharacterCode = (byte)(nextCharacterCode | b >> 8 - bitsRemaining);
-            span[arrayIndex++] = ValueToChar(nextCharacterCode);
+            span[index++] = ValueToChar(nextCharacterCode);
 
             if (bitsRemaining < 4)
             {
                 nextCharacterCode = (byte)(b >> 3 - bitsRemaining & 31);
-                span[arrayIndex++] = ValueToChar(nextCharacterCode);
+                span[index++] = ValueToChar(nextCharacterCode);
                 bitsRemaining += 5;
             }
 
@@ -91,39 +83,26 @@ public static class Base32Encoding
             nextCharacterCode = (byte)(b << bitsRemaining & 31);
         }
 
-        if (arrayIndex != spanCount)
+        if (index != length)
         {
-            span[arrayIndex++] = ValueToChar(nextCharacterCode);
-            while (arrayIndex != spanCount)
-                span[arrayIndex++] = '=';
+            span[index++] = ValueToChar(nextCharacterCode);
+            while (index != length)
+                span[index++] = '=';
         }
 
         return new(span);
     }
 
-    private static int CharToValue(char character)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static int CharToValue(char character) => character switch
     {
-        if (Debugger.IsAttached)
-        {
-            int value = GlobalTables.Base32_RFC3548.IndexOf(character);
-            if (value == -1)
-                throw new ArgumentException("非Base32字符", nameof(character));
-            return value;
-        }
-        else
-        {
-            int value = character;
+        >= 'A' and <= 'Z' => character - 'A',
+        >= 'a' and <= 'z' => character - 'a',
+        >= '2' and <= '7' => character - '2' + 26,
+        _ => throw new ArgumentException("非Base32字符", nameof(character))
+    };
 
-            return value switch
-            {
-                >= 'A' and <= 'Z' => value - 'A',
-                >= '2' and <= '7' => value - '2' + 26,
-                >= 'a' and <= 'z' => value - 'a',
-                _ => throw new ArgumentException("非Base32字符", nameof(character))
-            };
-        }
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static char ValueToChar(byte byteCode)
     {
         return GlobalTables.Base32_RFC3548[byteCode];

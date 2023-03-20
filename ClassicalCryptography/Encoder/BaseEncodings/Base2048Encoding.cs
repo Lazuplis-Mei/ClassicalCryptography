@@ -1,14 +1,11 @@
-﻿using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <para>Base2048编码</para>
-/// <see href="https://github.com/qntm/base2048"/>
+/// <a href="https://github.com/qntm/base2048">Base2048编码</a>
 /// </summary>
 [Introduction("Base2048编码", "https://github.com/qntm/base2048")]
-[TranslatedFrom("JavaScript")]
-public static class Base2048Encoding
+[ReferenceFrom("https://github.com/qntm/base2048/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
+public class Base2048Encoding : IEncoding
 {
     const int BITS_PER_CHAR = 11;
     const int BITS_PER_BYTE = 8;
@@ -21,13 +18,9 @@ public static class Base2048Encoding
 
     private static readonly BaseXXXXEncoding base2048 = new(BITS_PER_CHAR, BITS_PER_BYTE, pairStrings);
 
-    /// <summary>
-    /// encode Base2048
-    /// </summary>
-    public static string Encode(byte[] uint8Array) => base2048.Encode(uint8Array);
+    /// <inheritdoc/>
+    public static string Encode(byte[] bytes) => base2048.Encode(bytes);
 
-    /// <summary>
-    /// decode Base2048
-    /// </summary>
-    public static byte[] Decode(string str) => base2048.Decode(str);
+    /// <inheritdoc/>
+    public static byte[] Decode(string encodeText) => base2048.Decode(encodeText);
 }

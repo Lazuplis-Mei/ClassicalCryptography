@@ -1,48 +1,45 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <para>Base100编码，又称Emoji表情符号编码</para>
-/// <para>原始的代码仓库可以在这里查看</para>
-/// <seealso href="https://github.com/AdamNiederer/base100"/>
-/// <para>参考的代码片段</para>
-/// <see href="https://github.com/stek29/base100/blob/master/base100.py"/>
-/// <para>在线的工具</para>
-/// <seealso href="https://ctf.bugku.com/tool/base100"/>
+/// Base100编码，又称Emoji表情符号编码<br/>
 /// </summary>
+/// <remarks>
+/// <a href="https://github.com/AdamNiederer/base100">原始的代码实现</a><br/>
+/// 在线工具:<a href="https://ctf.bugku.com/tool/base100">Base100</a>
+/// </remarks>
 [Introduction("Base100编码", "将字节编码为Emoji表情符号")]
-[TranslatedFrom("Python")]
-public static class Base100Encoding
+[ReferenceFrom("https://github.com/stek29/base100/blob/master/base100.py", ProgramingLanguage.Python, License.Unlicense)]
+public class Base100Encoding : IEncoding
 {
 
-    /// <summary>
-    /// 将字节编码为Emoji表情符号
-    /// </summary>
-    /// <param name="bytes">要编码的字节</param>
+    /// <inheritdoc/>
+    [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
-        byte[] emojiBytes = new byte[bytes.Length << 2];
+        int length = bytes.Length << 2;
+        Span<byte> emojiBytes = length.CanAllocate() ?
+            stackalloc byte[length] : new byte[length];
         for (int i = 0; i < bytes.Length; i++)
         {
             int j = i << 2;
             emojiBytes[j++] = 0xF0;
             emojiBytes[j++] = 0x9F;
-            (int quotient, int remainder) = int.DivRem((bytes[i] + 55), 0x40);
+            (int quotient, int remainder) = int.DivRem(bytes[i] + 55, 0x40);
             emojiBytes[j++] = (byte)(quotient + 0x8F);
             emojiBytes[j] = (byte)(remainder + 0x80);
         }
         return Encoding.UTF8.GetString(emojiBytes);
     }
 
-    /// <summary>
-    /// 解码Emoji表情符号(不包含严格的检查)
-    /// </summary>
-    /// <param name="emojiString">Emoji表情符号</param>
-    public static byte[] Decode(string emojiString)
+    /// <inheritdoc/>
+    /// <remarks>
+    /// 该方法不包括严格的检查
+    /// </remarks>
+    public static byte[] Decode(string encodeText)
     {
-        var emojiBytes = Encoding.UTF8.GetBytes(emojiString);
+        var emojiBytes = Encoding.UTF8.GetBytes(encodeText);
         Guard.IsEqualTo(emojiBytes.Length & 0B11, 0);
 
         var bytes = new byte[emojiBytes.Length >> 2];

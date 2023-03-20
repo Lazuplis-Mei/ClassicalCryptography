@@ -1,5 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
+﻿using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.Versioning;
@@ -301,7 +300,14 @@ public static class ColorfulBarcode
         var result = reader.Decode(redBitmap1).Text;
         result += reader.Decode(redBitmap2).Text;
         result += reader.Decode(greenBitmap1).Text;
-        result += reader.Decode(greenBitmap2).Text;
+        var mayBeNullResult = reader.Decode(greenBitmap2);
+        if (mayBeNullResult is null)
+        {
+            greenBitmap2.RotateFlip(RotateFlipType.Rotate270FlipNone);
+            mayBeNullResult = reader.Decode(greenBitmap2);
+            Debug.WriteLine($"`{mayBeNullResult.Text}` 二维码在旋转后无法识别");
+        }
+        result += mayBeNullResult.Text;
         result += reader.Decode(blueBitmap1).Text;
         result += reader.Decode(blueBitmap2).Text;
         return result;

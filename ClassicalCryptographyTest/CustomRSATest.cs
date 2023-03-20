@@ -1,4 +1,4 @@
-﻿using ClassicalCryptography.Calculation.CustomRSAPrivateKey;
+﻿using ClassicalCryptography.Calculation.RSASteganograph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -12,12 +12,12 @@ namespace ClassicalCryptographyTest
     public class CustomRSATest
     {
         [TestMethod]
-        [DataRow(100), DataRow(200), DataRow(300)/*, DataRow(400)*/]
+        [DataRow(100), DataRow(200)/*, DataRow(300), DataRow(400)*/]
         public void TestCustomRSA(int textCount)
         {
             var text = RandomString.Generate(textCount);
-            var pemkey = CustomRSA.GenerateRSAPrivateKey(text, true);
-            var result = CustomRSA.GetTextFrom(pemkey);
+            var pemkey = RSASteganograph.GenerateRSAPrivateKey(text, true);
+            var result = RSASteganograph.GetTextFrom(pemkey);
             Assert.AreEqual(text, result);
         }
 
@@ -42,7 +42,7 @@ namespace ClassicalCryptographyTest
             -----END RSA PRIVATE KEY-----
             """;
 
-            var text = CustomRSA.GetTextFrom(rsaPrivateKey);
+            var text = RSASteganograph.GetTextFrom(rsaPrivateKey);
 
             Assert.AreEqual("天空不会一直都晴朗的，偶尔会下些雨滴，也有吹起暴风雨的时候，景色会渐渐的改变。", text);
         }

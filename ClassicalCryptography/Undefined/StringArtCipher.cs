@@ -1,7 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Text;
-using static ClassicalCryptography.Utils.GlobalTables;
+﻿using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Undefined;
 
@@ -70,7 +67,7 @@ public class StringArtCipher
     public static string Decrypt(string text)
     {
         var pairs = text.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        Span<char> span = pairs.Length <= StackLimit.MaxCharSize ?
+        Span<char> span = pairs.Length <= StackLimit.MAX_CHAR_SIZE ?
             stackalloc char[pairs.Length] : new char[pairs.Length];
         for (int i = 0; i < pairs.Length; i++)
         {

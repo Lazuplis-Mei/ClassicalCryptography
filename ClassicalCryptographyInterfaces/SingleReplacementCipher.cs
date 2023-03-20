@@ -59,7 +59,7 @@ public class SingleReplacementCipher : ICipher<string, string>
     [SkipLocalsInit]
     public string Decrypt(string cipherText)
     {
-        Span<char> result = cipherText.Length <= StackLimit.MaxCharSize
+        Span<char> result = cipherText.Length <= StackLimit.MAX_CHAR_SIZE
             ? stackalloc char[cipherText.Length] : new char[cipherText.Length];
         for (int i = 0; i < cipherText.Length; i++)
         {
@@ -77,7 +77,7 @@ public class SingleReplacementCipher : ICipher<string, string>
     [SkipLocalsInit]
     public string Encrypt(string plainText)
     {
-        Span<char> result = plainText.Length <= StackLimit.MaxCharSize
+        Span<char> result = plainText.Length <= StackLimit.MAX_CHAR_SIZE
             ? stackalloc char[plainText.Length] : new char[plainText.Length];
 
         for (int i = 0; i < plainText.Length; i++)

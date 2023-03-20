@@ -12,7 +12,7 @@ namespace ClassicalCryptographyTest
     {
         public static string Generate(int textLength)
         {
-            Span<char> chars = textLength <= StackLimit.MaxCharSize
+            Span<char> chars = textLength <= StackLimit.MAX_CHAR_SIZE
                 ? stackalloc char[textLength] : new char[textLength];
             for (int i = 0; i < textLength; i++)
                 chars[i] = GlobalTables.VChar64[Random.Shared.Next(64)];
@@ -21,7 +21,7 @@ namespace ClassicalCryptographyTest
 
         public static string GenerateUppers(int textLength)
         {
-            Span<char> chars = textLength <= StackLimit.MaxCharSize
+            Span<char> chars = textLength <= StackLimit.MAX_CHAR_SIZE
                 ? stackalloc char[textLength] : new char[textLength];
             for (int i = 0; i < textLength; i++)
                 chars[i] = GlobalTables.U_Letters[Random.Shared.Next(26)];

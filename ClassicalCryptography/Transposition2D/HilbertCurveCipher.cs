@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-
-namespace ClassicalCryptography.Transposition2D;
+﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
 /// 希尔伯特曲线密码

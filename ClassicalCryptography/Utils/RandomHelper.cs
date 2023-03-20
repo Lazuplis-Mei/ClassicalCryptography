@@ -1,7 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Utils;
 
@@ -13,8 +10,6 @@ internal static class RandomHelper
     /// <summary>
     /// 随机的字节值
     /// </summary>
-    /// <param name="maxValue"></param>
-    /// <returns></returns>
     public static byte RandomByte(byte maxValue)
     {
         return (byte)Random.Shared.Next(maxValue);
@@ -49,13 +44,13 @@ internal static class RandomHelper
     /// <summary>
     /// 打乱数组
     /// </summary>
-    public static void Shuffle(this int[] arr)
+    public static void Shuffle(this int[] array)
     {
-        for (int i = arr.Length - 1; i > 0; i--)
+        for (int i = array.Length - 1; i > 0; i--)
         {
             int j = Random.Shared.Next(i + 1);
             if (i != j)
-                (arr[j], arr[i]) = (arr[i], arr[j]);
+                (array[j], array[i]) = (array[i], array[j]);
         }
     }
 
@@ -71,11 +66,11 @@ internal static class RandomHelper
         var list = new List<int>(count);
         for (int i = 0; i < count; i++)
         {
-            int t;
+            int temp;
             do
-                t = Random.Shared.Next(max);
-            while (list.Contains(t));
-            list.Add(t);
+                temp = Random.Shared.Next(max);
+            while (list.Contains(temp));
+            list.Add(temp);
         }
         return list;
     }
@@ -103,7 +98,7 @@ internal static class RandomHelper
         if (maxValue < int.MaxValue)
             return Random.Shared.Next((int)maxValue);
         int byteCount = maxValue.GetByteCount(true);
-        Span<byte> buffer = byteCount <= StackLimit.MaxByteSize
+        Span<byte> buffer = byteCount.CanAllocate()
             ? stackalloc byte[byteCount] : new byte[byteCount];
         byte firstBit = (byte)(maxValue >> ((byteCount - 1) << 3));
         buffer[0] = RandomByte(firstBit);
@@ -112,11 +107,12 @@ internal static class RandomHelper
     }
 
     /// <summary>
-    ///  Generate a random bigInteger ∈ [min,max]
-    /// <para>see https://github.com/mikolajtr/dotnetprime/blob/master/MillerRabin/Helpers/PrimeGeneratorHelpers.cs#L8 </para>
+    ///  生成一个[min,max]范围的<see cref="BigInteger"/>
+    /// <para>see  </para>
     /// </summary>
     /// <param name="min">min value</param>
     /// <param name="max">max value</param>
+    [ReferenceFrom("https://github.com/mikolajtr/dotnetprime/blob/master/MillerRabin/Helpers/PrimeGeneratorHelpers.cs#L8")]
     public static BigInteger RandomBigInteger(BigInteger min, BigInteger max)
     {
         byte[] bytes = max.ToByteArray();
@@ -132,15 +128,18 @@ internal static class RandomHelper
     /// </summary>
     public static T RandomItem<T>(this List<T> list)
     {
+        Guard.HasSizeGreaterThan(list, 0);
+        if (list.Count == 1)
+            return list[0];
         return list[Random.Shared.Next(list.Count)];
     }
 
     /// <summary>
     /// 随机的列表项目
     /// </summary>
-    public static T RandomItem<T>(this T[] arr)
+    public static T RandomItem<T>(this T[] array)
     {
-        return arr[Random.Shared.Next(arr.Length)];
+        return array[Random.Shared.Next(array.Length)];
     }
 
     /// <summary>

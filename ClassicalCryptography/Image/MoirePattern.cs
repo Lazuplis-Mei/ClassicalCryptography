@@ -1,7 +1,7 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Drawing.Imaging;
+﻿using System.Drawing.Imaging;
 using System.Drawing;
 using System.Runtime.Versioning;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Image;
 
@@ -37,6 +37,7 @@ public static class MoirePattern
     /// </summary>
     public static Font Font { get; set; } = new Font("微软雅黑", 24);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static void SetCenterPoint(ref this RectangleF rect, Bitmap bitmap)
     {
         var centerX = (bitmap.Width - rect.Width) / 2;
@@ -153,8 +154,7 @@ public static class MoirePattern
     /// </summary>
     public unsafe static Bitmap DrawTexts(string[] texts, int imageWidth, int imageHeight)
     {
-        if (texts.Length <= 1)
-            throw new ArgumentException("至少需要2段文本", nameof(texts));
+        Guard.HasSizeGreaterThan(texts, 1);
 
         var bitmap = new Bitmap(imageWidth, imageHeight);
         using var graphics = Graphics.FromImage(bitmap);

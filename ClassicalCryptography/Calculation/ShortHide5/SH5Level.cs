@@ -6,7 +6,7 @@
 public enum SH5Level
 {
     /// <summary>
-    /// 仅一组
+    /// 一组
     /// </summary>
     Single = 1,
     /// <summary>

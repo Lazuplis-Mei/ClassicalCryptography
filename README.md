@@ -34,14 +34,14 @@ cipher.Encrypt("012345");//543210
 * 密钥为(2,3)
 * 结果为"12675834"
 
-|          | 1 | 2 |  3  |  4  |  5  |  6  |  7  | 8 |
-| -------- | - | - | :-: | :-: | :-: | :-: | :-: | - |
-| 12       |   |   | [3] | [4] | [5] |  6  |  7  | 8 |
-| 12       |   |   |  6  |  7  |  8  |  3  |  4  | 5 |
-| 1267     |   |   |    |    | [8] | [3] | [4] | 5 |
-| 1267     |   |   |    |    |  5  |  8  |  3  | 4 |
-| 126758   |   |   |    |    |    |    |  3  | 4 |
-| 12675834 |   |   |    |    |    |    |    |   |
+|          |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |
+| -------- | :-: | :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+| 12       |     |     | [3] | [4] | [5] |  6  |  7  |  8  |
+| 12       |     |     |  6  |  7  |  8  |  3  |  4  |  5  |
+| 1267     |     |     |     |     | [8] | [3] | [4] |  5  |
+| 1267     |     |     |     |     |  5  |  8  |  3  |  4  |
+| 126758   |     |     |     |     |     |     |  3  |  4  |
+| 12675834 |     |     |     |     |     |     |     |     |
 
 ```csharp
 var cipher = new TakeTranslateCipher();
@@ -65,6 +65,7 @@ cipher.Encrypt("12345678", key)//12675834
   | - | - | - | - | - |
   |   | 2 | 3 | 4 |   |
   | 5 | 6 | 7 | 8 | 9 |
+
 * 按列读出即为"526137489"
 
 ```text
@@ -102,6 +103,8 @@ var key = JosephusCipher.Key.FromString("3");
 cipher.Encrypt("123456", key);//364251
 ```
 
+---
+
 ### RailFenceCipher
 
 * 栅栏密码(普通型，实际上这是个二维置换密码)
@@ -127,6 +130,8 @@ var cipher = new RailFenceCipher();
 var key = RailFenceCipher.Key.FromString("3");
 cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 ```
+
+---
 
 ## Transposition2D
 
@@ -218,44 +223,45 @@ cipher.Encrypt("eg1ML9mymEqtKzeN0", key);//mz\`9K\`1E0gmNMq\`Lt\`eye
   6. 按行读出结果
 * 如下所示即是一个栅格(H代表对应位置有洞)
 
-  |   |   | H |   |
-  | - | :- | - | - |
-  |   | H |   |   |
-  | H |   |   |   |
-  |   |   |   | H |
+  |     |     |  H  |     |
+  | :-: | :-: | :-: | :-: |
+  |     |  H  |     |     |
+  |  H  |     |     |     |
+  |     |     |     |  H  |
+
 * 以下演示的文本为"meetmeattwelvepm"
 * 密钥为"4:tA=="(即为上述的栅格)
 * 结果为"tmmveeewepeatlmt"
 
 > 将meet填入栅格位置，并旋转栅格
 
-|  | - | m |   |
-| :-: | - | :-: | - |
-|  | e | - |   |
-| e |   |  | - |
-| - |   |  | t |
+|     |  -  |  m  |     |
+| :-: | :-: | :-: |  -  |
+|     |  e  |  -  |     |
+|  e  |     |     |  -  |
+|  -  |     |     |  t  |
 
 > 填入meat并旋转栅格
 
-| - | m | m |   |
-| :-: | - | :-: | - |
-|  | e | e | - |
-| e |   | - | a |
-| t | - |  | t |
+|  -  |  m  |  m  |     |
+| :-: | :-: | :-: |  -  |
+|     |  e  |  e  |  -  |
+|  e  |     |  -  |  a  |
+|  t  |  -  |     |  t  |
 
 > 重复上述步骤
 
-| t | m | m | - |
+|  t  |  m  |  m  |  -  |
 | :-: | :-: | :-: | :-: |
-| - | e | e | w |
-| e | - | e | a |
-| t | l | - | t |
+|  -  |  e  |  e  |  w  |
+|  e  |  -  |  e  |  a  |
+|  t  |  l  |  -  |  t  |
 
-| t | m | m | v |
+|  t  |  m  |  m  |  v  |
 | :-: | :-: | :-: | :-: |
-| e | e | e | w |
-| e | p | e | a |
-| t | l | m | t |
+|  e  |  e  |  e  |  w  |
+|  e  |  p  |  e  |  a  |
+|  t  |  l  |  m  |  t  |
 
 ```csharp
 var cipher = new RotatingGrillesCipher();
@@ -269,7 +275,7 @@ var key = RotatingGrillesCipher.Key.FromString(keyStr);
 cipher.Encrypt("meetmeattwelvepm", key);//tmmveeewepeatlmt
 ```
 
-* 补充：你也可以设置 `cipher.AntiClockwise`属性来让栅格逆时针旋转
+* 补充：你也可以设置`cipher.AntiClockwise`属性来让栅格逆时针旋转
 
 ---
 
@@ -284,9 +290,10 @@ cipher.Encrypt("meetmeattwelvepm", key);//tmmveeewepeatlmt
 * 如下所示即是一个3阶幻方(行列和对角线的和都相等)
 
   | 8 | 1 | 6 |
-  | - | :- | - |
+  | - | - | - |
   | 3 | 5 | 7 |
   | 4 | 9 | 2 |
+
 * 以下描述了具体依据使用的方法，细节请查看代码
 
   1. 奇数阶幻方使用Louberel法
@@ -313,11 +320,11 @@ cipher.Encrypt("123456789");//816357492
 
 > 4*4的曲线顺序为
 
-| 1 | 4 | 5 | 6 |
+|  1  |  4  |  5  |  6  |
 | :-: | :-: | :-: | :-: |
-| 2 | 3 | 8 | 7 |
-| 15 | 14 | 9 | 10 |
-| 16 | 13 | 12 | 11 |
+|  2  |  3  |  8  |  7  |
+| 15  | 14  |  9  | 10  |
+| 16  | 13  | 12  | 11  |
 
 ```csharp
 var cipher = new HilbertCurveCipher();
@@ -339,11 +346,11 @@ cipher.Encrypt("0123456789ABCDEF");//03451276ED89FCBA
 
 > 4*4时的顺序为
 
-| 1 | 2 | 3 | 4 |
+|  1  |  2  |  3  |  4  |
 | :-: | :-: | :-: | :-: |
-| 12 | 13 | 14 | 5 |
-| 11 | 16 | 15 | 6 |
-| 10 | 9 | 8 | 7 |
+| 12  | 13  | 14  |  5  |
+| 11  | 16  | 15  |  6  |
+| 10  |  9  |  8  |  7  |
 
 ```csharp
 var cipher = new HilbertCurveCipher();
@@ -378,6 +385,8 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * 可能需要补充字符(默认`)
 * 具体方法请前往[VBakersMapCipher.cs](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/ClassicalCryptography/Transposition2D/VBakersMapCipher.cs)查看代码
 
+---
+
 ### JigsawCipher
 
 * 锯齿分割密码
@@ -392,6 +401,45 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * 下图为使用2,5,1,3加密文本的图示
 * ![JigsawCipher](Images/JigsawCipher.png)
 
+---
+
+### FifteenPuzzle
+
+* 数字华容道密码
+* 有密钥(移动步骤)
+* 可能需要补充字符(默认`)
+  1. 文字排列成N^2的方阵
+  2. 右下角的位置空着
+  3. 移动空位和相邻的内容交换
+  4. 经过一系列移动后再读出方阵
+* *此功能正在开发中*
+
+---
+
+### SixteenPuzzle
+
+* 移动数字华容道密码
+* 有密钥(移动步骤)
+* 可能需要补充字符(默认`)
+  1. 文字排列成N^2的方阵
+  2. 首位循环地移动整行/列
+  3. 经过一系列移动后再读出方阵
+* *此功能正在开发中*
+
+---
+
+### TwiddlePuzzle
+
+* 旋转阵列密码
+* 有密钥(旋转步骤)
+* 可能需要补充字符(默认`)
+  1. 文字排列成N^2的方阵
+  2. 以指定的4个格子为中心旋转
+  3. 经过一系列旋转后再读出方阵
+* *此功能正在开发中*
+
+---
+
 ## Replacement
 
 替换/代换密码(也包括输出图像)
@@ -402,9 +450,10 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * 无密钥
 * 仅处理纯英文字母和空格
 * 包含变体
-
   1. ![类型1](Images/PigpenCipher1.png)
   2. ![类型2](Images/PigpenCipher2.png)
+
+---
 
 ### SingleReplacementCipher
 
@@ -423,6 +472,8 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
   11. 敲击码
 * 更多可自定义
 
+---
+
 ### MorseCode
 
 * 摩斯密码
@@ -430,11 +481,15 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
   2. 扩展数字和符号的摩斯密码
   3. 数字短码
 
+---
+
 ### CommercialCode
 
 * 中文电码
   1. 标准中文电码(Chinese Commercial Code)
   2. 默认使用数字短码进行编码
+
+---
 
 ## Calculation
 
@@ -447,7 +502,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * [Standard Short Hide5(标准SH5)](https://www.bilibili.com/read/cv15660906)
 * [标准的1组SH5推荐字母表](https://www.bilibili.com/read/cv15676311)
 
-### CustomRSA
+---
+
+### RSASteganograph
 
 * RSA隐写术
 * 以指定的前缀字节生成质数并计算RSA私钥
@@ -456,10 +513,22 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ```csharp
 var text = "天空不会一直都晴朗的，偶尔会下些雨滴，也有吹起暴风雨的时候，景色会渐渐的改变。";
-var pemkey = CustomRSA.GenerateRSAPrivateKey(text, true);
+var pemkey = RSASteganograph.GenerateRSAPrivateKey(text, true);
 //将会生成一个pem格式的RSA私钥
-CustomRSA.GetTextFrom(pemkey);//获取其中的文本
+RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 ```
+
+---
+
+### PerfectShuffle
+
+* 完美洗牌密码
+* 对于字母表进行2种交替式的完美洗牌
+* 取指定的首字母作为结果
+* 补充：结果有随机性
+* *快速的插入查找方法正在开发中*
+
+---
 
 ## Image
 
@@ -492,6 +561,8 @@ var text = ColorfulBarcode.Recognize(bitmap);//识别3色二维码
 bitmap = ColorfulBarcode.EncodeSixColor(plainText);//生成6色二维码
 text = ColorfulBarcode.RecognizeSixColor(bitmap);//识别6色二维码
 ```
+
+---
 
 ### MoirePattern
 
@@ -548,6 +619,8 @@ MoirePattern.FillAndSavePattens(bitmap, 5, "E:/Pattens");
 ![Pattens](Images/Pattens.png)
 ![5826912_0](Images/Pattens/5826912_0.png)![5826912_1](Images/Pattens/5826912_1.png)![5826912_2](Images/Pattens/5826912_2.png)![5826912_3](Images/Pattens/5826912_3.png)![5826912_4](Images/Pattens/5826912_4.png)
 
+---
+
 ### WeaveCipher
 
 * 编织图形密码
@@ -573,6 +646,10 @@ bitmap.Save("E:/WeaveCipherExtend.png");
 
 ![WeaveCipherExtend](Images/WeaveCipherExtend.png)
 
+* *解密三角形的功能正在开发中*
+
+---
+
 ## Sound
 
 与声音相关的密码，用声音表示。
@@ -591,6 +668,8 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 
 > [MorseMoonlight.mid](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/Sound/MorseMoonlight.mid)
 
+---
+
 ## Encoder
 
 多种编码之间转换的实现
@@ -601,9 +680,14 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 * Base32768
 * Base32
 * Base85
+* 2,4,8,16进制
 * 盲文编码
 * 易经八卦编码(等价于Base64)
 * 罗马数字转换
+* BubbleBabble
+* 国家通用盲文方案(*正在开发中*)
+
+---
 
 ### PLEncoding
 
@@ -615,6 +699,8 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 * JJEncode
 * Jother
 * Brainfuck
+
+---
 
 ## Undefined
 
@@ -630,3 +716,18 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
   2. 根据旗语对应的符号连接写一个字母
   3. 删除所有路径上的字母
   4. 剩余的则为内容
+
+---
+
+### StringArtCipher
+
+* 弦艺术密码
+* 使用22个针脚的欧拉字体
+* 使用22个针脚的非欧拉字体
+
+---
+
+### PascalianPuzzleCipher
+
+* 帕斯卡谜题密码
+* *此功能正在开发中*

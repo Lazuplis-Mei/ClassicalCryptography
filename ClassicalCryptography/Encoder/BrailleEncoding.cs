@@ -1,17 +1,13 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder;
 
 /// <summary>
-/// <para>盲文编码，用盲文符号编码字节</para>
-/// <para>参考代码</para>
-/// <see href="https://github.com/qntm/braille-encode"/>
+/// 盲文编码，用盲文符号编码字节
 /// </summary>
 [Introduction("盲文编码", "用盲文符号编码字节")]
-[TranslatedFrom("JavaScript")]
-public class BrailleEncoding
+[ReferenceFrom("https://github.com/qntm/braille-encode", ProgramingLanguage.JavaScript, License.MIT)]
+public class BrailleEncoding : IEncoding
 {
     /// <summary>
     /// 字符编码
@@ -19,7 +15,7 @@ public class BrailleEncoding
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
 
     /// <summary>
-    /// <see href="http://www.unicode.org/charts/PDF/U2800.pdf"/>
+    /// <a href="http://www.unicode.org/charts/PDF/U2800.pdf">U2800</a>
     /// </summary>
     public const int FIRST_BRAILLE = '\u2800';
 
@@ -34,13 +30,11 @@ public class BrailleEncoding
         }
     }
 
-    /// <summary>
-    /// 用盲文符号编码字节
-    /// </summary>
+    /// <inheritdoc/>
     [SkipLocalsInit]
-    public static string EncodeBytes(byte[] bytes)
+    public static string Encode(byte[] bytes)
     {
-        Span<char> span = bytes.Length <= StackLimit.MaxCharSize
+        Span<char> span = bytes.Length.CanAllocateString()
             ? stackalloc char[bytes.Length] : new char[bytes.Length];
         for (int i = 0; i < bytes.Length; i++)
             span[i] = characters[bytes[i]];
@@ -53,7 +47,7 @@ public class BrailleEncoding
     [SkipLocalsInit]
     public static string EncodeWithUnicodeOrder(byte[] bytes)
     {
-        Span<char> span = bytes.Length <= StackLimit.MaxCharSize
+        Span<char> span = bytes.Length.CanAllocateString()
             ? stackalloc char[bytes.Length] : new char[bytes.Length];
         for (int i = 0; i < bytes.Length; i++)
             span[i] = (char)(FIRST_BRAILLE + bytes[i]);
@@ -63,15 +57,13 @@ public class BrailleEncoding
     /// <summary>
     /// 用盲文符号编码字符串
     /// </summary>
-    public static string Encode(string text)
+    public static string EncodeString(string text)
     {
-        return EncodeBytes(Encoding.GetBytes(text));
+        return Encode(Encoding.GetBytes(text));
     }
 
-    /// <summary>
-    /// 解码盲文符号
-    /// </summary>
-    public static byte[] DecodeBytes(string brailles)
+    /// <inheritdoc/>
+    public static byte[] Decode(string brailles)
     {
         var bytes = new byte[brailles.Length];
         for (int i = 0; i < brailles.Length; i++)
@@ -93,8 +85,8 @@ public class BrailleEncoding
     /// <summary>
     /// 解码盲文符号字符串
     /// </summary>
-    public static string Decode(string text)
+    public static string DecodeString(string text)
     {
-        return Encoding.GetString(DecodeBytes(text));
+        return Encoding.GetString(Decode(text));
     }
 }

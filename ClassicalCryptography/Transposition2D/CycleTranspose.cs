@@ -1,5 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Transposition2D;
 

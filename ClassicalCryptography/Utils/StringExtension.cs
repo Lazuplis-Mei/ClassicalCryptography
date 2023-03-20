@@ -1,22 +1,52 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Xml;
 
 namespace ClassicalCryptography.Utils;
 
-/// <summary>
-/// 
-/// </summary>
 internal static class StringExtension
 {
     /// <summary>
+    /// 字符串转换成可修改的内存
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Span<char> MemoryAsSpan(this string text)
+    {
+        var reference = MemoryMarshal.GetReference(text.AsSpan());
+        return MemoryMarshal.CreateSpan(ref reference, text.Length);
+    }
+
+    /// <summary>
+    /// 添加一个xml元素，拥有指定的名字和内容
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void WriteElement(this XmlWriter writer, string name, string text)
+    {
+        writer.WriteStartElement(name);
+        writer.WriteString(text);
+        writer.WriteEndElement();
+    }
+
+    /// <summary>
+    /// 添加一个xml元素，内容是<see cref="BigInteger"/>的Base64形式
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void WriteElement(this XmlWriter writer, string name, BigInteger number)
+    {
+        writer.WriteStartElement(name);
+        writer.WriteString(number.ToBase64());
+        writer.WriteEndElement();
+    }
+
+    /// <summary>
     /// 移除最后一个字符
     /// </summary>
-    /// <param name="stringBuilder"></param>
-    public static void RemoveLast(this StringBuilder stringBuilder)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static StringBuilder RemoveLast(this StringBuilder stringBuilder)
     {
         if (stringBuilder.Length > 0)
             stringBuilder.Remove(stringBuilder.Length - 1, 1);
+        return stringBuilder;
     }
 
     /// <summary>
@@ -39,34 +69,34 @@ internal static class StringExtension
     /// <summary>
     /// 英文字母转换成对应的数字
     /// </summary>
-    public static int LetterNumber(this char c)
+    public static int LetterNumber(this char character)
     {
-        if (c is >= 'A' and <= 'Z')
-            return c - 'A';
-        else if (c is >= 'a' and <= 'z')
-            return c - 'a';
-        throw new ArgumentOutOfRangeException(nameof(c));
+        if (character is >= 'A' and <= 'Z')
+            return character - 'A' + 1;
+        else if (character is >= 'a' and <= 'z')
+            return character - 'a' + 1;
+        throw new ArgumentOutOfRangeException(nameof(character));
     }
 
     /// <summary>
-    /// 16进制字符
+    /// 小写36进制字符
     /// </summary>
-    public static int HexCharNumber(this char c)
+    public static int Base36Number(this char character)
     {
-        if (c is >= '0' and <= '9')
-            return c - '0';
-        else if (c is >= 'a' and <= 'f')
-            return c - 'a' + 10;
-        throw new ArgumentOutOfRangeException(nameof(c));
+        if (character is >= '0' and <= '9')
+            return character - '0';
+        else if (character is >= 'a' and <= 'z')
+            return character - 'a' + 10;
+        throw new ArgumentOutOfRangeException(nameof(character));
     }
 
     /// <summary>
     /// 分解字符串为不重复的大写字母字符集合
     /// </summary>
-    public static HashSet<char> Decompose(this string str)
+    public static HashSet<char> Decompose(this string text)
     {
         var set = new HashSet<char>();
-        foreach (var c in str)
+        foreach (var c in text)
         {
             if (c is >= 'a' and <= 'z')
                 set.Add((char)('A' + c - 'a'));
@@ -79,27 +109,13 @@ internal static class StringExtension
     /// <summary>
     /// 找到字符出现的所有位置
     /// </summary>
-    /// <param name="str"></param>
-    /// <param name="c"></param>
-    public static List<int> FindAll(this string str, char c)
+    /// <param name="text"></param>
+    /// <param name="character"></param>
+    public static List<int> FindAll(this string text, char character)
     {
         var result = new List<int>();
-        for (int i = 0; i < str.Length; i++)
-            if (str[i] == c)
-                result.Add(i);
-        return result;
-    }
-
-    /// <summary>
-    /// 找到字符出现的所有位置
-    /// </summary>
-    /// <param name="str"></param>
-    /// <param name="c"></param>
-    public static List<int> FindAll(this char[] str, char c)
-    {
-        var result = new List<int>();
-        for (int i = 0; i < str.Length; i++)
-            if (str[i] == c)
+        for (int i = 0; i < text.Length; i++)
+            if (text[i] == character)
                 result.Add(i);
         return result;
     }
@@ -157,9 +173,21 @@ internal static class StringExtension
     [SkipLocalsInit]
     public static string Repeat(this char character, int count)
     {
-        Span<char> span = count <= StackLimit.MaxCharSize
+        Span<char> span = count.CanAllocateString()
             ? stackalloc char[count] : new char[count];
         span.Fill(character);
         return new(span);
     }
+
+    /// <summary>
+    /// 将数值转换成base64编码
+    /// </summary>
+    /// <param name="number">要转换的数</param>
+    /// <returns>base64编码</returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string ToBase64(this BigInteger number)
+    {
+        return Convert.ToBase64String(number.ToByteArray(true, true));
+    }
+
 }

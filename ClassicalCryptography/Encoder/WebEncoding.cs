@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 using System.Web;
 
 
@@ -16,6 +12,7 @@ public class WebEncoding
     /// <summary>
     /// 转换为Url编码
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string UrlEncode(string input, Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
@@ -25,6 +22,7 @@ public class WebEncoding
     /// <summary>
     /// 从Url编码转换
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string UrlDecode(string input, Encoding? encoding = null)
     {
         encoding ??= Encoding.UTF8;
@@ -34,6 +32,7 @@ public class WebEncoding
     /// <summary>
     /// 转换为Html编码
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string HtmlEncode(string input)
     {
         return HttpUtility.HtmlEncode(input);
@@ -42,6 +41,7 @@ public class WebEncoding
     /// <summary>
     /// 从Html编码转换
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string HtmlDecode(string input)
     {
         return HttpUtility.HtmlDecode(input);

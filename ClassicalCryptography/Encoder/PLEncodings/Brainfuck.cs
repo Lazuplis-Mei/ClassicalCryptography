@@ -1,14 +1,15 @@
 ﻿using ClassicalCryptography.Utils;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace ClassicalCryptography.Encoder.PLEncodings;
 
 /// <summary>
-/// <para>Brainfuck解释器，参考资料</para>
-/// <seealso href="https://en.wikipedia.org/wiki/Brainfuck"/>
-/// <para>在线工具</para>
-/// <seealso href="https://www.splitbrain.org/services/ook"/>
+/// <a href="https://en.wikipedia.org/wiki/Brainfuck">Brainfuck程序</a>
 /// </summary>
+/// <remarks>
+/// 在线工具:<a href="https://www.splitbrain.org/services/ook">Brainfuck</a>
+/// </remarks>
 public static class Brainfuck
 {
     /// <summary>
@@ -23,11 +24,10 @@ public static class Brainfuck
 
     /// <summary>
     /// 解释执行brainfuck代码
-    /// <para>代码片段来自</para>
-    /// <see href="https://www.bilibili.com/read/cv15123678"/>
     /// </summary>
     /// <param name="brainfuckCode">brainfuck代码</param>
     /// <param name="input">输入</param>
+    [ReferenceFrom("https://www.bilibili.com/read/cv15123678")]
     public static string Interpret(string brainfuckCode, string input = "")
     {
         var inputBytes = Encoding.GetBytes(input);
@@ -91,11 +91,9 @@ public static class Brainfuck
 
     /// <summary>
     /// 为文本生成brainfuck代码
-    /// <para>参考代码</para>
-    /// <see href="https://github.com/splitbrain/ook/blob/master/util.php"/>    
     /// </summary>
     /// <param name="text">要编码的字符串</param>
-    [TranslatedFrom("php")]
+    [ReferenceFrom("https://github.com/splitbrain/ook/blob/master/util.php", ProgramingLanguage.PHP, License.GPL2)]
     public static string GenerateCode(string text)
     {
         int value = 0;
@@ -117,25 +115,25 @@ public static class Brainfuck
                 result.Append('>');
 
                 if (difference > 0)
-                    result.Append('+'.Repeat(difference));
+                    result.Append(GetPlus(difference));
                 else if (difference < 0)
-                    result.Append('-'.Repeat(absDifference));
+                    result.Append(GetMinus(absDifference));
             }
             else
             {
                 var loop = (int)Math.Sqrt(absDifference);
 
-                result.Append('+'.Repeat(loop));
+                result.Append(GetPlus(loop));
 
                 if (difference > 0)
                 {
-                    result.Append($"[->{'+'.Repeat(loop)}<]");
-                    result.Append('>').Append('+'.Repeat(difference - loop * loop));
+                    result.Append($"[->{GetPlus(loop)}<]");
+                    result.Append('>').Append(GetPlus(difference - loop * loop));
                 }
                 else if (difference < 0)
                 {
-                    result.Append($"[->{'-'.Repeat(loop)}<]");
-                    result.Append('>').Append('-'.Repeat(absDifference - loop * loop));
+                    result.Append($"[->{GetMinus(loop)}<]");
+                    result.Append('>').Append(GetMinus(absDifference - loop * loop));
                 }
             }
 
@@ -144,6 +142,28 @@ public static class Brainfuck
 
         result.Replace("<>", string.Empty);
         return result.ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string GetPlus(int count) => count switch
+        {
+            1 => "+",
+            2 => "++",
+            3 => "+++",
+            4 => "++++",
+            5 => "+++++",
+            _ => '+'.Repeat(count)
+        };
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string GetMinus(int count) => count switch
+        {
+            1 => "-",
+            2 => "--",
+            3 => "---",
+            4 => "----",
+            5 => "-----",
+            _ => '-'.Repeat(count)
+        };
     }
 
 }

@@ -1,11 +1,8 @@
-﻿using ClassicalCryptography.Interfaces;
-using Midi;
+﻿using Midi;
 using System.Diagnostics;
-using System.Text.RegularExpressions;
-using System.Xml.Linq;
 
 namespace ClassicalCryptography.Sound;
-//used <see href="https://www.codeproject.com/Articles/5272315/Midi-A-Windows-MIDI-Library-in-Csharp"/>
+//使用了 <see href="https://www.codeproject.com/Articles/5272315/Midi-A-Windows-MIDI-Library-in-Csharp"/>
 
 /// <summary>
 /// 将摩斯密码掺入月光奏鸣曲第一乐章的节奏中

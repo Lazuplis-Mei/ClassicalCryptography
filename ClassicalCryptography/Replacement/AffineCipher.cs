@@ -1,5 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using static ClassicalCryptography.Utils.GlobalTables;
+﻿using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Replacement
 {

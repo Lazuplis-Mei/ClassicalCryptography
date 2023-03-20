@@ -1,7 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Numerics;
-
-namespace ClassicalCryptography.Transposition;
+﻿namespace ClassicalCryptography.Transposition;
 
 public partial class JosephusCipher
 {

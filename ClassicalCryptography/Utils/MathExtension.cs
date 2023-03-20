@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Utils;
 
@@ -10,7 +10,31 @@ internal static class MathExtension
 {
 
     /// <summary>
-    /// 二进制序列转换回数值
+    /// 求模逆元，请参考:<br/>
+    /// <see href="https://www.geeksforgeeks.org/multiplicative-inverse-under-modulo-m/">geeksforgeeks</see>
+    /// </summary>
+    public static BigInteger ModularInverse(BigInteger a, BigInteger n)
+    {
+        BigInteger q, t, m = n, x = 1, y = 0;
+        if (n.IsOne)
+            return 0;
+        while (a > 1)
+        {
+            q = a / n;
+            t = n;
+            n = a % n;
+            a = t;
+            t = y;
+            y = x - q * y;
+            x = t;
+        }
+        if (BigInteger.IsNegative(x))
+            x += m;
+        return x;
+    }
+
+    /// <summary>
+    /// 二进制序列转换为数值
     /// </summary>
     public static int ToInt32(this BitArray bits)
     {
@@ -43,6 +67,7 @@ internal static class MathExtension
     /// </summary>
     /// <param name="dividend">被除数</param>
     /// <param name="divisor">除数</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int DivCeil(this int dividend, int divisor)
     {
         int quotient = dividend / divisor;
@@ -53,6 +78,7 @@ internal static class MathExtension
     /// <summary>
     /// 向上取平方根
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int SqrtCeil(this int number)
     {
         return (int)Math.Ceiling(Math.Sqrt(number));

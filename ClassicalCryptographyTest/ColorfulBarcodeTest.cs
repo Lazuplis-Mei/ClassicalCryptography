@@ -28,6 +28,12 @@ namespace ClassicalCryptographyTest
             text = ColorfulBarcode.RecognizeSixColor(bitmap);
 
             Assert.AreEqual(plainText, text);
+
+            //内部识别错误例`z3TlDHB8FXUQqoOE`
+            plainText = "dsBp1IFXhf3zVNzo0LbYZmNMAEvkpG8KP9P2KykN/DK+r9EVz3TlDHB8FXUQqoOEcvuj7gt/PgJjBqRP0YUEO1P8ZuPJ/U9lnZ/E";
+            bitmap = ColorfulBarcode.EncodeSixColor(plainText);
+            text = ColorfulBarcode.RecognizeSixColor(bitmap);
+            Assert.AreEqual(plainText, text);
         }
     }
 }

@@ -1,11 +1,11 @@
-﻿using System.Text;
+﻿using System.Runtime.CompilerServices;
 using static ClassicalCryptography.Replacement.CommonTables;
 namespace ClassicalCryptography.Encoder;
 
 /// <summary>
 /// 用易经八卦代替Base64
 /// </summary>
-public static class IChingEightTrigramsEncoding
+public class IChingEightTrigramsEncoding : IEncoding
 {
     /// <summary>
     /// 字符编码
@@ -13,10 +13,9 @@ public static class IChingEightTrigramsEncoding
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
 
 
-    /// <summary>
-    /// 易经八卦编码
-    /// </summary>
-    public static string EncodeBytes(byte[] bytes)
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string Encode(byte[] bytes)
     {
         return IChingEightTrigramsBase64.Encrypt(Convert.ToBase64String(bytes));
     }
@@ -24,15 +23,15 @@ public static class IChingEightTrigramsEncoding
     /// <summary>
     /// 易经八卦编码
     /// </summary>
-    public static string Encode(string text)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string EncodeString(string text)
     {
-        return EncodeBytes(Encoding.GetBytes(text));
+        return Encode(Encoding.GetBytes(text));
     }
 
-    /// <summary>
-    /// 易经八卦解码
-    /// </summary>
-    public static byte[] DecodeBytes(string text)
+    /// <inheritdoc/>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] Decode(string text)
     {
         return Convert.FromBase64String(IChingEightTrigramsBase64.Decrypt(text));
     }
@@ -40,8 +39,10 @@ public static class IChingEightTrigramsEncoding
     /// <summary>
     /// 易经八卦解码
     /// </summary>
-    public static string Decode(string text)
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string DecodeString(string text)
     {
-        return Encoding.GetString(DecodeBytes(text));
+        return Encoding.GetString(Decode(text));
     }
+
 }

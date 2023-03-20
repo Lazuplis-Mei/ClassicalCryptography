@@ -1,9 +1,5 @@
 ﻿using ClassicalCryptography.Encoder.PLEncodings;
-using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
 using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
 using static ClassicalCryptography.Encoder.PLEncodings.Constants;
 
 namespace ClassicalCryptography.Encoder;
@@ -37,7 +33,7 @@ public static partial class PLEncoding
     public static string FromPythonBytes(string input)
     {
         var matches = PYHexRegex().Matches(input);
-        Span<byte> bytes = matches.Count <= StackLimit.MaxByteSize
+        Span<byte> bytes = matches.Count <= StackLimit.MAX_BYTE_SIZE
             ? stackalloc byte[matches.Count] : new byte[matches.Count];
         for (int i = 0; i < matches.Count; i++)
         {
@@ -62,6 +58,7 @@ public static partial class PLEncoding
     /// <summary>
     /// Perl的一个子集，限制了源代码只能有Perl的关键字
     /// </summary>
+    [ReferenceFrom("https://github.com/ezeeo/ctf-tools/blob/095808a84d34e7ebfa6bcbe063275da24563f092/Library/ppencode/ppencode.js", ProgramingLanguage.JavaScript)]
     public static string PPEncode(string code)
     {
         static void AppendCharacter(int character, StringBuilder strBuilder)
@@ -92,7 +89,7 @@ public static partial class PLEncoding
     /// 编码JavaScript代码为颜文字
     /// </summary>
     /// <param name="jsCode">js代码</param>
-    [TranslatedFrom("JavaScript")]
+    [ReferenceFrom("https://github.com/ezeeo/ctf-tools/blob/095808a84d34e7ebfa6bcbe063275da24563f092/Library/jj_and_aa/aaencode.js", ProgramingLanguage.JavaScript)]
     public static string AAEncode(string jsCode)
     {
         var result = new StringBuilder();
@@ -107,7 +104,7 @@ public static partial class PLEncoding
                 var octStrng = Convert.ToString(character, 8);
                 for (int j = 0; j < octStrng.Length; j++)
                 {
-                    result.Append(aaCodes[octStrng[j].HexCharNumber()]).Append("+ ");
+                    result.Append(aaCodes[octStrng[j].Base36Number()]).Append("+ ");
                 }
             }
             else
@@ -116,7 +113,7 @@ public static partial class PLEncoding
                 result.Append("(oﾟｰﾟo)+ ");
                 for (int j = 0; j < hexString.Length; j++)
                 {
-                    result.Append(aaCodes[hexString[j].HexCharNumber()]).Append("+ ");
+                    result.Append(aaCodes[hexString[j].Base36Number()]).Append("+ ");
                 }
             }
         }
@@ -129,7 +126,7 @@ public static partial class PLEncoding
     /// </summary>
     /// <param name="jsCode">js代码</param>
     /// <param name="varName">变量名</param>
-    [TranslatedFrom("JavaScript")]
+    [ReferenceFrom("https://github.com/ezeeo/ctf-tools/blob/095808a84d34e7ebfa6bcbe063275da24563f092/Library/jj_and_aa/jjencode.js", ProgramingLanguage.JavaScript)]
     public static string JJEncode(string jsCode, string varName = "DeJS")
     {
         var result = new StringBuilder();
@@ -190,7 +187,7 @@ public static partial class PLEncoding
 
                     var octString = Convert.ToString(character, 8);
                     for (int j = 0; j < octString.Length; j++)
-                        result.Append($"{varName}.{jjCodes[octString[j] - '0']}+");
+                        result.Append($"{varName}.{jjCodes[octString[j].Base36Number()]}+");
                     tempString.Clear();
                     break;
                 }
@@ -204,7 +201,7 @@ public static partial class PLEncoding
                     var hexString = character.ToString("x4");
                     for (int j = 0; j < hexString.Length; j++)
                     {
-                        result.Append(jjCodes["0123456789abcdef".IndexOf(hexString[j])]);
+                        result.Append(jjCodes[hexString[j].Base36Number()]);
                         result.Append('+');
                     }
 

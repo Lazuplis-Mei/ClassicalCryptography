@@ -1,10 +1,9 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Replacement;
 
 /// <summary>
-/// 摩斯密码<see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">MorseCode.Chinese</see>
+/// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">摩斯密码</see>
 /// </summary>
 [Introduction("摩斯密码", "一种用信号时长和断续表示内容的代码")]
 public class MorseCode
@@ -140,6 +139,7 @@ public class MorseCode
         this.codes = codes;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int GetLetterIndex(char letter)
     {
         int index = letters.IndexOf(letter);
@@ -155,11 +155,13 @@ public class MorseCode
     /// <summary>
     /// 字符可以编码
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsVaildLetter(char letter)
     {
         return letters.Contains(letter) || lowerLetters.Contains(letter);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private int GetCodeIndex(string code)
     {
         int index = Array.IndexOf(codes, code);
@@ -171,6 +173,7 @@ public class MorseCode
     /// <summary>
     /// 存在的摩斯密码
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsVaildCode(string code)
     {
         return Array.IndexOf(codes, code) != -1;

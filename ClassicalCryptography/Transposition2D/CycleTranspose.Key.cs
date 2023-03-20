@@ -1,9 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Collections;
-using System.Numerics;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Collections;
 
 
 namespace ClassicalCryptography.Transposition2D;

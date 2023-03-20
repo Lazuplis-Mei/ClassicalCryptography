@@ -1,6 +1,5 @@
-﻿using ClassicalCryptography.Interfaces;
-using System.Drawing;
-using System.Text;
+﻿using System.Drawing;
+using System.Runtime.CompilerServices;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Image;
@@ -49,12 +48,13 @@ public static partial class WeaveCipher
     /// <summary>
     /// 加密为图像
     /// </summary>
+    [SkipLocalsInit]
     public static Bitmap EncryptExtend(string text)
     {
         var bytes = Encoding.UTF8.GetBytes(text).AsSpan();
         int h = (bytes.Length + bytes.Length % 2) / 2;
         int size = h - h / 2;
-        Span<byte> bytes4 = size <= StackLimit.MaxByteSize
+        Span<byte> bytes4 = size.CanAllocate()
             ? stackalloc byte[size] : new byte[size];
         var bytes1 = bytes[..(h / 2)];
         var bytes2 = bytes[(h / 2)..h];
@@ -63,9 +63,6 @@ public static partial class WeaveCipher
         return EncryptExtend(bytes1, bytes2, bytes3, bytes4);
     }
 
-    /// <summary>
-    /// 核心加密代码
-    /// </summary>
     internal static BitMatrix EncryptBitsExtend(BitArray bits1, BitArray bits2, BitArray bits3, BitArray bits4)
     {
         Guard.IsEqualTo(bits3.Size, bits1.Size);
