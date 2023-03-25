@@ -9,10 +9,12 @@ public enum SH5Level
     /// 一组
     /// </summary>
     Single = 1,
+
     /// <summary>
     /// 两组
     /// </summary>
     Double = 2,
+
     /// <summary>
     /// 三组
     /// </summary>

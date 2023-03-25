@@ -14,10 +14,12 @@ public partial class SH5 : IEnumerable<int>
     /// <a href="https://www.bilibili.com/read/cv15676311">标准的1组SH5推荐字母表</a>
     /// </summary>
     public static readonly string AlphaBetSingle = "EADIHTNORFS";
+
     /// <summary>
     /// 2组SH5的字母表
     /// </summary>
     public static readonly string AlphaBetDouble = "XABCDEFGHIJKLMNOPQRSTUVWYZ";
+
     /// <summary>
     /// 3组SH5的字母表
     /// </summary>
@@ -27,10 +29,12 @@ public partial class SH5 : IEnumerable<int>
     /// 第一组的大写字母值U和乘数V
     /// </summary>
     public readonly (int U, ulong V) Pair1;
+
     /// <summary>
     /// 第二组的大写字母值U和乘数V
     /// </summary>
     public readonly (int U, ulong V) Pair2;
+
     /// <summary>
     /// 第三组的大写字母值U和乘数V
     /// </summary>
@@ -82,11 +86,10 @@ public partial class SH5 : IEnumerable<int>
     public static int GetPrefixCount(string word)
     {
         int count = 0;
-        while (word[count] is 'X' or 'x' && count < word.Length)
+        while (count < word.Length && word[count] is 'X' or 'x')
             count++;
         return count;
     }
-
 
     /// <summary>
     /// 仅一组的SH5结构
@@ -129,7 +132,7 @@ public partial class SH5 : IEnumerable<int>
     private static partial Regex SH5GroupRegex();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int DoubleLetterNumber(char character) => character switch
+    private static int DoubleAlphaBet_IndexOf(char character) => character switch
     {
         'X' => 0,
         < 'X' => character - 'A' + 1,
@@ -157,10 +160,10 @@ public partial class SH5 : IEnumerable<int>
                 break;
             case SH5Level.Double:
                 sh5Patten = matches[0].ValueSpan;
-                Pair1.U = DoubleLetterNumber(sh5Patten[0]);
+                Pair1.U = DoubleAlphaBet_IndexOf(sh5Patten[0]);
                 Pair1.V = FromBase36(sh5Patten[1..]);
                 sh5Patten = matches[1].ValueSpan;
-                Pair2.U = DoubleLetterNumber(sh5Patten[0]);
+                Pair2.U = DoubleAlphaBet_IndexOf(sh5Patten[0]);
                 Pair2.V = FromBase36(sh5Patten[1..]);
                 PrefixCount = GetPrefixCount(sh5Pattens);
                 break;
@@ -223,8 +226,7 @@ public partial class SH5 : IEnumerable<int>
                 while (v1 != 0)
                 {
                     //额外的计算规则在 https://www.bilibili.com/read/cv15676311 中有解释
-                    yield return Pair1.U * (int)(v1 % 5)
-                        + Pair1.U / AlphaBetSingle.Length;
+                    yield return Pair1.U * (int)(v1 % 5) + Pair1.U / AlphaBetSingle.Length;
                     v1 /= 5;
                 }
                 yield break;
@@ -233,8 +235,7 @@ public partial class SH5 : IEnumerable<int>
                 v2 = Pair2.V;
                 while (v1 != 0 || v2 != 0)
                 {
-                    yield return Pair1.U * (int)(v1 % 5)
-                        + Pair2.U * (int)(v2 % 5);
+                    yield return Pair1.U * (int)(v1 % 5) + Pair2.U * (int)(v2 % 5);
                     v1 /= 5;
                     v2 /= 5;
                 }
@@ -255,5 +256,6 @@ public partial class SH5 : IEnumerable<int>
                 yield break;
         }
     }
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

@@ -1,19 +1,14 @@
 ﻿using ClassicalCryptography.Calculation.RSASteganograph;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ClassicalCryptographyTest
 {
     [TestClass]
-    public class CustomRSATest
+    public class RSASteganographTest
     {
         [TestMethod]
-        [DataRow(100), DataRow(200)/*, DataRow(300), DataRow(400)*/]
-        public void TestCustomRSA(int textCount)
+        [DataRow(100), DataRow(200), DataRow(300)/*, DataRow(400)*/]
+        public void TestRSASteganograph(int textCount)
         {
             var text = RandomString.Generate(textCount);
             var pemkey = RSASteganograph.GenerateRSAPrivateKey(text, true);
@@ -22,7 +17,7 @@ namespace ClassicalCryptographyTest
         }
 
         [TestMethod]
-        public void TestCustomRSASpecific()
+        public void TestRSASteganographSpecific()
         {
             var rsaPrivateKey = """
             -----BEGIN RSA PRIVATE KEY-----

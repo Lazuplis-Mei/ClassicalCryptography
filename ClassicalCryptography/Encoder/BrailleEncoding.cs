@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -21,9 +22,12 @@ public class BrailleEncoding : IEncoding
 
     private static readonly string characters = Properties.Resources.BrailleEncodingString;
 
-    private static readonly Dictionary<char, byte> decodeMap = new();
-    static BrailleEncoding()
+    private static Dictionary<char, byte>? decodeMap;
+
+    [MemberNotNull(nameof(decodeMap))]
+    private static void BuildMap()
     {
+        decodeMap = new();
         for (int i = 0; i < characters.Length; i++)
         {
             decodeMap.Add(characters[i], (byte)i);
@@ -65,6 +69,9 @@ public class BrailleEncoding : IEncoding
     /// <inheritdoc/>
     public static byte[] Decode(string brailles)
     {
+        if (decodeMap is null)
+            BuildMap();
+
         var bytes = new byte[brailles.Length];
         for (int i = 0; i < brailles.Length; i++)
             bytes[i] = decodeMap[brailles[i]];

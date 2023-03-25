@@ -1,6 +1,4 @@
 ﻿using ClassicalCryptography.Encoder.BaseEncodings;
-using System.Numerics;
-using System.Text;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -9,7 +7,6 @@ namespace ClassicalCryptography.Encoder;
 /// </summary>
 public static partial class BaseEncoding
 {
-
     /// <summary>
     /// 字符编码
     /// </summary>
@@ -90,7 +87,6 @@ public static partial class BaseEncoding
         return Encoding.GetString(Base32768Encoding.Decode(input));
     }
 
-
     /// <summary>
     /// 转换为Base65536编码
     /// </summary>
@@ -98,7 +94,6 @@ public static partial class BaseEncoding
     {
         return Base65536Encoding.Encode(Encoding.GetBytes(input));
     }
-
 
     /// <summary>
     /// 从Base65536编码转换
@@ -108,7 +103,6 @@ public static partial class BaseEncoding
         return Encoding.GetString(Base65536Encoding.Decode(input));
     }
 
-
     /// <summary>
     /// 转换为Base2048编码
     /// </summary>
@@ -116,7 +110,6 @@ public static partial class BaseEncoding
     {
         return Base2048Encoding.Encode(Encoding.GetBytes(input));
     }
-
 
     /// <summary>
     /// 从Base2048编码转换
@@ -141,7 +134,6 @@ public static partial class BaseEncoding
     {
         return Encoding.GetString(Convert.FromHexString(input));
     }
-
 
     /// <summary>
     /// 转换为Emoji表情符号
@@ -207,5 +199,4 @@ public static partial class BaseEncoding
         var bytes = number.ToByteArray(true, true);
         return Encoding.GetString(bytes);
     }
-
 }

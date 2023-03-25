@@ -9,6 +9,7 @@ namespace ClassicalCryptographyTest
     public class BubbleBabbleTest
     {
         [TestMethod]
+        [DataRow("", "xexax")]
         [DataRow("abcd", "ximek-domek-gyxox")]
         [DataRow("Pineapple", "xigak-nyryk-humil-bosek-sonax")]
         [DataRow("中文", "xunar-myruv-kahem-lyxox")]

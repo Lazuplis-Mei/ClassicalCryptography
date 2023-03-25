@@ -160,6 +160,9 @@ public class ShortHide5 : ICipher<string, string>
     {
         var result = new HashSet<SH5>();
         int prefixCount = GetPrefixCount(word);
+        if (prefixCount == word.Length)
+            return Array.Empty<SH5>();
+
         word = word[prefixCount..].ToUpper();
 
         var characterSet = word.ToHashSet();
@@ -242,5 +245,4 @@ public class ShortHide5 : ICipher<string, string>
         }
         return result.ToArray();
     }
-
 }

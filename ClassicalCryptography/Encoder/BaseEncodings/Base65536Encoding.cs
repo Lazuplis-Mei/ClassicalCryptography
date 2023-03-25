@@ -1,4 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
+﻿using System.Runtime.InteropServices;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
@@ -7,14 +7,23 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 /// </summary>
 [Introduction("Base65536编码", "https://github.com/qntm/base65536")]
 [ReferenceFrom("https://github.com/cyberdot/base65536", ProgramingLanguage.CSharp, License.MIT)]
-public partial class Base65536Encoding : IEncoding
+public class Base65536Encoding : IEncoding
 {
     private const int PaddingBlockStart = 5376;
     private const int BmpThreshold = 0x10000;
 
+    private static readonly BidirectionalDictionary<byte, int> Map = new();
+
     /// <inheritdoc/>
     public static string Encode(byte[] bytes)
     {
+        if (Map.Count == 0)
+        {
+            var numbers = MemoryMarshal.Cast<byte, int>(Properties.Resources.Base65536);
+            for (int i = 0; i < numbers.Length; i++)
+                Map.Add((byte)i, numbers[i]);
+        }
+
         var result = new StringBuilder(bytes.Length);
 
         for (var i = 0; i < bytes.Length; i += 2)
@@ -63,6 +72,12 @@ public partial class Base65536Encoding : IEncoding
     /// <param name="ignoreGarbage">忽略错误字符</param>
     public static byte[] Decode(string encodeText, bool ignoreGarbage)
     {
+        if (Map.Count == 0)
+        {
+            var numbers = MemoryMarshal.Cast<byte, int>(Properties.Resources.Base65536);
+            for (int i = 0; i < numbers.Length; i++)
+                Map.Add((byte)i, numbers[i]);
+        }
         bool sequenceEnded = false;
         var bytes = new List<byte>(encodeText.Length << 1);
         for (int i = 0; i < encodeText.Length;)

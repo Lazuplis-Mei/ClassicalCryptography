@@ -12,7 +12,6 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 [Introduction("Base32编码", "使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")]
 public class Base32Encoding : IEncoding
 {
-
     /// <inheritdoc/>
     public static byte[] Decode(string encodeText)
     {
@@ -61,8 +60,7 @@ public class Base32Encoding : IEncoding
         Guard.HasSizeGreaterThan(bytes, 0);
 
         int length = bytes.Length.DivCeil(5) << 3;
-        Span<char> span = length.CanAllocateString()
-            ? stackalloc char[length] : new char[length];
+        Span<char> span = length.CanAllocateString() ? stackalloc char[length] : new char[length];
 
         byte nextCharacterCode = 0, bitsRemaining = 5;
         int index = 0;
@@ -107,5 +105,4 @@ public class Base32Encoding : IEncoding
     {
         return GlobalTables.Base32_RFC3548[byteCode];
     }
-
 }

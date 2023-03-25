@@ -13,12 +13,11 @@ namespace ClassicalCryptography.Calculation;
 [Introduction("完美洗牌密码", "对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果")]
 public static class PerfectShuffle
 {
-
     private static readonly char[] separators = { ' ', ',', '.', ':', '"', '\'' };
 
     private const char INSIDE = '-';
     private const char OUTSIDE = '.';
-    private const char CHARACTER_END = '/';
+    private const char CHARACTER_POSITION = '/';
     private const char WORD_SEPARATOR = ' ';
 
     private static readonly BitArray[] shufflings = new BitArray[]
@@ -78,7 +77,7 @@ public static class PerfectShuffle
                     ShuffleInside(span);
                 else if (character == OUTSIDE)
                     ShuffleOutside(span);
-                else if (character == CHARACTER_END)
+                else if (character == CHARACTER_POSITION)
                     result.Append(span[0]);
             }
             result.Append(WORD_SEPARATOR);
@@ -125,7 +124,7 @@ public static class PerfectShuffle
                     Shuffle(span, bits[i]);
                     result.Append(bits[i] ? INSIDE : OUTSIDE);
                 }
-                result.Append(CHARACTER_END);
+                result.Append(CHARACTER_POSITION);
             }
             result.Append(WORD_SEPARATOR);
         }
@@ -204,14 +203,14 @@ public static class PerfectShuffle
                     if (shufflingIndex < minPositions.Length &&
                         position == minPositions[shufflingIndex])
                     {
-                        result.Append(CHARACTER_END);
+                        result.Append(CHARACTER_POSITION);
                         shufflingIndex++;
                         characterCount++;
                     }
                     if (repeatIndex < repeatPosition.Count &&
                         repeatPosition[repeatIndex] == characterCount)
                     {
-                        result.Append(CHARACTER_END);
+                        result.Append(CHARACTER_POSITION);
                         repeatIndex++;
                         characterCount++;
                     }
@@ -223,26 +222,24 @@ public static class PerfectShuffle
                 }
                 if (minPositions[^1] == minShuffling.Length)
                 {
-                    result.Append(CHARACTER_END);
+                    result.Append(CHARACTER_POSITION);
                     characterCount++;
                 }
                 while (repeatIndex < repeatPosition.Count &&
-                       repeatPosition[repeatIndex] == characterCount)
+                    repeatPosition[repeatIndex] == characterCount)
                 {
-                    result.Append(CHARACTER_END);
+                    result.Append(CHARACTER_POSITION);
                     repeatIndex++;
                     characterCount++;
                 }
 
                 if (i < subWords.Length - 1)
-                    for (int j = 0; j < minShuffling.Length; j++)
-                        Shuffle(originalSpan, minShuffling[j]);
+                    Shuffle(originalSpan, minShuffling);
                 minPositions[^1] = int.MaxValue;
             }
             result.Append(WORD_SEPARATOR);
         }
-        result.RemoveLast();
-        return result.ToString();
+        return result.RemoveLast().ToString();
     }
 
     private static string FilterWord(string word, List<int> repeatPosition)
@@ -269,9 +266,117 @@ public static class PerfectShuffle
     /// <param name="text">要加密的文本</param>
     /// <param name="insertCount">插入洗牌次数</param>
     /// <param name="wordSplitCount">单词分割数</param>
-    public static string EncryptShortInsert(string text, int insertCount = 4, int wordSplitCount = 4)
+    public static string EncryptShortInsert(string text, int insertCount = 5, int wordSplitCount = 5)
     {
-        throw new NotImplementedException();
+        var result = new StringBuilder();
+        var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
+        Span<char> span = stackalloc char[26];
+        Span<char> originalSpan = stackalloc char[26];
+        Span<int> currentPosition = stackalloc int[wordSplitCount];
+
+        var shufflingList = new List<BitArray>();
+        int[] minPositions = new int[] { int.MaxValue };
+        var minShufflingList = new List<BitArray>();
+
+        foreach (var word in words)
+        {
+            uLetters.CopyTo(originalSpan);
+            var repeatPosition = new List<int>();
+            var subWords = FilterWord(word, repeatPosition).Partition(wordSplitCount);
+            int repeatIndex = 0, characterCount = 0;
+            for (int i = 0; i < subWords.Length; i++)
+            {
+                string subWord = subWords[i];
+                if (subWord.Length == 1)
+                {
+                    var shuffling = FindShufflings(originalSpan, subWord[0]);
+                    minPositions = new int[] { shuffling.Length };
+                    minShufflingList.Add(shuffling);
+                }
+                else
+                {
+                    for (int shuffeCount = 0; shuffeCount <= insertCount; shuffeCount++)
+                    {
+                        for (int shuffeNumber = 0; shuffeNumber < (1 << shuffeCount); shuffeNumber++)
+                        {
+                            var shuffling = shuffeNumber.ToBinary(shuffeCount);
+                            originalSpan.CopyTo(span);
+                            shufflingList.Add(shuffling);
+                            Shuffle(span, shuffling);
+                            var position = currentPosition[..subWord.Length];
+                            int characterPosition = shuffling.Length;
+                            int currentIndex = 0;
+                            foreach (var character in subWord)
+                            {
+                                shuffling = FindShufflings(span, character);
+                                Shuffle(span, shuffling);
+                                shufflingList.Add(shuffling);
+                                characterPosition += shuffling.Length;
+                                position[currentIndex++] = characterPosition;
+                            }
+                            if (currentPosition[^1] < minPositions[^1])
+                            {
+                                minPositions = position.ToArray();
+                                minShufflingList.Clear();
+                                minShufflingList.AddRange(shufflingList);
+                            }
+                            shufflingList.Clear();
+                        }
+                    }
+                }
+                int shufflingCount = minShufflingList.Sum(bits => bits.Length);
+                var minShuffling = new BitArray(shufflingCount);
+                shufflingCount = 0;
+                foreach (var item in minShufflingList)
+                {
+                    foreach (bool subItem in item)
+                    {
+                        minShuffling[shufflingCount++] = subItem;
+                    }
+                }
+                for (int position = 0, shufflingIndex = 0; position < minShuffling.Length;)
+                {
+                    if (shufflingIndex < minPositions.Length &&
+                        position == minPositions[shufflingIndex])
+                    {
+                        result.Append(CHARACTER_POSITION);
+                        shufflingIndex++;
+                        characterCount++;
+                    }
+                    if (repeatIndex < repeatPosition.Count &&
+                        repeatPosition[repeatIndex] == characterCount)
+                    {
+                        result.Append(CHARACTER_POSITION);
+                        repeatIndex++;
+                        characterCount++;
+                    }
+                    else
+                    {
+                        result.Append(minShuffling[position] ? INSIDE : OUTSIDE);
+                        position++;
+                    }
+                }
+                if (minPositions[^1] == minShuffling.Length)
+                {
+                    result.Append(CHARACTER_POSITION);
+                    characterCount++;
+                }
+                while (repeatIndex < repeatPosition.Count &&
+                    repeatPosition[repeatIndex] == characterCount)
+                {
+                    result.Append(CHARACTER_POSITION);
+                    repeatIndex++;
+                    characterCount++;
+                }
+                if (i < subWords.Length - 1)
+                    Shuffle(originalSpan, minShuffling);
+                minPositions[^1] = int.MaxValue;
+                minShufflingList.Clear();
+            }
+            result.Append(WORD_SEPARATOR);
+        }
+        return result.RemoveLast().ToString();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -281,6 +386,14 @@ public static class PerfectShuffle
             ShuffleInside(letterSpan);
         else
             ShuffleOutside(letterSpan);
+    }
+
+    private static void Shuffle(Span<char> letterSpan, BitArray bits)
+    {
+        foreach (bool inside in bits)
+        {
+            Shuffle(letterSpan, inside);
+        }
     }
 
     [SkipLocalsInit]
@@ -306,5 +419,4 @@ public static class PerfectShuffle
         for (int i = half; i < copy.Length; i++)
             letterSpan[((i - half) << 1) + 1] = copy[i];
     }
-
 }

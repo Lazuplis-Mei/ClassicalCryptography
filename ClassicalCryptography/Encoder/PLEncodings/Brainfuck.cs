@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Utils;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.PLEncodings;
 
@@ -165,5 +163,4 @@ public static class Brainfuck
             _ => '-'.Repeat(count)
         };
     }
-
 }

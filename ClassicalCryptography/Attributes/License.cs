@@ -9,18 +9,22 @@ public enum License
     /// 没有协议
     /// </summary>
     None,
+
     /// <summary>
     /// 无条件许可
     /// </summary>
     Unlicense,
+
     /// <summary>
     /// MIT协议
     /// </summary>
     MIT,
+
     /// <summary>
     /// Apache License 2.0
     /// </summary>
     Apache2,
+
     /// <summary>
     /// GNU GENERAL PUBLIC LICENSE Version 2
     /// </summary>

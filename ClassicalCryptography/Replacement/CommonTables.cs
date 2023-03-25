@@ -158,5 +158,8 @@ public static partial class CommonTables
     public static readonly SingleReplacementCipher IChingEightTrigramsBase64 =
         new(Base64, "䷁䷗䷆䷒䷎䷣䷭䷊䷏䷲䷧䷵䷽䷶䷟䷡䷇䷂䷜䷻䷦䷾䷯䷄䷬䷐䷮䷹䷞䷰䷛䷪䷖䷚䷃䷨䷳䷕䷑䷙䷢䷔䷿䷥䷷䷝䷱䷍䷓䷩䷺䷼䷴䷤䷸䷈䷋䷘䷅䷉䷠䷌䷫䷀☯");
 
-
+    /// <summary>
+    /// 火星文
+    /// </summary>
+    public static readonly SingleReplacementCipher MarsLanguage = new(Properties.Resources.MarsLanguagePlain, Properties.Resources.MarsLanguageText);
 }

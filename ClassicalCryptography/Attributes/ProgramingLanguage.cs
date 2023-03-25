@@ -9,17 +9,19 @@ public enum ProgramingLanguage
     /// Python
     /// </summary>
     Python,
+
     /// <summary>
     /// JavaScript
     /// </summary>
     JavaScript,
+
     /// <summary>
     /// PHP
     /// </summary>
     PHP,
+
     /// <summary>
     /// CSharp
     /// </summary>
     CSharp,
-
 }

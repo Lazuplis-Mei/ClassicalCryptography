@@ -13,14 +13,17 @@ internal static class GZip
         return memory.ToArray();
     }
 
-    public static byte[] Decompress(byte[] bytes)
+    public static byte[] Decompress(byte[] bytes) => DecompressToStream(bytes).ToArray();
+
+    public static MemoryStream DecompressToStream(byte[] bytes)
     {
         var memory = new MemoryStream(bytes);
         GZipStream gzip = new(memory, CompressionMode.Decompress);
         memory = new MemoryStream();
         gzip.CopyTo(memory);
         gzip.Close();
-        return memory.ToArray();
+        memory.Seek(0, SeekOrigin.Begin);
+        return memory;
     }
 
 }

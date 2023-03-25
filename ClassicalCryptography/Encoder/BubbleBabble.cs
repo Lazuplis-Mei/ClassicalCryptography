@@ -23,6 +23,8 @@ public partial class BubbleBabble : IEncoding
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string EncodeString(string text)
     {
+        if (string.IsNullOrEmpty(text))
+            return "xexax";
         return Encode(Encoding.GetBytes(text));
     }
 
@@ -106,13 +108,7 @@ public partial class BubbleBabble : IEncoding
     public static byte[] Decode(string text)
     {
         int checksum = 1;
-
-        if (text[0] != 'x')
-            throw new ArgumentException("字符串必须以'x'开头", nameof(text));
-        if (text[^1] != 'x')
-            throw new ArgumentException("字符串必须以'x'结尾", nameof(text));
-        if (text.Length != 5 && text.Length % 6 != 5)
-            throw new ArgumentException("字符串长度不正确", nameof(text));
+        Guard.IsTrue(CheckString(text));
 
         string[] texts = text[1..^1].Partition(6);
         var lastTuple = texts.Length - 1;
@@ -155,6 +151,8 @@ public partial class BubbleBabble : IEncoding
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string DecodeString(string text)
     {
+        if (text == "xexax")
+            return string.Empty;
         return Encoding.GetString(Decode(text));
     }
 
@@ -172,6 +170,6 @@ public partial class BubbleBabble : IEncoding
         return BubbleBabbleRegex().IsMatch(text);
     }
 
-    [GeneratedRegex("^[bcdfghklmnprstvzxaeiouy]{5}(-[bcdfghklmnprstvzxaeiouy]{5})*$")]
+    [GeneratedRegex("^([a-z-[jqw]]{5})(-[a-z-[jqw]]{5})*$")]
     private static partial Regex BubbleBabbleRegex();
 }

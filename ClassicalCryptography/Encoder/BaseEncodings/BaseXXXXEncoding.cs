@@ -14,6 +14,7 @@ class BaseXXXXEncoding
     private readonly string[] pairStrings;
     private readonly Dictionary<int, List<char>> lookupE = new();
     private readonly Dictionary<int, (int, int)> lookupD = new();
+
     public BaseXXXXEncoding(int charBits, int byteBits, string[] pairStrs)
     {
         BITS_PER_CHAR = charBits;

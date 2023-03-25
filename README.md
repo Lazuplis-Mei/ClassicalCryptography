@@ -68,7 +68,7 @@ cipher.Encrypt("12345678", key)//12675834
 
 * 按列读出即为"526137489"
 
-```text
+```csharp
 var cipher = new TriangleCipher();
 cipher.Encrypt("123456789");//526137489
 ```

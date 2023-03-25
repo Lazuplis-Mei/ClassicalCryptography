@@ -4,10 +4,10 @@
 /// 大写罗马数字
 /// </summary>
 [ReferenceFrom("https://github.com/qntm/big-roman/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
-public static partial class RomanNumerals
+public static class RomanNumerals
 {
     const char BAR_HAT = '\u0305';
-    static readonly string[][] banks = new[]
+    static readonly string[][] romanNumers = new[]
     {
         new[] { "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"},
         new[] { "", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"},
@@ -22,13 +22,13 @@ public static partial class RomanNumerals
     /// </summary>
     /// <param name="arabicDigit">个位数</param>
     /// <param name="powerOfTen">指数</param>
-    public static string ArabicToRoman(int arabicDigit, int powerOfTen)
+    private static string ArabicToRoman(int arabicDigit, int powerOfTen)
     {
-        var bank = banks[powerOfTen % 3][arabicDigit];
+        var number = romanNumers[powerOfTen % 3][arabicDigit];
         var result = new StringBuilder();
-        for (int i = 0; i < bank.Length; i++)
+        for (int i = 0; i < number.Length; i++)
         {
-            result.Append(bank[i]);
+            result.Append(number[i]);
             for (int j = 0; j < powerOfTen / 3; j++)
                 result.Append(BAR_HAT);
         }
@@ -51,7 +51,7 @@ public static partial class RomanNumerals
     }
 
     /// <summary>
-    /// RomanToArabic
+    /// 将罗马数字转换成阿拉伯数字
     /// </summary>
     public static ulong RomanToArabic(string romanNumeral)
     {
@@ -89,6 +89,6 @@ public static partial class RomanNumerals
         if (index != romanSpan.Length)
             throw new ArgumentException($"无法转换剩余的数字，位置:{index}", nameof(romanNumeral));
 
-        return ulong.Parse(string.Concat(arabicDigits));
+        return ulong.Parse(arabicDigits.ToString());
     }
 }

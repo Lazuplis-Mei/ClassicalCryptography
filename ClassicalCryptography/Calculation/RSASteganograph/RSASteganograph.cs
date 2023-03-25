@@ -20,14 +20,17 @@ public static class RSASteganograph
         /// 1024位RSA
         /// </summary>
         RSA1024 = 64,
+
         /// <summary>
         /// 2048位RSA
         /// </summary>
         RSA2048 = 128,
+
         /// <summary>
         /// 3072位RSA
         /// </summary>
         RSA3072 = 192,
+
         /// <summary>
         /// 4096位RSA
         /// </summary>
@@ -40,14 +43,17 @@ public static class RSASteganograph
     /// 短密钥长度
     /// </summary>
     public const int RSA_KEYSIZE_SHORT = 1024;
+
     /// <summary>
     /// 中等密钥长度
     /// </summary>
     public const int RSA_KEYSIZE_MEDIUM = RSA_KEYSIZE_SHORT * 2;
+
     /// <summary>
     /// 长密钥长度
     /// </summary>
     public const int RSA_KEYSIZE_LONG = RSA_KEYSIZE_SHORT * 3;
+
     /// <summary>
     /// 最长密钥长度
     /// </summary>
@@ -56,7 +62,8 @@ public static class RSASteganograph
     /// <summary>
     /// 用于生成质数时预留的字节长度(只是粗略的估计)
     /// </summary>
-    public const int REMAIN_BYTECOUNT = 5;
+    public const int REMAIN_BYTESCOUNT = 5;
+
     /// <summary>
     /// 标记前缀字节的结尾
     /// </summary>
@@ -66,6 +73,7 @@ public static class RSASteganograph
     /// 默认的RSA指数
     /// </summary>
     public const int RSA_EXPONENT = 65537;
+
     /// <summary>
     /// 默认的RSA指数字符串形式
     /// </summary>
@@ -90,11 +98,12 @@ public static class RSASteganograph
     {
         Guard.IsTrue(Enum.IsDefined(keySize));
         int bytesCount = (int)keySize;
-        Guard.HasSizeLessThanOrEqualTo(prefix, bytesCount - REMAIN_BYTECOUNT);
-        Guard.IsFalse(prefix.Contains((byte)0));
+        Guard.HasSizeLessThanOrEqualTo(prefix, bytesCount - REMAIN_BYTESCOUNT);
+        Guard.IsFalse(prefix.Contains(PREFIX_END_FLAG));
 
         Span<byte> bigIntegerBytes = bytesCount.CanAllocate()
-            ? stackalloc byte[bytesCount] : new byte[bytesCount];
+            ? stackalloc byte[bytesCount]
+            : new byte[bytesCount];
 
         prefix.CopyTo(bigIntegerBytes);
         int prefixRegionCount = prefix.Length + 1;
@@ -103,7 +112,7 @@ public static class RSASteganograph
         //为了避免生成质数时，数值的增长覆盖了前缀字节结尾的标记，扩大了寻找质数的范围
         bigIntegerBytes[prefixRegionCount] >>= 1;
 
-        return new BigInteger(bigIntegerBytes, true, true).NextPrime();
+        return new BigInteger(bigIntegerBytes, true, true).ParallelFindPrime();
     }
 
     /// <summary>
@@ -177,7 +186,7 @@ public static class RSASteganograph
     /// <returns>xml格式的RSA私钥</returns>
     public static string GenerateRSAPrivateKey(Span<byte> prefixP, Span<byte> prefixQ)
     {
-        int prefixRegionCount = Math.Max(prefixP.Length, prefixQ.Length) + REMAIN_BYTECOUNT;
+        int prefixRegionCount = Math.Max(prefixP.Length, prefixQ.Length) + REMAIN_BYTESCOUNT;
         var keySize = GetKeySize(prefixRegionCount);
 
         var P = GeneratePrime(prefixP, keySize);
@@ -193,7 +202,7 @@ public static class RSASteganograph
                 <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
                 <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
                 <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
-                _ => throw new ArgumentException("前缀字节的长度过长"),
+                _ => throw new ArgumentException("前缀字节的长度过长", nameof(prefixRegionCount)),
             };
         }
     }
@@ -258,10 +267,10 @@ public static class RSASteganograph
 
         int prifixEndofP = Array.IndexOf(pBytes, PREFIX_END_FLAG);
         if (prifixEndofP == -1)
-            prifixEndofP = pBytes.Length - REMAIN_BYTECOUNT;
+            prifixEndofP = pBytes.Length - REMAIN_BYTESCOUNT;
         int prifixEndofQ = Array.IndexOf(qBytes, PREFIX_END_FLAG);
         if (prifixEndofQ == -1)
-            prifixEndofQ = qBytes.Length - REMAIN_BYTECOUNT;
+            prifixEndofQ = qBytes.Length - REMAIN_BYTESCOUNT;
 
         return (pBytes.SubArray(0, prifixEndofP), qBytes.SubArray(0, prifixEndofQ));
     }
@@ -280,8 +289,7 @@ public static class RSASteganograph
     {
         var (prifixP, prifixQ) = GetPrifix(privateKey);
         int length = prifixP.Count + prifixQ.Count;
-        Span<byte> prifix = length.CanAllocate()
-            ? stackalloc byte[length] : new byte[length];
+        Span<byte> prifix = length.CanAllocate() ? stackalloc byte[length] : new byte[length];
         prifixP.CopyTo(prifix);
         prifixQ.CopyTo(prifix[prifixP.Count..]);
         return Encoding.GetString(prifix);

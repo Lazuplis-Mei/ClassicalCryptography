@@ -1,4 +1,5 @@
 ﻿namespace ClassicalCryptography.Attributes;
+
 /// <summary>
 /// 指示代码是参考其他代码或从其他语言的代码翻译而来，可能不符合当前项目代码的编写规范
 /// </summary>
@@ -26,13 +27,14 @@ public sealed class ReferenceFromAttribute : Attribute
     /// <param name="sourceLink">参考代码的来源链接</param>
     /// <param name="sourceLanguage">参考代码的编程语言</param>
     /// <param name="sourceLicense">参考代码的开源协议</param>
-    public ReferenceFromAttribute(string sourceLink,
+    public ReferenceFromAttribute(
+        string sourceLink,
         ProgramingLanguage sourceLanguage = ProgramingLanguage.CSharp,
-        License sourceLicense = License.None)
+        License sourceLicense = License.None
+    )
     {
         SourceLanguage = sourceLanguage;
         SourceLink = sourceLink;
         SourceLicense = sourceLicense;
     }
-
 }

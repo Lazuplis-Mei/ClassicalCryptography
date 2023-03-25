@@ -69,7 +69,7 @@ internal static class BaseConverter
             span[i--] = (char)('0' + (number & 0B11));
             number >>= 2;
         }
-        return new(span[i..]);
+        return new(span[(i + 1)..]);
     }
 
     /// <summary>

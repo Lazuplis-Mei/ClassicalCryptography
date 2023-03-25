@@ -35,5 +35,15 @@ namespace ClassicalCryptographyTest
             }
         }
 
+        [TestMethod]
+        public void TestShortHide5XXXXX()
+        {
+            var cipher = new ShortHide5();
+            var text = "XXXXX";
+            var cipherText = cipher.Encrypt(text);
+            var result = cipher.Decrypt(cipherText);
+            Assert.AreEqual(text, result);
+        }
+
     }
 }

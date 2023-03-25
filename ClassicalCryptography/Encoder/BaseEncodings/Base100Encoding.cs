@@ -13,14 +13,12 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 [ReferenceFrom("https://github.com/stek29/base100/blob/master/base100.py", ProgramingLanguage.Python, License.Unlicense)]
 public class Base100Encoding : IEncoding
 {
-
     /// <inheritdoc/>
     [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
         int length = bytes.Length << 2;
-        Span<byte> emojiBytes = length.CanAllocate() ?
-            stackalloc byte[length] : new byte[length];
+        Span<byte> emojiBytes = length.CanAllocate() ? stackalloc byte[length] : new byte[length];
         for (int i = 0; i < bytes.Length; i++)
         {
             int j = i << 2;
@@ -43,15 +41,14 @@ public class Base100Encoding : IEncoding
         Guard.IsEqualTo(emojiBytes.Length & 0B11, 0);
 
         var bytes = new byte[emojiBytes.Length >> 2];
-
-        for (int i = 0, temp = 0; i < emojiBytes.Length; i++)
+        int temp = 0;
+        for (int i = 0; i < emojiBytes.Length; i++)
         {
             if ((i & 0B11) == 2)
-                temp = ((emojiBytes[i] - 0x8F) << 6) % 0x100;
+                temp = (byte)((emojiBytes[i] - 0x8F) << 6);
             else if ((i & 0B11) == 3)
                 bytes[i >> 2] = (byte)(emojiBytes[i] - 0xB7 + temp);
         }
         return bytes;
     }
-
 }

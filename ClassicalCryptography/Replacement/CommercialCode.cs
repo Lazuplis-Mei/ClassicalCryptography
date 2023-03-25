@@ -9,7 +9,20 @@ namespace ClassicalCryptography.Replacement;
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
 public static class CommercialCode
 {
-    private static readonly string charDATA = Encoding.Unicode.GetString(GZip.Decompress(Resources.CC));
+    private static readonly Dictionary<char, short> commercialCodeData = new();
+    private static string commercialCodeString = string.Empty;
+    private static bool dataLoaded = false;
+
+    private static void LoadData()
+    {
+        commercialCodeString = Encoding.UTF8.GetString(GZip.Decompress(Resources.CommercialCode));
+        for (short i = 0; i < commercialCodeString.Length; i++)
+        {
+            if (commercialCodeString[i] != commercialCodeString[0])
+                commercialCodeData.Add(commercialCodeString[i], i);
+        }
+        dataLoaded = true;
+    }
 
     /// <summary>
     /// 解密中文电码串(4个数字一组)
@@ -25,10 +38,11 @@ public static class CommercialCode
     [SkipLocalsInit]
     public static string FromCodes(params short[] codes)
     {
+        if (!dataLoaded) LoadData();
         Span<char> span = codes.Length.CanAllocateString()
             ? stackalloc char[codes.Length] : new char[codes.Length];
         for (int i = 0; i < span.Length; i++)
-            span[i] = charDATA[codes[i]];
+            span[i] = commercialCodeString[codes[i]];
         return new(span);
     }
 
@@ -37,12 +51,12 @@ public static class CommercialCode
     /// </summary>
     public static short[] ToCodes(string text)
     {
+        if (!dataLoaded) LoadData();
         var codes = new short[text.Length];
         for (int i = 0; i < codes.Length; i++)
         {
-            codes[i] = (short)charDATA.IndexOf(text[i]);
-            if (codes[i] == -1)
-                codes[i] = 0;
+            if (commercialCodeData.ContainsKey(text[i]))
+                codes[i] = commercialCodeData[text[i]];
         }
         return codes;
     }
@@ -53,15 +67,16 @@ public static class CommercialCode
     [SkipLocalsInit]
     public static string ToCodesString(string text)
     {
+        if (!dataLoaded) LoadData();
         int len = text.Length << 2;
         Span<char> span = len.CanAllocateString()
             ? stackalloc char[len] : new char[len];
 
         for (int i = 0; i < text.Length; i++)
         {
-            var code = charDATA.IndexOf(text[i]);
-            if (code == -1)
-                code = 0;
+            var code = 0;
+            if (commercialCodeData.TryGetValue(text[i], out short value))
+                code = value;
             code.ToString("D4").CopyTo(span[(i << 2)..]);
         }
         return new(span);

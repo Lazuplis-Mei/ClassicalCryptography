@@ -183,5 +183,4 @@ public class Base85Encoding : IEncoding
 
         return result.ToArray();
     }
-
 }
