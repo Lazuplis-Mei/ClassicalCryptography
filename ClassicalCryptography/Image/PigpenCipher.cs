@@ -1,6 +1,5 @@
 ﻿using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
@@ -11,17 +10,9 @@ namespace ClassicalCryptography.Image;
 /// </summary>
 [SupportedOSPlatform("windows")]
 [Introduction("猪圈密码", "一种以格子为基础的替代式密码。")]
-public static partial class PigpenCipher
+public partial class PigpenCipher : IImageEncoder<string>
 {
-    /// <summary>
-    /// 图形密码
-    /// </summary>
-    public static CipherType Type => CipherType.Image;
 
-    /// <summary>
-    /// 图片保存的格式
-    /// </summary>
-    public static ImageFormat ImgFormat { get; set; } = ImageFormat.Png;
     /// <summary>
     /// 每行字母数
     /// </summary>
@@ -38,6 +29,8 @@ public static partial class PigpenCipher
     /// 额外字符笔刷
     /// </summary>
     public static Brush Extraground { get; set; } = Brushes.White;
+
+    #region 常量
 
     private const int LINE_WIDTH = 5;
     private const int FIGURE_SIZE = 60;
@@ -119,6 +112,8 @@ public static partial class PigpenCipher
         //省略了重复的
     };
 
+    #endregion
+
     /// <summary>
     /// 加密成图像
     /// </summary>
@@ -164,15 +159,6 @@ public static partial class PigpenCipher
             graphics.TranslateTransform(-graphics.Transform.OffsetX, FIGURE_SIZE);
         }
         return bitmap;
-    }
-
-    /// <summary>
-    /// 加密成图像
-    /// </summary>
-    public static void Encrypt(string plainText, string imagePath, bool variant = false)
-    {
-        using var bitmap = Encrypt(plainText, variant);
-        bitmap.Save(imagePath, ImgFormat);
     }
 
     /// <summary>
@@ -230,4 +216,7 @@ public static partial class PigpenCipher
         }
         return new string(str[..count]);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static Bitmap IImageEncoder<string>.Encode(string plain) => Encrypt(plain);
 }

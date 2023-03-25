@@ -8,7 +8,7 @@ namespace ClassicalCryptography.Encoder.PLEncodings;
 /// <remarks>
 /// 在线工具:<a href="https://www.splitbrain.org/services/ook">Brainfuck</a>
 /// </remarks>
-public static class Brainfuck
+public class Brainfuck : IStaticCipher<string, string>
 {
     /// <summary>
     /// 内存空间大小
@@ -19,6 +19,8 @@ public static class Brainfuck
     /// 字符编码
     /// </summary>
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    static CipherType IStaticCipher<string, string>.Type => CipherType.Calculation;
 
     /// <summary>
     /// 解释执行brainfuck代码
@@ -163,4 +165,10 @@ public static class Brainfuck
             _ => '-'.Repeat(count)
         };
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Encrypt(string plainText) => GenerateCode(plainText);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Decrypt(string cipherText) => Interpret(cipherText);
 }

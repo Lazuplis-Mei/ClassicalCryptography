@@ -10,7 +10,7 @@ internal static class StringExtension
     /// 字符串转换成可修改的内存
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<char> MemoryAsSpan(this string text)
+    public static Span<char> AsWriteableSpan(this string text)
     {
         var reference = MemoryMarshal.GetReference(text.AsSpan());
         return MemoryMarshal.CreateSpan(ref reference, text.Length);
@@ -33,9 +33,7 @@ internal static class StringExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void WriteElement(this XmlWriter writer, string name, BigInteger number)
     {
-        writer.WriteStartElement(name);
-        writer.WriteString(number.ToBase64());
-        writer.WriteEndElement();
+        writer.WriteElement(name, number.ToBase64());
     }
 
     /// <summary>

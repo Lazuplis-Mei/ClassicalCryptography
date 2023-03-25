@@ -11,7 +11,7 @@ namespace ClassicalCryptography.Calculation;
 /// 在线工具：<a href="http://erikdemaine.org/fonts/shuffle/">erikdemaine/shuffle</a>
 /// </remarks>
 [Introduction("完美洗牌密码", "对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果")]
-public static class PerfectShuffle
+public class PerfectShuffle : IStaticCipher<string, string>
 {
     private static readonly char[] separators = { ' ', ',', '.', ':', '"', '\'' };
 
@@ -50,6 +50,8 @@ public static class PerfectShuffle
         new(new[] { true, true, false, false, true }),
     };
 
+    static CipherType IStaticCipher<string, string>.Type => CipherType.Calculation;
+
     private static BitArray FindShufflings(Span<char> uLetters, char character)
     {
         for (int i = 0; i < 26; i++)
@@ -60,7 +62,7 @@ public static class PerfectShuffle
         throw new ArgumentException($"{character}不在指定范围中", nameof(character));
     }
 
-    /// <inheritdoc cref="ICipher{TP, TC}.Decrypt(TC)"/>
+    /// <inheritdoc/>
     [SkipLocalsInit]
     public static string Decrypt(string text)
     {
@@ -419,4 +421,8 @@ public static class PerfectShuffle
         for (int i = half; i < copy.Length; i++)
             letterSpan[((i - half) << 1) + 1] = copy[i];
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Encrypt(string plainText) => Encrypt(plainText);
+
 }

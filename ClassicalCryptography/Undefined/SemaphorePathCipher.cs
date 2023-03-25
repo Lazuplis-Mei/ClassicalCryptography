@@ -1,11 +1,7 @@
-﻿using ClassicalCryptography.Interfaces;
-using ClassicalCryptography.Utils;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
-using System.Text;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Undefined;
@@ -230,9 +226,6 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
     /// <summary>
     /// 加密指定的文本
     /// </summary>
-#if DEBUG
-    [SupportedOSPlatform("windows")]
-#endif
     public string[] Encrypt(string plainText)
     {
         int len = (plainText.Length * 3).SqrtCeil();
@@ -243,10 +236,6 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
             try
             {
                 cMatrix = GenerateMatrix(plainText.Length, len, len, t);
-#if DEBUG
-                if (Debugger.IsAttached)
-                    DrawSemaphores(cMatrix, $"temp_{plainText.GetHashCode()}.png");
-#endif
                 break;
             }
             catch

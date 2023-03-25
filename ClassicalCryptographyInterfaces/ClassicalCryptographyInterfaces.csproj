@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 	  <PackageReference Include="BidirectionalDictionary" Version="1.1.1" />
+	  <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 	</ItemGroup>
 
 </Project>

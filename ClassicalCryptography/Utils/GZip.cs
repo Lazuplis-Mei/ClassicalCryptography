@@ -4,6 +4,9 @@ namespace ClassicalCryptography.Utils;
 
 internal static class GZip
 {
+    /// <summary>
+    /// 压缩数据
+    /// </summary>
     public static byte[] Compress(byte[] bytes)
     {
         var memory = new MemoryStream();
@@ -13,8 +16,14 @@ internal static class GZip
         return memory.ToArray();
     }
 
+    /// <summary>
+    /// 解压数据
+    /// </summary>
     public static byte[] Decompress(byte[] bytes) => DecompressToStream(bytes).ToArray();
 
+    /// <summary>
+    /// 解压数据
+    /// </summary>
     public static MemoryStream DecompressToStream(byte[] bytes)
     {
         var memory = new MemoryStream(bytes);

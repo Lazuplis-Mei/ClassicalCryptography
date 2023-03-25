@@ -20,7 +20,7 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
     /// </summary>
     protected bool FillOrder = true;
 
-    private Dictionary<IKey<T>, ushort[]>? keys;
+    private Dictionary<int, ushort[]>? keys;
 
     /// <summary>
     /// 转换顺序
@@ -52,16 +52,16 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
         if (StoreKey)
         {
             keys ??= new();
-            if (!keys.ContainsKey(key))
+            if (!keys.ContainsKey(key.GetHashCode()))
             {
                 order = new ushort[textLength];
                 if (FillOrder)
                     order.FillOrder();
                 order = Transpose(order, key);
-                keys.Add(key, order);
+                keys.Add(key.GetHashCode(), order);
             }
             else
-                order = keys[key];
+                order = keys[key.GetHashCode()];
         }
         else
         {

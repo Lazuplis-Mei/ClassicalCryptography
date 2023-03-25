@@ -33,7 +33,7 @@ public static partial class PLEncoding
     public static string FromPythonBytes(string input)
     {
         var matches = PYHexRegex().Matches(input);
-        Span<byte> bytes = matches.Count <= StackLimit.MAX_BYTE_SIZE
+        Span<byte> bytes = matches.Count.CanAllocate()
             ? stackalloc byte[matches.Count] : new byte[matches.Count];
         for (int i = 0; i < matches.Count; i++)
         {

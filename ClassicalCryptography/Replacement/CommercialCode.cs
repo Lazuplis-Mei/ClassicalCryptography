@@ -7,11 +7,13 @@ namespace ClassicalCryptography.Replacement;
 /// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">中文电码</see>
 /// </summary>
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
-public static class CommercialCode
+public class CommercialCode : IStaticCipher<string, string>
 {
     private static readonly Dictionary<char, short> commercialCodeData = new();
     private static string commercialCodeString = string.Empty;
     private static bool dataLoaded = false;
+
+    static CipherType IStaticCipher<string, string>.Type => CipherType.Substitution;
 
     private static void LoadData()
     {
@@ -99,4 +101,10 @@ public static class CommercialCode
     {
         return FromCodeString(MorseCode.ShortDigit.FromMorse(morse));
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Encrypt(string plainText) => ToCodesString(plainText);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Decrypt(string cipherText) => FromCodeString(cipherText);
 }

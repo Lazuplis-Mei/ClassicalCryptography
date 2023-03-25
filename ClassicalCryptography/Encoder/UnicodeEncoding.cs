@@ -5,8 +5,10 @@ namespace ClassicalCryptography.Encoder;
 /// <summary>
 /// Unicode字符串
 /// </summary>
-public partial class UnicodeEncoding
+public partial class UnicodeEncoding : ICipher<string, string>
 {
+    CipherType ICipher<string, string>.Type => CipherType.Substitution;
+
     /// <summary>
     /// 转换成\u字符串
     /// </summary>
@@ -50,4 +52,10 @@ public partial class UnicodeEncoding
 
     [GeneratedRegex(@"\\u[0-9A-Fa-f]{1,4}")]
     private static partial Regex UnicodeRegex();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    string ICipher<string, string>.Encrypt(string plainText) => Encode(plainText);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    string ICipher<string, string>.Decrypt(string cipherText) => Decode(cipherText);
 }

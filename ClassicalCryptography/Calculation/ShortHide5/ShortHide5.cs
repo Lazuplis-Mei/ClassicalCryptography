@@ -8,7 +8,7 @@ namespace ClassicalCryptography.Calculation.ShortHide5;
 /// <a href="https://www.bilibili.com/read/cv15660906">Standard Short Hide5(标准SH5)</a>
 /// </summary>
 [Introduction("ShortHide5密码", "一种自创的英文文本加密方法")]
-public class ShortHide5 : ICipher<string, string>
+public class ShortHide5 : IStaticCipher<string, string>
 {
     private static readonly string[] singleAlphaBets;
     private static readonly string[,] doubleAlphaBets;
@@ -41,7 +41,7 @@ public class ShortHide5 : ICipher<string, string>
     }
 
     /// <inheritdoc/>
-    public CipherType Type => CipherType.Calculation;
+    public static CipherType Type => CipherType.Calculation;
 
     /// <summary>
     /// 解密SH5结构的内容
@@ -62,7 +62,7 @@ public class ShortHide5 : ICipher<string, string>
     }
 
     /// <inheritdoc/>
-    public string Decrypt(string cipherText) => DecryptSH5(new(cipherText));
+    public static string Decrypt(string cipherText) => DecryptSH5(new(cipherText));
 
     /// <summary>
     /// 加密指定的内容
@@ -89,7 +89,7 @@ public class ShortHide5 : ICipher<string, string>
     }
 
     /// <inheritdoc/>
-    public string Encrypt(string plainText) => EncryptSH5(plainText).ToString();
+    public static string Encrypt(string plainText) => EncryptSH5(plainText).ToString();
 
     /// <summary>
     /// 随机的3组加密

@@ -9,19 +9,21 @@ namespace ClassicalCryptography.Encoder;
 /// <remarks>
 /// ABC DEF GHI JKL MNO PQRS TUV WXYZ
 /// </remarks>
-public static partial class PinyinNineKey
+public partial class PinyinNineKey : IStaticCipher<string, string>
 {
     private static readonly BidirectionalDictionary<char, byte> keyboards = new()
     {
-        { 'A', 21 }, { 'B', 22 }, { 'C', 23 },
-        { 'D', 31 }, { 'E', 32 }, { 'F', 33 },
-        { 'G', 41 }, { 'H', 42 }, { 'I', 43 },
-        { 'J', 51 }, { 'K', 52 }, { 'L', 53 },
-        { 'M', 61 }, { 'N', 62 }, { 'O', 63 },
-        { 'P', 71 }, { 'Q', 72 }, { 'R', 73 }, { 'S', 74 },
-        { 'T', 81 }, { 'U', 82 }, { 'V', 83 },
-        { 'W', 91 }, { 'X', 92 }, { 'Y', 93 }, { 'Z', 94 }
+        { 'A', 21 }, { 'B', 22 }, { 'C', 23 },              //2
+        { 'D', 31 }, { 'E', 32 }, { 'F', 33 },              //3
+        { 'G', 41 }, { 'H', 42 }, { 'I', 43 },              //4
+        { 'J', 51 }, { 'K', 52 }, { 'L', 53 },              //5
+        { 'M', 61 }, { 'N', 62 }, { 'O', 63 },              //6
+        { 'P', 71 }, { 'Q', 72 }, { 'R', 73 }, { 'S', 74 }, //7
+        { 'T', 81 }, { 'U', 82 }, { 'V', 83 },              //8
+        { 'W', 91 }, { 'X', 92 }, { 'Y', 93 }, { 'Z', 94 }  //9
     };
+
+    static CipherType IStaticCipher<string, string>.Type => CipherType.Substitution;
 
     /// <summary>
     /// 将英文字母转换为九键输入
@@ -92,4 +94,10 @@ public static partial class PinyinNineKey
 
     [GeneratedRegex(@"\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-z]{1,6})\))?")]
     private static partial Regex ChineseCharWithPinyin();
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Encrypt(string plainText) => ToCodes(plainText);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Decrypt(string cipherText) => FromCodes(cipherText);
 }

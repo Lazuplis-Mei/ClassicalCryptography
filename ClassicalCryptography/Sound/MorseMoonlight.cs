@@ -57,6 +57,11 @@ public static partial class MorseMoonlight
     private const int L = M + T;
 
     /// <summary>
+    /// 音乐
+    /// </summary>
+    public static CipherType Type => CipherType.Sound;
+
+    /// <summary>
     /// 使用timidity编码为wav格式
     /// </summary>
     public static async void ExportWav(string morseCode, string filePath, string timidityPath = "timidity.exe")

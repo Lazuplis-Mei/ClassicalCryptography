@@ -82,5 +82,8 @@ public partial class JigsawCipher
         {
             return string.Join(',', KeyValue);
         }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => KeyValue.GetHashCode();
     }
 }

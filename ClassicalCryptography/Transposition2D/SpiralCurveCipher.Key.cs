@@ -56,5 +56,8 @@ public partial class SpiralCurveCipher
         /// 字符串形式
         /// </summary>
         public override string ToString() => KeyValue.ToString();
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => KeyValue.GetHashCode();
     }
 }

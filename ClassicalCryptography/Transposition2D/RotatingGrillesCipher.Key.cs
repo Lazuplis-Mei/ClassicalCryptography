@@ -98,5 +98,8 @@ public partial class RotatingGrillesCipher
         /// 密钥的字符串形式
         /// </summary>
         public string GetString() => KeyValue.ToString();
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => GetString().GetHashCode();
     }
 }

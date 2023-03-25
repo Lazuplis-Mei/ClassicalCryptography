@@ -76,9 +76,9 @@ internal static class RandomHelper
     }
 
     /// <summary>
-    /// 获得随机的排列
+    /// 获得随机的4进制数组
     /// </summary>
-    /// <param name="count">排列长度</param>
+    /// <param name="count">数组长度</param>
     public static QuaterArray RandomQuaterArray(int count)
     {
         var array = new QuaterArray(count);
@@ -107,23 +107,6 @@ internal static class RandomHelper
     }
 
     /// <summary>
-    ///  生成一个[min,max]范围的<see cref="BigInteger"/>
-    /// <para>see  </para>
-    /// </summary>
-    /// <param name="min">min value</param>
-    /// <param name="max">max value</param>
-    [ReferenceFrom("https://github.com/mikolajtr/dotnetprime/blob/master/MillerRabin/Helpers/PrimeGeneratorHelpers.cs#L8")]
-    public static BigInteger RandomBigInteger(BigInteger min, BigInteger max)
-    {
-        byte[] bytes = max.ToByteArray();
-
-        Random.Shared.NextBytes(bytes);
-        bytes[^1] &= 0x7F;
-        var value = new BigInteger(bytes);
-        return (value % (max - min + 1)) + min;
-    }
-
-    /// <summary>
     /// 随机的列表项目
     /// </summary>
     public static T RandomItem<T>(this List<T> list)
@@ -135,7 +118,7 @@ internal static class RandomHelper
     }
 
     /// <summary>
-    /// 随机的列表项目
+    /// 随机的数组项目
     /// </summary>
     public static T RandomItem<T>(this T[] array)
     {

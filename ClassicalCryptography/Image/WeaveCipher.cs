@@ -1,5 +1,6 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using ZXing.Common;
 
@@ -15,12 +16,8 @@ namespace ClassicalCryptography.Image;
 /// </remarks>
 [Introduction("编织图形密码", "https://tieba.baidu.com/p/7814788182")]
 [SupportedOSPlatform("windows")]
-public static partial class WeaveCipher
+public partial class WeaveCipher : IImageEncoder<string>
 {
-    /// <summary>
-    /// 图形密码
-    /// </summary>
-    public static CipherType Type => CipherType.Image;
 
     /// <summary>
     /// 前景颜色
@@ -122,4 +119,6 @@ public static partial class WeaveCipher
         return Encoding.UTF8.GetString(bytes);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static Bitmap IImageEncoder<string>.Encode(string plain) => Encrypt(plain);
 }

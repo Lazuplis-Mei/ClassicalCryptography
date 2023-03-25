@@ -3,17 +3,17 @@
 namespace ClassicalCryptography.Undefined;
 
 /// <summary>
-/// <para>弦艺术密码，使用22个针脚的欧拉字体(也可以更换为<see cref="nonEulerianFont"/>)</para>
+/// <para>弦艺术密码，使用22个针脚的欧拉字体(<see cref="nonEulerianFont"/>不被采用)</para>
 /// <see href="https://en.wikipedia.org/wiki/String_art"/>
 /// </summary>
 [Introduction("弦艺术密码", "https://en.wikipedia.org/wiki/String_art")]
-public class StringArtCipher
+public class StringArtCipher : IStaticCipher<string, string>
 {
     //2和Z在事实上是相同的
     private static readonly string[] eulerianFont = new[]
     {
         "tucglmdbopth", "bdfhsomkitbopab", "bdfvomkqobvqb", "hboigcapnji",
-        "tsihtabvfebolkqops", "sihtabvfebopt", "nikqobvfdbqvolk", 
+        "tsihtabvfebolkqops", "sihtabvfebopt", "nikqobvfdbqvolk",
         "isabopshlmdehti", "mdefvadopqklobm", "qolkmdekqsn", "tdfsmktabopt",
         "qklpabo", "vbilmdsfdeivabopv", "blabopamledm", "vboqkmdfvomfkdbqv",
         "thispobhfdbas",  "obfvbdfkmoqvdmskq", "thispobhfdbasmku",
@@ -40,6 +40,11 @@ public class StringArtCipher
     };
 
     private static readonly BidirectionalDictionary<char, string> fontMap;
+
+    /// <summary>
+    /// 替换密码
+    /// </summary>
+    public static CipherType Type => CipherType.Substitution;
 
     static StringArtCipher()
     {

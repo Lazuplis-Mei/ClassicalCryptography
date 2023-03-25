@@ -10,10 +10,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	  <FileAlignment>512</FileAlignment>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	  <FileAlignment>512</FileAlignment>
 	</PropertyGroup>
 
 	<ItemGroup>

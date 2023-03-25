@@ -16,21 +16,19 @@ namespace ClassicalCryptographyTest
         [DataRow("H246j5vidjU4rd21fftaT5z6swycuy", "When Pi is NOT 3,14")]
         public void TestShortHide5(string cipherText, string plainText)
         {
-            var cipher = new ShortHide5();
-            Assert.AreEqual(CipherType.Calculation, cipher.Type);
+            Assert.AreEqual(CipherType.Calculation, ShortHide5.Type);
 
-            Assert.AreEqual(plainText, cipher.Decrypt(cipherText));
+            Assert.AreEqual(plainText, ShortHide5.Decrypt(cipherText));
         }
 
         [TestMethod]
         public void TestShortHide5Generate()
         {
-            var cipher = new ShortHide5();
             for (int i = 0; i < 10; i++)
             {
                 var text = RandomString.GenerateUppers(10);
-                var cipherText = cipher.Encrypt(text);
-                var result = cipher.Decrypt(cipherText);
+                var cipherText = ShortHide5.Encrypt(text);
+                var result = ShortHide5.Decrypt(cipherText);
                 Assert.AreEqual(text, result);
             }
         }
@@ -38,10 +36,9 @@ namespace ClassicalCryptographyTest
         [TestMethod]
         public void TestShortHide5XXXXX()
         {
-            var cipher = new ShortHide5();
             var text = "XXXXX";
-            var cipherText = cipher.Encrypt(text);
-            var result = cipher.Decrypt(cipherText);
+            var cipherText = ShortHide5.Encrypt(text);
+            var result = ShortHide5.Decrypt(cipherText);
             Assert.AreEqual(text, result);
         }
 

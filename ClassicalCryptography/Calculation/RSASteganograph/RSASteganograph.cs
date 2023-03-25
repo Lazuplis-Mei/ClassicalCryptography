@@ -9,7 +9,7 @@ namespace ClassicalCryptography.Calculation.RSASteganograph;
 /// 以指定的前缀字节生成质数并计算RSA私钥
 /// </summary>
 [Introduction("RSA隐写术", "以指定的前缀字节生成质数并计算RSA私钥")]
-public static class RSASteganograph
+public class RSASteganograph : IStaticCipher<string, string>
 {
     /// <summary>
     /// RSA密钥长度
@@ -85,6 +85,8 @@ public static class RSASteganograph
     /// 字符编码
     /// </summary>
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    static CipherType IStaticCipher<string, string>.Type => CipherType.Calculation;
 
     private static readonly RSACryptoServiceProvider RSA_CSP = new();
 
@@ -294,4 +296,10 @@ public static class RSASteganograph
         prifixQ.CopyTo(prifix[prifixP.Count..]);
         return Encoding.GetString(prifix);
     }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Encrypt(string plainText) => GenerateRSAPrivateKey(plainText);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    static string IStaticCipher<string, string>.Decrypt(string cipherText) => GetTextFrom(cipherText);
 }

@@ -2,11 +2,11 @@
 
 internal static class ArrayExtension
 {
-
     /// <summary>
     /// 找到元素出现的所有位置
     /// </summary>
-    public static List<int> FindAll<T>(this T[] array, T item) where T : notnull
+    public static List<int> FindAll<T>(this T[] array, T item)
+        where T : notnull
     {
         var result = new List<int>();
         for (int i = 0; i < array.Length; i++)

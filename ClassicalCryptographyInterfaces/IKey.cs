@@ -12,35 +12,38 @@ public interface IKey<T>
     /// 密钥值
     /// </summary>
     T KeyValue { get; }
+
     /// <summary>
     /// 是否可逆
     /// </summary>
     bool CanInverse { get; }
+
     /// <summary>
     /// 逆向密钥(如果存在)
     /// </summary>
     IKey<T>? InversedKey { get; }
+
     /// <summary>
     /// 返回密钥的文本形式
     /// </summary>
     string GetString();
 
-    //以下的三个方法本应该是静态的抽象方法，但如果它没有实现就不能用于类型参数(在.net6预览的C#11中是允许的)
-
     /// <summary>
     /// 从文本格式创建密钥
     /// </summary>
     /// <param name="strKey">文本类型的密钥</param>
-    static IKey<T> FromString(string strKey) => throw new NotImplementedException();
+    static abstract IKey<T> FromString(string strKey);
+
     /// <summary>
     /// 产生随机密钥
     /// </summary>
     /// <param name="textLength">加密内容的长度</param>
-    static IKey<T> GenerateKey(int textLength) => throw new NotImplementedException();
+    static abstract IKey<T> GenerateKey(int textLength);
+
     /// <summary>
     /// 获得密钥的空间
     /// </summary>
     /// <param name="textLength">加密内容的长度</param>
-    static BigInteger GetKeySpace(int textLength) => throw new NotImplementedException();
+    static abstract BigInteger GetKeySpace(int textLength);
 
 }

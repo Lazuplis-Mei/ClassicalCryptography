@@ -24,7 +24,7 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
     /// 是否存储密钥
     /// </summary>
     public bool StoreKey { get; set; }
-    private Dictionary<IKey<T>, ushort[,]>? keys;
+    private Dictionary<int, ushort[,]>? keys;
     /// <summary>
     /// 划分二维顺序矩阵
     /// </summary>
@@ -58,15 +58,15 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         if (StoreKey)
         {
             keys ??= new();
-            if (!keys.ContainsKey(key))
+            if (!keys.ContainsKey(key.GetHashCode()))
             {
                 order = new ushort[width, height];
                 if (FillOrder)
                     order.FillOrderByRow();
                 order = Transpose(order, key);
-                keys.Add(key, order);
+                keys.Add(key.GetHashCode(), order);
             }
-            return keys[key];
+            return keys[key.GetHashCode()];
         }
         else
         {

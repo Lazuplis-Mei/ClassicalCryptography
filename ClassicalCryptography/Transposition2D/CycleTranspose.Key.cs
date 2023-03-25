@@ -128,5 +128,8 @@ public partial class CycleTranspose
         {
             return MathExtension.Factorial(textLength);
         }
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => keyValue.GetHashCode();
     }
 }

@@ -12,6 +12,7 @@ public interface ICipher<TP, TC, TKey>
     /// 密码类型
     /// </summary>
     CipherType Type { get; }
+
     /// <summary>
     /// 是否存储密钥
     /// </summary>
@@ -23,6 +24,7 @@ public interface ICipher<TP, TC, TKey>
     /// <param name="plainText">明文:要加密的内容</param>
     /// <param name="key">密钥</param>
     TC Encrypt(TP plainText, IKey<TKey> key);
+
     /// <summary>
     /// 解密指定的内容
     /// </summary>
@@ -30,7 +32,6 @@ public interface ICipher<TP, TC, TKey>
     /// <param name="key">密钥</param>
     TP Decrypt(TC cipherText, IKey<TKey> key);
 }
-
 
 /// <summary>
 /// 密码接口
@@ -49,6 +50,7 @@ public interface ICipher<TP, TC>
     /// </summary>
     /// <param name="plainText">明文:要加密的内容</param>
     TC Encrypt(TP plainText);
+
     /// <summary>
     /// 解密指定的内容
     /// </summary>

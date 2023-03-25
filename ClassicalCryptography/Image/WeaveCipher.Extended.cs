@@ -4,7 +4,7 @@ using ZXing.Common;
 
 namespace ClassicalCryptography.Image;
 
-public static partial class WeaveCipher
+public partial class WeaveCipher
 {
 
     private static readonly Point pointLT = Point.Empty;

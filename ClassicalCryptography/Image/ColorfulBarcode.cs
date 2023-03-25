@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using ZXing;
 using ZXing.QrCode;
@@ -13,35 +14,18 @@ namespace ClassicalCryptography.Image;
 /// </summary>
 [Introduction("彩色二维码", "以颜色通道分别存储多个二维码")]
 [SupportedOSPlatform("windows")]
-public static class ColorfulBarcode
+public class ColorfulBarcode
 {
-
-    /// <summary>
-    /// 二维码图像的变长
-    /// </summary>
-    public const int IMAGE_SIZE = 600;
 
     /// <summary>
     /// 图形密码
     /// </summary>
-    public static CipherType Type => CipherType.Image;
+    static CipherType Type => CipherType.Image;
 
     /// <summary>
-    /// 图片保存的格式
+    /// 二维码图像的边长
     /// </summary>
-    public static ImageFormat ImgFormat { get; set; } = ImageFormat.Png;
-
-    /// <summary>
-    /// 编码彩色二维码并保存
-    /// </summary>
-    /// <param name="text">要编码的字符串</param>
-    /// <param name="imagePath">图片保存路径</param>
-    /// <param name="useBase64">是否使用base64</param>
-    public static void SaveBarcode(string text, string imagePath, bool useBase64 = false)
-    {
-        using var bitmap = Encode(text, useBase64);
-        bitmap.Save(imagePath, ImgFormat);
-    }
+    public const int IMAGE_SIZE = 600;
 
     /// <summary>
     /// 编码彩色二维码
@@ -79,18 +63,6 @@ public static class ColorfulBarcode
 
         bitmap.UnlockBits(data);
         return bitmap;
-    }
-
-    /// <summary>
-    /// 编码6种基础颜色组合的彩色二维码并保存
-    /// </summary>
-    /// <param name="text">要编码的字符串</param>
-    /// <param name="imagePath">图片保存路径</param>
-    /// <param name="useBase64">是否使用base64</param>
-    public static void SaveSixColorBarcode(string text, string imagePath, bool useBase64 = false)
-    {
-        using var bitmap = EncodeSixColor(text, useBase64);
-        bitmap.Save(imagePath, ImgFormat);
     }
 
     /// <summary>

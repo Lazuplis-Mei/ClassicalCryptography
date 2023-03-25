@@ -23,6 +23,20 @@ internal static class BaseConverter
     }
 
     /// <summary>
+    /// 转换成10000进制
+    /// </summary>
+    public static ushort[] ToBase10000(ulong number)
+    {
+        var stack = new Stack<ushort>();
+        while (number != 0)
+        {
+            stack.Push((ushort)(number % 10000));
+            number /= 10000;
+        }
+        return stack.ToArray();
+    }
+
+    /// <summary>
     /// 从36进制转换
     /// </summary>
     public static ulong FromBase36(ReadOnlySpan<char> span)

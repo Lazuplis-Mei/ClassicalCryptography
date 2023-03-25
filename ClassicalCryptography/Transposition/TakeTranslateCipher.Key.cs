@@ -74,5 +74,8 @@ public partial class TakeTranslateCipher
         /// 字符串形式
         /// </summary>
         public string GetString() => ToString();
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => KeyValue.GetHashCode();
     }
 }

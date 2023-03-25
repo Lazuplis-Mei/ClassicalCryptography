@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 namespace ClassicalCryptography.Image;
 
-public static partial class PigpenCipher
+public partial class PigpenCipher
 {
 
     private static readonly Dictionary<((bool, bool, bool, bool), bool), char> figureDict = new()
