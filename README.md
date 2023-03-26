@@ -13,7 +13,7 @@
 * [声音密码](#Sound)
 * [未归类的密码](#Undefined)
 
-## 一维置换密码\(Transposition\){#Transposition}
+## Transposition
 
 这一类型的密码为一维置换密码，仅改变内容字符的排列顺序，不改变内容，排列顺序的决定方式是一个基于一维坐标的公式$f(L,x)$，其中$L$为文本长度，$x$为从0开始的坐标索引。
 
@@ -165,7 +165,9 @@ cipher.Encrypt("123456", key);//364251
 
 ----------------------------------------
 
-### 栅栏密码[^5]\(RailFenceCipher\){#RailFenceCipher}
+### RailFenceCipher
+
+栅栏密码
 
 * 密钥\(每组字数$n$\)
 
