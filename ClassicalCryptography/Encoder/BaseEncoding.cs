@@ -128,11 +128,69 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
+    /// 编码最基本形式的QuotedPrintable
+    /// </summary>
+    public static string ToQuotedPrintable(string input)
+    {
+        var result = new StringBuilder();
+        foreach (var character in input)
+        {
+            if (char.IsAscii(character))
+            {
+                if (character == '=')
+                    result.Append("=3D");
+                else
+                    result.Append(character);
+            }
+            else
+            {
+                var bytes = Encoding.GetBytes(character.ToString());
+                foreach (var value in bytes)
+                {
+                    result.Append('=');
+                    result.Append(GlobalTables.UHexString[value >> 4]);
+                    result.Append(GlobalTables.UHexString[value & 0xF]);
+                }
+            }
+        }
+        return result.ToString();
+    }
+
+    /// <summary>
     /// 从16进制编码转换
     /// </summary>
     public static string FromBase16(string input)
     {
         return Encoding.GetString(Convert.FromHexString(input));
+    }
+
+    /// <summary>
+    /// 解码最基本形式的QuotedPrintable
+    /// </summary>
+    public static string FromQuotedPrintable(string input)
+    {
+        IEnumerable<Match> matches = QuotedPrintableRegex().Matches(input);
+        var result = new StringBuilder();
+        foreach (var match in matches)
+        {
+            var group = match.Groups["Hex"];
+            if (group.Success)
+            {
+                int length = group.Value.Length / 3;
+                var bytes = new byte[length];
+                for (int i = 0; i < group.Value.Length; i += 3)
+                {
+                    bytes[i / 3] = (byte)(group.Value[i + 1].Base36Number() << 4);
+                    bytes[i / 3] += (byte)group.Value[i + 2].Base36Number();
+                }
+                result.Append(Encoding.GetString(bytes));
+                continue;
+            }
+            group = match.Groups["Other"];
+            if (group.Success)
+                result.Append(group.Value);
+        }
+        return result.ToString();
     }
 
     /// <summary>
@@ -199,4 +257,8 @@ public static partial class BaseEncoding
         var bytes = number.ToByteArray(true, true);
         return Encoding.GetString(bytes);
     }
+
+    [GeneratedRegex("(?<Hex>(=[0-9a-fA-F]{2})+)|(?<Other>[^=]+)")]
+    private static partial Regex QuotedPrintableRegex();
+
 }

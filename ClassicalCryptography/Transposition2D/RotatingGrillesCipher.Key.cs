@@ -14,7 +14,6 @@ public partial class RotatingGrillesCipher
         /// 密钥值
         /// </summary>
         public QuaterArray KeyValue { get; }
-        private Key(QuaterArray keyValue) => KeyValue = keyValue;
         /// <summary>
         /// 密钥不可逆
         /// </summary>
@@ -24,6 +23,10 @@ public partial class RotatingGrillesCipher
         /// </summary>
         public IKey<QuaterArray>? InversedKey => null;
 
+        /// <summary>
+        /// 旋转栅格密码的密钥
+        /// </summary>
+        public Key(QuaterArray keyValue) => KeyValue = keyValue;
 
         /// <summary>
         /// 从文本格式创建密钥

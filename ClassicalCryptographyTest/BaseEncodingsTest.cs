@@ -69,5 +69,13 @@ namespace ClassicalCryptographyTest
             Assert.AreEqual(text, BaseEncoding.FromBase85(encodingText));
         }
 
+        [TestMethod]
+        [DataRow("012=Q是的ABC", "012=3DQ=E6=98=AF=E7=9A=84ABC")]
+        public void TestQuotedPrintable(string text, string encodingText)
+        {
+            Assert.AreEqual(encodingText, BaseEncoding.ToQuotedPrintable(text));
+            Assert.AreEqual(text, BaseEncoding.FromQuotedPrintable(encodingText));
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
-/// 猫映射变换密码
+/// 猫映射变换密码<a href="https://en.wikipedia.org/wiki/Arnold%27s_cat_map">Arnold's_cat_map</a>
 /// </summary>
 [Introduction("猫映射变换密码", "文本按照Arnold猫变换的顺序加密文本。")]
 public class ArnoldCatMapCipher : TranspositionCipher2D

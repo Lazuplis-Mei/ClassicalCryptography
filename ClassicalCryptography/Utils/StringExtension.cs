@@ -85,6 +85,8 @@ internal static class StringExtension
             return character - '0';
         else if (character is >= 'a' and <= 'z')
             return character - 'a' + 10;
+        else if (character is >= 'A' and <= 'Z')
+            return character - 'A' + 10;
         throw new ArgumentOutOfRangeException(nameof(character));
     }
 

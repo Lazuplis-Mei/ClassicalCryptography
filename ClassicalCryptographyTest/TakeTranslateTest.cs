@@ -29,6 +29,7 @@ namespace ClassicalCryptographyTest
 
         [TestMethod]
         [DataRow("012345", "015234", "23")]
+        [DataRow("0123", "0123", "32")]
         [DataRow("qwertyuiop", "qweyuirtop", "32")]
         [DataRow("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDLMNOWXYZPQRSIJKTUVEFGH", "47")]
         [DataRow("When I look at myself,I feel I'm so cute that I can't divert my eyes.",

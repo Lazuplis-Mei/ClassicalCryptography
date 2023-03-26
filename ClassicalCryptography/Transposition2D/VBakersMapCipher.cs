@@ -1,10 +1,13 @@
 ﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
-/// 魔改Baker's映射变换密码
+/// 面包师映射变换密码<a href="https://en.wikipedia.org/wiki/Baker%27s_map">Baker's_map</a>
 /// </summary>
-[Introduction("魔改Baker's映射变换密码",
-    "文本按照以Baker's映射(x,y)=>(2x,y/2)|2x>=N|(2x-N,(y+N)/2)为基础魔改的版本的顺序加密文本。")]
+/// <remarks>
+/// 原始版本的变换公式存在一定程度上的不便<br/>
+/// 实际的变换过程以代码为准
+/// </remarks>
+[Introduction("面包师映射变换密码", "文本按照面包师映射变换的顺序加密文本。")]
 public class VBakersMapCipher : TranspositionCipher2D
 {
     /// <summary>
@@ -35,14 +38,18 @@ public class VBakersMapCipher : TranspositionCipher2D
             for (int y = 0; y < N; y++)
             {
                 int xi = x << 1, yi = y >> 1;
-                if ((x << 1) >= N)
+                if ((N & 1) == 1 && y == N - 1)
+                    xi = x;
+                else
                 {
-                    xi = (x << 1) - N;
-                    xi += (N + 1) & 1;
-                    yi = (y + N) >> 1;
+                    xi += y & 1;
+                    if (xi >= N)
+                    {
+                        xi -= N;
+                        yi += N >> 1;
+                        yi += N & 1;
+                    }
                 }
-                if (((y + N) & 1) == 1)
-                    yi = N - yi - 1;
                 indexes[xi, yi] = (ushort)(x + y * N);
             }
         }

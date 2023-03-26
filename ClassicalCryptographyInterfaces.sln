@@ -11,7 +11,43 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClassicalCryptographyTest",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{A8E389F4-51B0-44DF-8F07-34B2D39AAD6A}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
 		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{308545D3-2894-4DB2-8816-9D276E090E26}"
+	ProjectSection(SolutionItems) = preProject
+		Images\ArnoldCatMap.png = Images\ArnoldCatMap.png
+		Images\ColorfulBarcode.png = Images\ColorfulBarcode.png
+		Images\ColorfulBarcodeSixColor.png = Images\ColorfulBarcodeSixColor.png
+		Images\HilbertCurve.png = Images\HilbertCurve.png
+		Images\JigsawCipher.png = Images\JigsawCipher.png
+		Images\MoirePattern.png = Images\MoirePattern.png
+		Images\MoirePatternEmbedded.png = Images\MoirePatternEmbedded.png
+		Images\MoirePatternEmbeddedFilled.png = Images\MoirePatternEmbeddedFilled.png
+		Images\MoirePatternFilled.png = Images\MoirePatternFilled.png
+		Images\MoirePatternRemoved.png = Images\MoirePatternRemoved.png
+		Images\Pattens.png = Images\Pattens.png
+		Images\PigpenCipher1.png = Images\PigpenCipher1.png
+		Images\PigpenCipher2.png = Images\PigpenCipher2.png
+		Images\Semaphores.png = Images\Semaphores.png
+		Images\WeaveCipher.png = Images\WeaveCipher.png
+		Images\WeaveCipherExtend.png = Images\WeaveCipherExtend.png
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sound", "Sound", "{FEA6D162-F3AB-4599-9E5A-EA257D05F565}"
+	ProjectSection(SolutionItems) = preProject
+		Sound\MorseMoonlight.mid = Sound\MorseMoonlight.mid
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pattens", "Pattens", "{28B40FDC-3440-4EB1-A9C4-E77F33A35D6C}"
+	ProjectSection(SolutionItems) = preProject
+		Images\Pattens\5826912_0.png = Images\Pattens\5826912_0.png
+		Images\Pattens\5826912_1.png = Images\Pattens\5826912_1.png
+		Images\Pattens\5826912_2.png = Images\Pattens\5826912_2.png
+		Images\Pattens\5826912_3.png = Images\Pattens\5826912_3.png
+		Images\Pattens\5826912_4.png = Images\Pattens\5826912_4.png
 	EndProjectSection
 EndProject
 Global
@@ -35,6 +71,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{308545D3-2894-4DB2-8816-9D276E090E26} = {A8E389F4-51B0-44DF-8F07-34B2D39AAD6A}
+		{FEA6D162-F3AB-4599-9E5A-EA257D05F565} = {A8E389F4-51B0-44DF-8F07-34B2D39AAD6A}
+		{28B40FDC-3440-4EB1-A9C4-E77F33A35D6C} = {308545D3-2894-4DB2-8816-9D276E090E26}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1FC7EF75-96A0-4D3C-9095-EB8B19DE7BDC}

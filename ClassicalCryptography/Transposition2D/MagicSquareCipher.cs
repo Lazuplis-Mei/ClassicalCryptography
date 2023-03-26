@@ -110,7 +110,7 @@ public class MagicSquareCipher : TranspositionCipher2D
         }
         indexes[N >> 1, 0] = 0;
     }
-    //si, sj, start != 0
+
     private static void LouberelMethod(ushort[,] indexes, int N, int si, int sj, int start)
     {
         int i = N >> 1, j = 0;

@@ -8,12 +8,12 @@ namespace ClassicalCryptographyTest
     public class VBakersMapTest
     {
         [TestMethod]
-        [DataRow("0123456789ABCDEF", "0E1F8697C2D34A5B")]
+        [DataRow("0123456789ABCDEF", "04158C9D2637AEBF")]
         [DataRow("ABCDEFGHIJKLMNOPQRSTUWXYZ",
-                 "FYGZHPNQORUDWEXKILJMASBTC")]
+                 "AFBGCKPLQMUWXYZHDIEJRNSOT")]
         [DataRow("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                 "0X1Y2ZCLDMENO9PAQBU3V4W5IFJGKH6R7S8T")]
-        public void TestBakersMap(string plainText, string cipherText)
+                 "061728CIDJEKOUPVQW394A5BFLGMHNRXSYTZ")]
+        public void TestVBakersMap(string plainText, string cipherText)
         {
             var cipher = new VBakersMapCipher();
             Assert.AreEqual(CipherType.Transposition, cipher.Type);

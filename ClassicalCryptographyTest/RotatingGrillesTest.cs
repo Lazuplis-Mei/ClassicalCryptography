@@ -21,12 +21,8 @@ namespace ClassicalCryptographyTest
             qArr[2] = 1;
             qArr[3] = 0;
 
-            var keyStr = qArr.ToString();
-
             var cipher = new RotatingGrillesCipher();
-
-            var key = RotatingGrillesCipher.Key.FromString(keyStr);
-            Assert.AreEqual(keyStr, key.GetString());
+            var key = new RotatingGrillesCipher.Key(qArr);
 
             Assert.AreEqual(cipherText, cipher.Encrypt(plainText, key));
             Assert.AreEqual(plainText, cipher.Decrypt(cipherText, key)[..plainText.Length]);
