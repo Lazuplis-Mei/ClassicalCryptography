@@ -27,7 +27,9 @@
 
 ----------------------------------------
 
-### 倒序密码\(ReverseCipher\){#ReverseCipher}
+### ReverseCipher
+
+倒序密码
 
 * 无密钥
 * 加密过程
@@ -43,7 +45,9 @@ cipher.Encrypt("012345");//543210
 
 ----------------------------------------
 
-### 取平移密码\(TakeTranslateCipher\){#TakeTranslateCipher}
+### TakeTranslateCipher
+
+取平移密码
 
 * 密钥$(n,k)$
 * 密钥不可逆
@@ -88,7 +92,9 @@ cipher.Encrypt("12345678", key)//12675834
 
 ----------------------------------------
 
-### 三角形排列密码\(TriangleCipher\){#TriangleCipher}
+### TriangleCipher
+
+三角形排列密码
 
 * 无密钥
 * 补充字符\(默认\`\)
@@ -118,7 +124,9 @@ cipher.Encrypt("123456789");//526137489
 
 ----------------------------------------
 
-### 约瑟夫环[^1]密码\(JosephusCipher\){#JosephusCipher}
+### JosephusCipher
+
+约瑟夫环[^1]密码
 
 * 密钥$m$
 * 密钥不可逆
@@ -193,7 +201,7 @@ cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 
 ----------------------------------------
 
-## 二维置换密码\(Transposition2D\){#Transposition2D}
+## Transposition2D
 
 这一类型的密码为二维置换密码，仅改变内容字符的排列顺序，不改变内容，排列顺序的决定方式是一个基于二维坐标的公式$f(L,x,y)$，其中$L$为文本长度，$x$为从0开始的横坐标索引，$y$为从0开始的纵坐标索引。
 
@@ -214,7 +222,9 @@ cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 
 ----------------------------------------
 
-### 周期/列置换密码\(CycleTranspose\){#CycleTranspose}
+### CycleTranspose
+
+周期/列置换密码
 
 * 密钥\(多组排列对\)
 * 补充字符\(默认\`\)
@@ -263,7 +273,9 @@ cipher.Encrypt("Sitdownplease!", key);//dSoitlwenp!a`se
 
 ----------------------------------------
 
-### 扩展栅栏密码\(AdvancedRailFenceCipher\){#AdvancedRailFenceCipher}
+### AdvancedRailFenceCipher
+
+扩展栅栏密码
 
 * 密钥\(可能的排列\)
 * 补充字符\(默认\`\)
@@ -304,7 +316,9 @@ cipher.Encrypt("eg1ML9mymEqtKzeN0", key);//mz`9K`1E0gmNMq`Lt`eye
 
 ----------------------------------------
 
-### 旋转栅格密码\(RotatingGrillesCipher\){#RotatingGrillesCipher}
+### RotatingGrillesCipher
+
+旋转栅格密码
 
 * 密钥\(栅格位置\)
 * 补充字符\(默认\`\)
@@ -383,7 +397,9 @@ cipher.Encrypt("meetmeattwelvepm", key);//tmmveeewepeatlmt
 
 ----------------------------------------
 
-### 幻方顺序密码\(MagicSquareCipher\){#MagicSquareCipher}
+### MagicSquareCipher
+
+幻方顺序密码
 
 * 无密钥
 * 补充字符\(默认\`\)
@@ -417,7 +433,9 @@ cipher.Encrypt("123456789");//816357492
 
 ----------------------------------------
 
-### 希尔伯特曲线密码\(HilbertCurveCipher\){#HilbertCurveCipher}
+### HilbertCurveCipher
+
+希尔伯特曲线密码
 
 * 无密钥
 * 补充字符\(默认\`\)
@@ -447,7 +465,9 @@ cipher.Encrypt("0123456789ABCDEF");//03451276ED89FCBA
 
 ----------------------------------------
 
-### 螺旋曲线密码\(SpiralCurveCipher\){#SpiralCurveCipher}
+### SpiralCurveCipher
+
+螺旋曲线密码
 
 * 密钥\(列数\)
 * 补充字符\(默认\`\)
@@ -475,7 +495,9 @@ cipher.Encrypt("0123456789ABCDEF");//0123BCD4AFE59876
 
 ----------------------------------------
 
-### 猫映射变换[^6]密码\(ArnoldCatMapCipher\){#ArnoldCatMapCipher}
+### ArnoldCatMapCipher
+
+猫映射变换[^6]密码
 
 * 无密钥
 * 补充字符\(默认\`\)
@@ -525,7 +547,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 面包师映射变换[^7]密码\(VBakersMapCipher\){#VBakersMapCipher}
+### VBakersMapCipher
+
+面包师映射变换[^7]密码
 
 * 无密钥
 * 补充字符\(默认\`\)
@@ -582,7 +606,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 锯齿分割密码\(JigsawCipher\){#JigsawCipher}
+### JigsawCipher
+
+锯齿分割密码
 
 * 密钥\(文本方阵边长的一个整数分拆\)
 * 补充字符\(默认`\)
@@ -597,7 +623,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 数字华容道[^8]密码\(FifteenPuzzle\){#FifteenPuzzle}
+### FifteenPuzzle
+
+数字华容道[^8]密码
 
 * 数字华容道密码
 * 密钥\(移动步骤\)
@@ -655,7 +683,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 移动数字华容道密码\(SixteenPuzzle\){#SixteenPuzzle}
+### SixteenPuzzle
+
+移动数字华容道密码
 
 * 密钥\(移动步骤\)
 * 补充字符\(默认\`\)
@@ -704,7 +734,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 旋转阵列密码\(TwiddlePuzzle\){#TwiddlePuzzle}
+### TwiddlePuzzle
+
+旋转阵列密码
 
 * 密钥\(有序的旋转位置\)
 * 补充字符\(默认\`\)
@@ -751,7 +783,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-## 替换/代换密码\(Replacement\){#Replacement}
+## Replacement
 
 这一类型的密码是通过将明文的符号替换成其他符号来实现加密的过程。
 
@@ -765,9 +797,9 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 单表替换密码\(SingleReplacementCipher\){#SingleReplacementCipher}
+### SingleReplacementCipher
 
-这类密码将明文的字符对应为另一组字符，包括以下几个
+单表替换密码，这类密码将明文的字符对应为另一组字符，包括以下几个
 
 1. 仿射密码
 2. 凯撒密码
@@ -802,7 +834,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 摩斯密码\(MorseCode\){#MorseCode}
+### MorseCode
 
 * 纯英文字母摩斯密码
 * 扩展数字和符号的摩斯密码
@@ -810,7 +842,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 中文电码\(CommercialCode\){#CommercialCode}
+### CommercialCode
 
 * 标准中文电码(Chinese Commercial Code)[^9]
 * 使用数字短码进行编码
@@ -819,7 +851,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-## 编码转换\(Encoder\){#Encoder}
+## Encoder
 
 计算机编码之间的转换，支持以下几种
 
@@ -856,7 +888,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### 编程语言\(PLEncoding\){#PLEncoding}
+### PLEncoding
 
 与编程语言强烈相关的，支持以下几种
 
@@ -874,7 +906,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-## 计算式的密码\(Calculation\){#Calculation}
+## Calculation
 
 使用特殊的自定义算法计算的密码，实现了以下几种
 
@@ -884,7 +916,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### ShortHide5{#ShortHide5}
+### ShortHide5
 
 * 无密钥
 * [Standard Short Hide5(标准SH5)](https://www.bilibili.com/read/cv15660906)
@@ -892,9 +924,10 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 
 ----------------------------------------
 
-### RSA隐写术\(RSASteganograph\){#RSASteganograph}
+### RSASteganograph
 
-* RSA隐写术
+RSA隐写术
+
 * 以指定的前缀字节生成质数并计算RSA私钥
 * 生成的私钥可以像正常的私钥一样使用
 * 可指定生成xml或pem格式的密钥
@@ -909,15 +942,16 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 
 ----------------------------------------
 
-### 完美洗牌密码\(PerfectShuffle\){#PerfectShuffle}
+### PerfectShuffle
 
-* 完美洗牌密码
+完美洗牌密码
+
 * 对于字母表进行2种交替式的完美洗牌
 * 取指定的首字母作为结果
 
 ----------------------------------------
 
-## 图像密码\(Image\){#Image}
+## Image
 
 加密结果为图像的密码，包含以下几种
 
@@ -927,7 +961,9 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 * [编织图形密码](#WeaveCipher)
 
 
-### 猪圈密码\(PigpenCipher\){#PigpenCipher}
+### PigpenCipher
+
+猪圈密码
 
 * 无密钥
 * 仅处理纯英文字母文本
@@ -938,7 +974,9 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 
 ----------------------------------------
 
-### 彩色二维码\(ColorfulBarcode\){#ColorfulBarcode}
+### ColorfulBarcode
+
+彩色二维码
 
 * 无密钥
 1. 文字分成3部分/6部分
@@ -966,9 +1004,10 @@ text = ColorfulBarcode.RecognizeSixColor(bitmap);//识别6色二维码
 
 ----------------------------------------
 
-### 摩尔纹\(MoirePattern\){#MoirePattern}
+### MoirePattern
 
-* 摩尔纹
+摩尔纹
+
 * 支持非嵌入式和嵌入式
 * 支持自定义条纹样式
 * 支持静态内容和多帧内容
@@ -1022,9 +1061,10 @@ MoirePattern.FillAndSavePattens(bitmap, 5, "E:/Pattens");
 
 ----------------------------------------
 
-### 编织图形密码\(WeaveCipher\){#WeaveCipher}
+### WeaveCipher
 
-* 编织图形密码
+编织图形密码
+
 * [参考实现逻辑](https://tieba.baidu.com/p/7814788182)
 * 扩展的(带有三角形的)图形的实现有所变化
 
@@ -1049,13 +1089,14 @@ bitmap.Save("E:/WeaveCipherExtend.png");
 
 ----------------------------------------
 
-## 声音密码\(Sound\){#Sound}
+## Sound
 
 加密结果为声音的密码
 
-### 摩斯月光奏鸣曲\(MorseMoonlight\){#MorseMoonlight}
+### MorseMoonlight
 
-* 摩斯月光奏鸣曲
+摩斯月光奏鸣曲
+
 * 将摩斯密码掺入月光奏鸣曲第一乐章的节奏中
 
 ```csharp
@@ -1069,7 +1110,9 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 
 ----------------------------------------
 
-## 未归类的密码{#Undefined}
+## Undefined
+
+未做具体归类的密码
 
 ### SemaphorePathCipher
 
