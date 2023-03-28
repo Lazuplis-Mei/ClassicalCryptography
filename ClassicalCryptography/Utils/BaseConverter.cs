@@ -13,6 +13,8 @@ internal static class BaseConverter
     /// </summary>
     public static string ToBase36(ulong number)
     {
+        if (number == 0)
+            return "0";
         var stack = new Stack<char>();
         while (number != 0)
         {

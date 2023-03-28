@@ -70,7 +70,7 @@ public static class MoirePattern
 
         var rect = new Rectangle(0, 0, imageWidth, imageHeight);
         var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>((void*)data.Scan0, imageWidth * imageHeight);
+        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
 
         for (int x = 0; x < imageWidth; x++)
         {
@@ -124,7 +124,7 @@ public static class MoirePattern
 
         var rect = new Rectangle(0, 0, imageWidth, imageHeight);
         var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>((void*)data.Scan0, imageWidth * imageHeight);
+        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
 
         for (int x = 0; x < imageWidth; x++)
         {
@@ -168,7 +168,7 @@ public static class MoirePattern
 
         var rect = new Rectangle(0, 0, imageWidth, imageHeight);
         var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>((void*)data.Scan0, imageWidth * imageHeight);
+        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
 
         using var bufferBitmap = new Bitmap(imageWidth, imageHeight);
         using var bufferGraphics = Graphics.FromImage(bufferBitmap);
@@ -182,7 +182,7 @@ public static class MoirePattern
             bufferGraphics.DrawString(texts[i], Font, brush, rectF);
 
             var bufferData = bufferBitmap.LockBits(rect, ImageLockMode.ReadWrite, bufferBitmap.PixelFormat);
-            var bufferDataSpan = new Span<int>((void*)bufferData.Scan0, imageWidth * imageHeight);
+            var bufferDataSpan = new Span<int>(bufferData.Scan0.ToPointer(), imageWidth * imageHeight);
 
             for (int x = 0; x < imageWidth; x++)
                 for (int y = 0; y < imageHeight; y++)

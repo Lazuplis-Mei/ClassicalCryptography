@@ -49,7 +49,7 @@ public class ColorfulBarcode
 
         var rect = new Rectangle(0, 0, IMAGE_SIZE, IMAGE_SIZE);
         var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>((void*)data.Scan0, IMAGE_SIZE * IMAGE_SIZE);
+        var dataSpan = new Span<int>(data.Scan0.ToPointer(), IMAGE_SIZE * IMAGE_SIZE);
         for (int x = 0; x < IMAGE_SIZE; x++)
         {
             for (int y = 0; y < IMAGE_SIZE; y++)
@@ -104,7 +104,7 @@ public class ColorfulBarcode
         var rect = new Rectangle(0, 0, IMAGE_SIZE, IMAGE_SIZE);
         var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
 
-        var dataSpan = new Span<int>((void*)data.Scan0, IMAGE_SIZE * IMAGE_SIZE);
+        var dataSpan = new Span<int>(data.Scan0.ToPointer(), IMAGE_SIZE * IMAGE_SIZE);
         for (int x = 0; x < IMAGE_SIZE; x++)
         {
             for (int y = 0; y < IMAGE_SIZE; y++)

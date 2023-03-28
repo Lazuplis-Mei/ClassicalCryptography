@@ -165,7 +165,7 @@ cipher.Encrypt("123456", key);//364251
 
 ----------------------------------------
 
-### RailFenceCipher
+### RailFenceCipher[^5]
 
 栅栏密码
 
@@ -216,7 +216,7 @@ cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 * [希尔伯特曲线密码](#HilbertCurveCipher)
 * [螺旋曲线密码](#SpiralCurveCipher)
 * [猫映射变换密码](#ArnoldCatMapCipher)
-* [魔改Baker\'s映射变换密码](#VBakersMapCipher)
+* [面包师映射变换密码](#VBakersMapCipher)
 * [锯齿分割密码](#JigsawCipher)
 * [数字华容道密码](#FifteenPuzzle)
 * [移动数字华容道密码](#SixteenPuzzle)
@@ -568,7 +568,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * 折叠前的样子
 
 | 0 | 4 | 1 | 5 | 2 | 6 | 3 | 7 |
-| - | - | - | - |
+| - | - | - | - | - | - | - | - |
 | 8 | C | 9 | D | A | E | B | F |
 
 * 折叠后的结果
@@ -636,10 +636,16 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 2. 右下角的位置空着
 3. 移动空位和相邻的内容交换
 4. 经过一系列移动后再读出方阵
+* 密钥由`QuaterArray`类型表示
+
+* 演示输入
+
+|       文本       |     密钥    |       结果       |
+| :--------------: | :---------: | :--------------: |
+| 0123456789ABCDEF | `1,2,2,3,0` | 012345678D9ACE_B |
+
 * 演示过程
-* 密钥由`QuaterArray`类型表示，数字代表移动方向
 * 步骤为`1,2,2,3,0`\(↑←←↓→\)
-* 初始局面为
 
 | 0 | 1 | 2 | 3 |
 | - | - | - | - |
@@ -677,9 +683,20 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 | 8 | D | 9 | A |
 | C | E | _ | B |
 
-* 结果为"012345678D9ACE\`B"
+* 演示代码
 
-* *此功能正在开发中*
+```csharp
+var qArr = new QuaterArray(5);
+qArr[0] = 1;
+qArr[1] = 2;
+qArr[2] = 2;
+qArr[3] = 3;
+qArr[4] = 0;
+
+var cipher = new FifteenPuzzle();
+var key = new FifteenPuzzle.Key(qArr);
+cipher.Encrypt("0123456789ABCDE_", key);//012345678D9ACE_B
+```
 
 [^8]:[wikipedia/15_puzzle](https://en.wikipedia.org/wiki/15_puzzle)
 
@@ -694,10 +711,15 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 1. 文字排列成$n^2$的方阵
 2. 首尾循环地移动整行/列
 3. 经过一系列移动后再读出方阵
+* 密钥由正数和负数分别代表行列，移动方向为右和下
+
+* 演示输入
+
+|       文本       |      密钥     |       结果       |
+| :--------------: | :-----------: | :--------------: |
+| 0123456789ABCDEF | `2,-3,1,4,-1` | F01E3426795B8CDA |
 
 * 演示过程
-* 密钥由数字和字母分别代表行列，移动方向为右和下
-* 步骤为`2c14a`
 * 初始局面为
 
 | 0 | 1 | 2 | 3 |
@@ -730,9 +752,13 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 | 7 | 9 | 5 | B |
 | 8 | C | D | A |
 
-* 结果为"F01E3426795B8CDA"
+* 演示代码
 
-* *此功能正在开发中*
+```csharp
+var cipher = new SixteenPuzzle();
+var key = SixteenPuzzle.Key.FromString("2,-3,1,4,-1");
+cipher.Encrypt("0123456789ABCDEF", key);//F01E3426795B8CDA
+```
 
 ----------------------------------------
 
@@ -745,10 +771,15 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 1. 文字排列成$n^2$的方阵
 2. 以指定的4个格子为中心顺时针旋转
 3. 经过一系列旋转后再读出方阵
+* 密钥由数字代表第几个旋转的位置
+
+* 演示输入
+
+|       文本       |    密钥   |       结果       |
+| :--------------: | :-------: | :--------------: |
+| 0123456789ABCDEF | `1,2,3,5` | 412059638A7BCDEF |
 
 * 演示过程
-* 密钥由数字代表第几个旋转的位置
-* 步骤为`1235`
 * 初始局面为
 
 | 0 | 1 | 2 | 3 |
@@ -781,7 +812,13 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 | 8 | A | 7 | B |
 | C | D | E | F |
 
-* *此功能正在开发中*
+* 演示代码
+
+```csharp
+var cipher = new TwiddlePuzzle();
+var key = TwiddlePuzzle.Key.FromString("1,2,3,5");
+cipher.Encrypt("0123456789ABCDEF", key);//412059638A7BCDEF
+```
 
 ----------------------------------------
 
@@ -794,6 +831,7 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * [单表替换密码](#SingleReplacementCipher)
 * [摩斯密码](#MorseCode)
 * [中文电码](#CommercialCode)
+* [Enigma加密机](#EnigmaMachine)
 * [编码转换](#Encoder)
 * [编程语言](#PLEncoding)
 
@@ -850,6 +888,14 @@ cipher.Encrypt("0123456789ABCDEF");//0DA7B41E2F85963C
 * 使用数字短码进行编码
 
 [^9]:[Chinese Commercial Code](https://www.chasedream.com/show.aspx?id=4487&cid=30)
+
+----------------------------------------
+
+### EnigmaMachine
+
+二战德国使用的Enigma加密机
+
+* *此功能正在开发中*
 
 ----------------------------------------
 
@@ -961,7 +1007,9 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 * [彩色二维码](#ColorfulBarcode)
 * [摩尔纹](#MoirePattern)
 * [编织图形密码](#WeaveCipher)
-
+* [僧侣密码数字](#CisterciansNumerals)
+* [图片隐写术](#Steganography)
+* [图片加密工具](#AESMosaic)
 
 ### PigpenCipher
 
@@ -1091,6 +1139,41 @@ bitmap.Save("E:/WeaveCipherExtend.png");
 
 ----------------------------------------
 
+### CisterciansNumerals[^24]
+
+僧侣密码数字，用特定符号表示的10000进制数字系统
+
+![CisterciansNumerals](Images/CisterciansNumerals.png)
+
+* 演示代码
+
+```csharp
+var bitmap = CisterciansNumerals.Encode(12345678);
+bitmap.Save("E:/12345678.png");
+```
+
+![12345678](Images/12345678.png)
+
+[^24]:[wikipedia/Cistercian_numerals](https://en.wikipedia.org/wiki/Cistercian_numerals)
+
+----------------------------------------
+
+### Steganography
+
+图片隐写术，在图片像素颜色数值的LSB(最低有效位)写入信息
+
+* 独立程序(不在此库中)
+* Winforms程序(net6.0-windows)
+* [存储库地址](https://github.com/Lazuplis-Mei/Steganography)
+
+### AESMosaic
+
+对图片的指定区域进行加密
+
+* *此功能正在开发中*
+
+----------------------------------------
+
 ## Sound
 
 加密结果为声音的密码
@@ -1109,6 +1192,8 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 ```
 
 [MorseMoonlight.mid](https://github.com/Lazuplis-Mei/ClassicalCryptography/blob/main/Sound/MorseMoonlight.mid)
+
+* 注意：可编码的节奏长度有限
 
 ----------------------------------------
 
@@ -1136,7 +1221,7 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 * 使用22个针脚的非欧拉字体
 
 ----------------------------------------
-
+****
 ### PascalianPuzzleCipher
 
 * 帕斯卡谜题密码

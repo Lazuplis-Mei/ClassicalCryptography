@@ -2,6 +2,7 @@
 using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Transposition2D;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Diagnostics;
 
 namespace ClassicalCryptographyTest
 {

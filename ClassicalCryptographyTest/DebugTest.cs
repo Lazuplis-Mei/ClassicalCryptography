@@ -7,6 +7,7 @@ using ClassicalCryptography.Image;
 using ClassicalCryptography.Interfaces;
 using ClassicalCryptography.Replacement;
 using ClassicalCryptography.Sound;
+using ClassicalCryptography.Transposition2D;
 using ClassicalCryptography.Undefined;
 using ClassicalCryptography.Utils;
 using Microsoft.International.Converters.PinYinConverter;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace ClassicalCryptographyTest
