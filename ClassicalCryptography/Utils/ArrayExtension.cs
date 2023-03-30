@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Utils;
+﻿using CommunityToolkit.HighPerformance;
+
+namespace ClassicalCryptography.Utils;
 
 internal static class ArrayExtension
 {
@@ -31,5 +33,15 @@ internal static class ArrayExtension
         Guard.IsNotNull(source.Array);
         var copy = source.Array.AsSpan();
         copy.Slice(source.Offset, source.Count).CopyTo(span);
+    }
+
+    /// <summary>
+    /// 二维转一维
+    /// </summary>
+    public static Span<T> AsSpan<T>(this Span2D<T> span2D)
+    {
+        Span<T> span = new T[span2D.Length];
+        span2D.CopyTo(span);
+        return span;
     }
 }

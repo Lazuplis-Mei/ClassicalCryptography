@@ -1009,7 +1009,8 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 * [编织图形密码](#WeaveCipher)
 * [僧侣密码数字](#CisterciansNumerals)
 * [图片隐写术](#Steganography)
-* [图片加密工具](#AESMosaic)
+* [图片加密工具](#NotMosaic)
+* [幻影坦克](#PhantomTank)
 
 ### PigpenCipher
 
@@ -1166,11 +1167,66 @@ bitmap.Save("E:/12345678.png");
 * Winforms程序(net6.0-windows)
 * [存储库地址](https://github.com/Lazuplis-Mei/Steganography)
 
-### AESMosaic
+### NotMosaic
 
 对图片的指定区域进行加密
 
-* *此功能正在开发中*
+* 对指定的矩形区域进行加密
+* 支持使用密码加密
+* 使用掩码调整效果
+
+* 演示图片
+
+![NotMosaicSample](Images/NotMosaicSample.png)
+
+* 演示代码
+
+```csharp
+var bitmap = new Bitmap("E:/NotMosaicSample.png");
+var rects = new Rectangle[]
+{
+    new Rectangle(100, 50, 100, 200),
+};
+bitmap = NotMosaic.Encrypt(bitmap, rects, out EncryptRegions encryptRegions, "123456");
+bitmap.Save("E:/NotMosaicEncrypted.png");
+```
+
+![NotMosaicEncrypted](Images/NotMosaicEncrypted.png)
+
+```csharp
+NotMosaic.Decrypt(bitmap, encryptRegions, "123456").Save("E:/NotMosaicDecrypted.png");
+```
+
+![NotMosaicDecrypted](Images/NotMosaicDecrypted.png)
+
+----------------------------------------
+
+### PhantomTank
+
+幻影坦克，利用调色和混合让图片在黑白两色的背景下显示不同的内容。
+
+* 支持彩色图片
+
+* 演示图片
+
+![Foreground](Images/Foreground.png)
+![Background](Images/Background.png)
+
+* 演示代码
+
+```csharp
+PhantomTank.Combine(new Bitmap("E:/Foreground.png"), new Bitmap("E:/Background.png")).Save("E:/PhantomTank.png");
+```
+
+![PhantomTank](Images/PhantomTank.png)
+
+* 彩色图片演示
+
+```csharp
+PhantomTank.CombineColorful(new Bitmap("E:/Foreground.png"), new Bitmap("E:/Background.png")).Save("E:/ColorfulPhantomTank.png");
+```
+
+![ColorfulPhantomTank](Images/ColorfulPhantomTank.png)
 
 ----------------------------------------
 
@@ -1221,7 +1277,7 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 * 使用22个针脚的非欧拉字体
 
 ----------------------------------------
-****
+
 ### PascalianPuzzleCipher
 
 * 帕斯卡谜题密码
