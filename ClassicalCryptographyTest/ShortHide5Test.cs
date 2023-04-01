@@ -18,7 +18,6 @@ namespace ClassicalCryptographyTest
         public void TestShortHide5(string cipherText, string plainText)
         {
             Assert.AreEqual(CipherType.Calculation, ShortHide5.Type);
-
             Assert.AreEqual(plainText, ShortHide5.Decrypt(cipherText));
         }
 

@@ -3,7 +3,7 @@
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <a href="https://github.com/qntm/base65536">Base65536编码</a>
+/// <see href="https://github.com/qntm/base65536">Base65536编码</see>
 /// </summary>
 [Introduction("Base65536编码", "https://github.com/qntm/base65536")]
 [ReferenceFrom("https://github.com/cyberdot/base65536", ProgramingLanguage.CSharp, License.MIT)]

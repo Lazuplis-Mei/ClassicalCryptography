@@ -6,37 +6,14 @@ using static ClassicalCryptography.Utils.MathExtension;
 namespace ClassicalCryptography.Calculation.RSASteganograph;
 
 /// <summary>
-/// 以指定的前缀字节生成质数并计算RSA私钥
+/// RSA隐写术
 /// </summary>
+/// <remarks>
+/// 以指定的前缀字节生成质数并计算RSA私钥
+/// </remarks>
 [Introduction("RSA隐写术", "以指定的前缀字节生成质数并计算RSA私钥")]
-public class RSASteganograph : IStaticCipher<string, string>
+public partial class RSASteganograph
 {
-    /// <summary>
-    /// RSA密钥长度
-    /// </summary>
-    public enum RSAKeySize
-    {
-        /// <summary>
-        /// 1024位RSA
-        /// </summary>
-        RSA1024 = 64,
-
-        /// <summary>
-        /// 2048位RSA
-        /// </summary>
-        RSA2048 = 128,
-
-        /// <summary>
-        /// 3072位RSA
-        /// </summary>
-        RSA3072 = 192,
-
-        /// <summary>
-        /// 4096位RSA
-        /// </summary>
-        RSA4096 = 256,
-    }
-
     #region 常数
 
     /// <summary>
@@ -60,7 +37,7 @@ public class RSASteganograph : IStaticCipher<string, string>
     public const int RSA_KEYSIZE_VERYLONG = RSA_KEYSIZE_SHORT * 4;
 
     /// <summary>
-    /// 用于生成质数时预留的字节长度(只是粗略的估计)
+    /// 用于生成质数时预留的字节长度
     /// </summary>
     public const int REMAIN_BYTESCOUNT = 5;
 
@@ -79,43 +56,14 @@ public class RSASteganograph : IStaticCipher<string, string>
     /// </summary>
     public const string RSA_EXPONENT_STRING = "AQAB";
 
-    #endregion
+    #endregion 常数
+
+    private static readonly RSACryptoServiceProvider RSA_CSP = new();
 
     /// <summary>
     /// 字符编码
     /// </summary>
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
-
-    static CipherType IStaticCipher<string, string>.Type => CipherType.Calculation;
-
-    private static readonly RSACryptoServiceProvider RSA_CSP = new();
-
-    /// <summary>
-    /// 以指定前缀生成指定RSA密钥长度的质数
-    /// </summary>
-    /// <param name="prefix">前缀字节</param>
-    /// <param name="keySize">密钥长度</param>
-    [SkipLocalsInit]
-    public static BigInteger GeneratePrime(Span<byte> prefix, RSAKeySize keySize)
-    {
-        Guard.IsTrue(Enum.IsDefined(keySize));
-        int bytesCount = (int)keySize;
-        Guard.HasSizeLessThanOrEqualTo(prefix, bytesCount - REMAIN_BYTESCOUNT);
-        Guard.IsFalse(prefix.Contains(PREFIX_END_FLAG));
-
-        Span<byte> bigIntegerBytes = bytesCount.CanAllocate()
-            ? stackalloc byte[bytesCount]
-            : new byte[bytesCount];
-
-        prefix.CopyTo(bigIntegerBytes);
-        int prefixRegionCount = prefix.Length + 1;
-        bigIntegerBytes[prefix.Length] = PREFIX_END_FLAG;
-        Random.Shared.NextBytes(bigIntegerBytes[prefixRegionCount..]);
-        //为了避免生成质数时，数值的增长覆盖了前缀字节结尾的标记，扩大了寻找质数的范围
-        bigIntegerBytes[prefixRegionCount] >>= 1;
-
-        return new BigInteger(bigIntegerBytes, true, true).ParallelFindPrime();
-    }
 
     /// <summary>
     /// xml格式的转换为pem格式
@@ -143,6 +91,34 @@ public class RSASteganograph : IStaticCipher<string, string>
     }
 
     /// <summary>
+    /// 以指定前缀生成指定RSA密钥长度的质数
+    /// </summary>
+    /// <remarks>
+    /// 前缀字节中不能含有数值<see cref="PREFIX_END_FLAG"/>
+    /// </remarks>
+    /// <param name="prefix">前缀字节</param>
+    /// <param name="keySize">密钥长度</param>
+    [SkipLocalsInit]
+    public static BigInteger GeneratePrime(Span<byte> prefix, RSAKeySize keySize)
+    {
+        Guard.IsTrue(Enum.IsDefined(keySize));
+        int size = (int)keySize;
+        Guard.HasSizeLessThanOrEqualTo(prefix, size - REMAIN_BYTESCOUNT);
+        Guard.IsFalse(prefix.Contains(PREFIX_END_FLAG));
+
+        Span<byte> buffer = size.CanAlloc() ? stackalloc byte[size] : new byte[size];
+        prefix.CopyTo(buffer);
+
+        int prefixRegionLength = prefix.Length + 1;
+        buffer[prefix.Length] = PREFIX_END_FLAG;
+        Random.Shared.NextBytes(buffer[prefixRegionLength..]);
+        //为了避免生成质数时，数值的增长覆盖了前缀字节结尾的标记，扩大了寻找质数的范围
+        buffer[prefixRegionLength] >>= 1;
+
+        return new BigInteger(buffer, true, true).FindPrime();
+    }
+
+    /// <summary>
     /// 使用指定的质数生成RSA私钥
     /// </summary>
     /// <param name="P">质数P</param>
@@ -157,12 +133,8 @@ public class RSASteganograph : IStaticCipher<string, string>
         var DQ = D % (Q - 1);
         var InverseQ = ModularInverse(Q, P);
 
-        var xmlKey = new StringBuilder();
-        using (var writer = XmlWriter.Create(xmlKey, new()
-        {
-            Indent = true,
-            OmitXmlDeclaration = true
-        }))
+        var xml = new StringBuilder();
+        using (var writer = XmlWriter.Create(xml, new() { Indent = true, OmitXmlDeclaration = true }))
         {
             writer.WriteStartElement("RSAKeyValue");
 
@@ -177,7 +149,7 @@ public class RSASteganograph : IStaticCipher<string, string>
 
             writer.WriteEndElement();
         }
-        return xmlKey.ToString();
+        return xml.ToString();
     }
 
     /// <summary>
@@ -188,8 +160,8 @@ public class RSASteganograph : IStaticCipher<string, string>
     /// <returns>xml格式的RSA私钥</returns>
     public static string GenerateRSAPrivateKey(Span<byte> prefixP, Span<byte> prefixQ)
     {
-        int prefixRegionCount = Math.Max(prefixP.Length, prefixQ.Length) + REMAIN_BYTESCOUNT;
-        var keySize = GetKeySize(prefixRegionCount);
+        int prefixRegionLength = Math.Max(prefixP.Length, prefixQ.Length) + REMAIN_BYTESCOUNT;
+        var keySize = GetKeySize(prefixRegionLength);
 
         var P = GeneratePrime(prefixP, keySize);
         var Q = GeneratePrime(prefixQ, keySize);
@@ -219,9 +191,12 @@ public class RSASteganograph : IStaticCipher<string, string>
     /// <param name="text">作为前缀的文本</param>
     /// <param name="pemFormat">是否以pem格式导出</param>
     /// <returns>xml或pem格式的密钥</returns>
+    [SkipLocalsInit]
     public static string GenerateRSAPrivateKey(string text, bool pemFormat = false)
     {
-        var prefix = Encoding.GetBytes(text).AsSpan();
+        int byteCount = Encoding.GetByteCount(text);
+        var prefix = byteCount.CanAlloc() ? stackalloc byte[byteCount] : new byte[byteCount];
+        Encoding.GetBytes(text, prefix);
         int halfLength = prefix.Length >> 1;
         var xmlKey = GenerateRSAPrivateKey(prefix[..halfLength], prefix[halfLength..]);
         return pemFormat ? XmlToPem(xmlKey) : xmlKey;
@@ -231,13 +206,14 @@ public class RSASteganograph : IStaticCipher<string, string>
     /// 从密钥中获得前缀字节
     /// </summary>
     /// <remarks>
-    /// 值得注意的是，如果前缀字节中包含0，则获取的内容会提前截断。
+    /// 值得注意的是，如果前缀字节中包含0，则获取的内容会提前截断。<br/>
+    /// 你可以通过<see cref="ArraySegment{T}.Array"/>获得完整的数据。
     /// </remarks>
     /// <param name="privateKey">RSA私钥</param>
     /// <returns>质数P和Q中的前缀字节</returns>
     public static (ArraySegment<byte>, ArraySegment<byte>) GetPrifix(string privateKey)
     {
-        Guard.HasSizeGreaterThan(privateKey, 0);
+        Guard.IsNotNullOrEmpty(privateKey);
         var xmlDocument = new XmlDocument();
         if (privateKey[0] == '<')
             xmlDocument.LoadXml(privateKey);
@@ -267,14 +243,14 @@ public class RSASteganograph : IStaticCipher<string, string>
         byte[] pBytes = Convert.FromBase64String(base64P);
         byte[] qBytes = Convert.FromBase64String(base64Q);
 
-        int prifixEndofP = Array.IndexOf(pBytes, PREFIX_END_FLAG);
-        if (prifixEndofP == -1)
-            prifixEndofP = pBytes.Length - REMAIN_BYTESCOUNT;
-        int prifixEndofQ = Array.IndexOf(qBytes, PREFIX_END_FLAG);
-        if (prifixEndofQ == -1)
-            prifixEndofQ = qBytes.Length - REMAIN_BYTESCOUNT;
+        int prifixLengthP = Array.IndexOf(pBytes, PREFIX_END_FLAG);
+        if (prifixLengthP == -1)
+            prifixLengthP = pBytes.Length - REMAIN_BYTESCOUNT;
+        int prifixLengthQ = Array.IndexOf(qBytes, PREFIX_END_FLAG);
+        if (prifixLengthQ == -1)
+            prifixLengthQ = qBytes.Length - REMAIN_BYTESCOUNT;
 
-        return (pBytes.SubArray(0, prifixEndofP), qBytes.SubArray(0, prifixEndofQ));
+        return (pBytes.Subarray(0, prifixLengthP), qBytes.Subarray(0, prifixLengthQ));
     }
 
     /// <summary>
@@ -291,15 +267,9 @@ public class RSASteganograph : IStaticCipher<string, string>
     {
         var (prifixP, prifixQ) = GetPrifix(privateKey);
         int length = prifixP.Count + prifixQ.Count;
-        Span<byte> prifix = length.CanAllocate() ? stackalloc byte[length] : new byte[length];
+        Span<byte> prifix = length.CanAlloc() ? stackalloc byte[length] : new byte[length];
         prifixP.CopyTo(prifix);
         prifixQ.CopyTo(prifix[prifixP.Count..]);
         return Encoding.GetString(prifix);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string IStaticCipher<string, string>.Encrypt(string plainText) => GenerateRSAPrivateKey(plainText);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string IStaticCipher<string, string>.Decrypt(string cipherText) => GetTextFrom(cipherText);
 }

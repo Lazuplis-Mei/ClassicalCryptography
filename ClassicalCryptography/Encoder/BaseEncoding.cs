@@ -214,7 +214,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string ToBase85(string input)
     {
-        return Base85Encoding.Encode(Encoding.GetBytes(input));
+        return TuupolaBase85Encoding.Default.Encode(Encoding.GetBytes(input));
     }
 
     /// <summary>
@@ -222,7 +222,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string FromBase85(string input)
     {
-        return Encoding.GetString(Base85Encoding.Decode(input));
+        return Encoding.GetString(TuupolaBase85Encoding.Default.Decode(input));
     }
 
     /// <summary>

@@ -54,7 +54,7 @@ public partial class WeaveCipher
         var bytes = Encoding.UTF8.GetBytes(text).AsSpan();
         int h = (bytes.Length + bytes.Length % 2) / 2;
         int size = h - h / 2;
-        Span<byte> bytes4 = size.CanAllocate()
+        Span<byte> bytes4 = size.CanAlloc()
             ? stackalloc byte[size] : new byte[size];
         var bytes1 = bytes[..(h / 2)];
         var bytes2 = bytes[(h / 2)..h];

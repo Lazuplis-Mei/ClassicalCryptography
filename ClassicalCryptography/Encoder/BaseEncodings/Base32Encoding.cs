@@ -3,10 +3,24 @@
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// Base32编码，使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567
+/// Base32编码
 /// </summary>
 /// <remarks>
-/// 在线工具:<a href="https://www.qqxiuzi.cn/bianma/base.php">Base32</a>
+/// 使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567编码字节数据
+/// <list type="bullet">
+///     <item>
+///         <term>参考资料</term>
+///         <description>
+///             <see href="https://en.wikipedia.org/wiki/Base32">wikipedia/Base32</see>
+///         </description>
+///     </item>
+///     <item>
+///         <term>在线工具</term>
+///         <description>
+///             <see href="https://www.qqxiuzi.cn/bianma/base.php">qqxiuzi/base</see>
+///         </description>
+///     </item>
+/// </list>
 /// </remarks>
 [ReferenceFrom("https://stackoverflow.com/questions/641361/base32-decoding#answer-7135008")]
 [Introduction("Base32编码", "使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")]
@@ -60,7 +74,7 @@ public class Base32Encoding : IEncoding
         Guard.HasSizeGreaterThan(bytes, 0);
 
         int length = bytes.Length.DivCeil(5) << 3;
-        Span<char> span = length.CanAllocateString() ? stackalloc char[length] : new char[length];
+        Span<char> span = length.CanAllocString() ? stackalloc char[length] : new char[length];
 
         byte nextCharacterCode = 0, bitsRemaining = 5;
         int index = 0;

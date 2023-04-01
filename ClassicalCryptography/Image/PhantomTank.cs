@@ -1,8 +1,6 @@
-﻿using CommunityToolkit.HighPerformance;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.Versioning;
-using System.Text;
 
 namespace ClassicalCryptography.Image;
 

@@ -3,11 +3,24 @@
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// Base100编码，又称Emoji表情符号编码<br/>
+/// Base100编码
 /// </summary>
 /// <remarks>
-/// <a href="https://github.com/AdamNiederer/base100">原始的代码实现</a><br/>
-/// 在线工具:<a href="https://ctf.bugku.com/tool/base100">Base100</a>
+/// 使用Emoji表情符号编码字节数据
+/// <list type="bullet">
+///     <item>
+///         <term>原始仓库</term>
+///         <description>
+///             <see href="https://github.com/AdamNiederer/base100">github/AdamNiederer/base100</see>
+///         </description>
+///     </item>
+///     <item>
+///         <term>在线工具</term>
+///         <description>
+///             <see href="https://ctf.bugku.com/tool/base100">bugku/base100</see>
+///         </description>
+///     </item>
+/// </list>
 /// </remarks>
 [Introduction("Base100编码", "将字节编码为Emoji表情符号")]
 [ReferenceFrom("https://github.com/stek29/base100/blob/master/base100.py", ProgramingLanguage.Python, License.Unlicense)]
@@ -18,7 +31,7 @@ public class Base100Encoding : IEncoding
     public static string Encode(byte[] bytes)
     {
         int length = bytes.Length << 2;
-        Span<byte> emojiBytes = length.CanAllocate() ? stackalloc byte[length] : new byte[length];
+        Span<byte> emojiBytes = length.CanAlloc() ? stackalloc byte[length] : new byte[length];
         for (int i = 0; i < bytes.Length; i++)
         {
             int j = i << 2;
@@ -41,8 +54,7 @@ public class Base100Encoding : IEncoding
         Guard.IsEqualTo(emojiBytes.Length & 0B11, 0);
 
         var bytes = new byte[emojiBytes.Length >> 2];
-        int temp = 0;
-        for (int i = 0; i < emojiBytes.Length; i++)
+        for (int i = 0, temp = 0; i < emojiBytes.Length; i++)
         {
             if ((i & 0B11) == 2)
                 temp = (byte)((emojiBytes[i] - 0x8F) << 6);

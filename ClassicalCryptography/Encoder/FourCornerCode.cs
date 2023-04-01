@@ -51,7 +51,7 @@ public class FourCornerCode : IStaticCipher<string, string>
     private static string FromCodes(params int[] codes)
     {
         if (!dataLoaded) LoadData();
-        Span<char> span = codes.Length.CanAllocateString()
+        Span<char> span = codes.Length.CanAllocString()
             ? stackalloc char[codes.Length] : new char[codes.Length];
         for (int i = 0; i < span.Length; i++)
             span[i] = fourCornerCodeData[100000 + codes[i]][0];
@@ -78,7 +78,7 @@ public class FourCornerCode : IStaticCipher<string, string>
     {
         if (!dataLoaded) LoadData();
         int len = text.Length * 5;
-        Span<char> span = len.CanAllocateString()
+        Span<char> span = len.CanAllocString()
             ? stackalloc char[len] : new char[len];
         var currentSpan = span;
         for (int i = 0; i < text.Length; i++)

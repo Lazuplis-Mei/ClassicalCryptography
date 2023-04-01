@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.HighPerformance;
+using System.Runtime.CompilerServices;
 using static ClassicalCryptography.Calculation.ShortHide5.SH5;
 
 namespace ClassicalCryptography.Calculation.ShortHide5;
@@ -8,34 +9,33 @@ namespace ClassicalCryptography.Calculation.ShortHide5;
 /// <a href="https://www.bilibili.com/read/cv15660906">Standard Short Hide5(标准SH5)</a>
 /// </summary>
 [Introduction("ShortHide5密码", "一种自创的英文文本加密方法")]
-public class ShortHide5 : IStaticCipher<string, string>
+public static class ShortHide5
 {
     private static readonly string[] singleAlphaBets;
     private static readonly string[,] doubleAlphaBets;
 
     [SkipLocalsInit]
-    static ShortHide5()
+    unsafe static ShortHide5()
     {
-        Span<char> span = stackalloc char[25];
+        Span2D<char> span2D = stackalloc char[25].AsSpan2D(5, 5);
+        Span<char> span = span2D.GetRowSpan(0);
 
         singleAlphaBets = new string[26];
         for (int u = 1; u <= 26; u++)
         {
             for (int i = 0; i < 5; i++)
                 span[i] = AlphaBetSingle[(u * i + u / 11) % 11];
-            singleAlphaBets[u - 1] = new(span[..5]);
+            singleAlphaBets[u - 1] = new(span);
         }
 
         doubleAlphaBets = new string[25, 25];
-
         for (int u1 = 1; u1 <= 25; u1++)
         {
             for (int u2 = 1; u2 <= 25; u2++)
             {
-                for (int i = 0; i < 5; i++)
-                    for (int j = 0; j < 5; j++)
-                        span[i + (i << 2) + j] = AlphaBetDouble[(u1 * i + u2 * j) % 26];
-                doubleAlphaBets[u1 - 1, u2 - 1] = new(span);
+                for (int i = 0; i < 5; i++) for (int j = 0; j < 5; j++)
+                        span2D[i, j] = AlphaBetDouble[(u1 * i + u2 * j) % 26];
+                doubleAlphaBets[u1 - 1, u2 - 1] = new(span2D.AsSpan());
             }
         }
     }
@@ -69,7 +69,7 @@ public class ShortHide5 : IStaticCipher<string, string>
     /// </summary>
     /// <remarks>
     /// <paramref name="plainText"/>应在<see cref="AlphaBetTriple"/>的范围中。<br/>
-    /// 加密的结果存在随机性。
+    /// 加密的结果是随机选择的。
     /// </remarks>
     /// <param name="plainText">明文文本</param>
     /// <returns>对应的<see cref="SH5"/>结构</returns>
@@ -125,9 +125,7 @@ public class ShortHide5 : IStaticCipher<string, string>
             u2 = Random.Shared.Next(26) + 1;
             u3 = Random.Shared.Next(26) + 1;
             int index = 0;
-            for (int i = 0; i < 5; i++)
-                for (int j = 0; j < 5; j++)
-                    for (int k = 0; k < 5; k++)
+            for (int i = 0; i < 5; i++) for (int j = 0; j < 5; j++) for (int k = 0; k < 5; k++)
                         alphaBet[index++] = AlphaBetTriple[(i * u1 + j * u2 + k * u3) % 64];
         }
 

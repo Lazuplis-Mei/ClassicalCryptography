@@ -20,7 +20,7 @@ internal static class ArrayExtension
     /// <summary>
     /// 获得子数组
     /// </summary>
-    public static ArraySegment<T> SubArray<T>(this T[] array, int start, int count)
+    public static ArraySegment<T> Subarray<T>(this T[] array, int start, int count)
     {
         return new ArraySegment<T>(array, start, count);
     }

@@ -21,7 +21,7 @@ public class TapCodeCipher : ICipher<string, string>
     public string Decrypt(string cipherText)
     {
         int size = cipherText.Length >> 1;
-        Span<char> result = size.CanAllocateString()
+        Span<char> result = size.CanAllocString()
             ? stackalloc char[size] : new char[size];
 
         for (int i = 0; i < cipherText.Length; i++)

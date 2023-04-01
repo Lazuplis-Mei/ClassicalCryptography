@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.HighPerformance;
+using System.Drawing;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Xml;
 
@@ -6,14 +8,14 @@ namespace ClassicalCryptography.Utils;
 
 internal static class StringExtension
 {
+
     /// <summary>
     /// 字符串转换成可修改的内存
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<char> AsWriteableSpan(this string text)
     {
-        var reference = MemoryMarshal.GetReference(text.AsSpan());
-        return MemoryMarshal.CreateSpan(ref reference, text.Length);
+        return MemoryMarshal.CreateSpan(ref text.DangerousGetReference(), text.Length);
     }
 
     /// <summary>
@@ -173,7 +175,7 @@ internal static class StringExtension
     [SkipLocalsInit]
     public static string Repeat(this char character, int count)
     {
-        Span<char> span = count.CanAllocateString()
+        Span<char> span = count.CanAllocString()
             ? stackalloc char[count] : new char[count];
         span.Fill(character);
         return new(span);

@@ -41,7 +41,7 @@ public class CommercialCode : IStaticCipher<string, string>
     public static string FromCodes(params short[] codes)
     {
         if (!dataLoaded) LoadData();
-        Span<char> span = codes.Length.CanAllocateString()
+        Span<char> span = codes.Length.CanAllocString()
             ? stackalloc char[codes.Length] : new char[codes.Length];
         for (int i = 0; i < span.Length; i++)
             span[i] = commercialCodeString[codes[i]];
@@ -71,7 +71,7 @@ public class CommercialCode : IStaticCipher<string, string>
     {
         if (!dataLoaded) LoadData();
         int len = text.Length << 2;
-        Span<char> span = len.CanAllocateString()
+        Span<char> span = len.CanAllocString()
             ? stackalloc char[len] : new char[len];
 
         for (int i = 0; i < text.Length; i++)

@@ -95,15 +95,12 @@ internal static class RandomHelper
     [SkipLocalsInit]
     public static BigInteger RandomBigInt(BigInteger maxValue)
     {
-        if (maxValue < int.MaxValue)
-            return Random.Shared.Next((int)maxValue);
-        int byteCount = maxValue.GetByteCount(true);
-        Span<byte> buffer = byteCount.CanAllocate()
-            ? stackalloc byte[byteCount] : new byte[byteCount];
-        byte firstBit = (byte)(maxValue >> ((byteCount - 1) << 3));
-        buffer[0] = RandomByte(firstBit);
-        Random.Shared.NextBytes(buffer[1..]);
-        return new BigInteger(buffer, true, true);
+        if (maxValue <= long.MaxValue)
+            return Random.Shared.NextInt64((long)maxValue);
+        Span<byte> bytes = maxValue.ToByteArray(true, true);
+        bytes[0] = RandomByte(bytes[0]);
+        Random.Shared.NextBytes(bytes[1..]);
+        return new BigInteger(bytes, true, true);
     }
 
     /// <summary>

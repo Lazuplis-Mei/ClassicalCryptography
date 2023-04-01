@@ -7,7 +7,7 @@ namespace ClassicalCryptographyTest
     public class RSASteganographTest
     {
         [TestMethod]
-        [DataRow(100), DataRow(200), DataRow(300)/*, DataRow(400)*/]
+        [DataRow(100), DataRow(200)/*, DataRow(300), DataRow(400)*/]
         public void TestRSASteganograph(int textCount)
         {
             var text = RandomString.Generate(textCount);

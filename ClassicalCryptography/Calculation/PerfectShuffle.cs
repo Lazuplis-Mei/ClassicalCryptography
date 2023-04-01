@@ -4,22 +4,33 @@ using System.Runtime.CompilerServices;
 namespace ClassicalCryptography.Calculation;
 
 /// <summary>
-/// 完美洗牌密码，天青留下的最后一个密码<br/>
+/// 完美洗牌密码
 /// </summary>
 /// <remarks>
-/// 对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果。<br/>
-/// 在线工具：<a href="http://erikdemaine.org/fonts/shuffle/">erikdemaine/shuffle</a>
+/// 对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果。
+/// <list type="bullet">
+///     <item>
+///         <term>参考资料</term>
+///         <description>
+///             <see href="https://erikdemaine.org/papers/JuggleShuffle_Graham80/paper.pdf">erikdemaine/JuggleShuffle_Graham80</see>
+///         </description>
+///     </item>
+///     <item>
+///         <term>在线工具</term>
+///         <description>
+///             <see href="http://erikdemaine.org/fonts/shuffle/">erikdemaine/shuffle</see>
+///         </description>
+///     </item>
+/// </list>
 /// </remarks>
 [Introduction("完美洗牌密码", "对于字母表进行2种交替式的完美洗牌，取指定的首字母作为结果")]
-public class PerfectShuffle : IStaticCipher<string, string>
+public static class PerfectShuffle
 {
-    private static readonly char[] separators = { ' ', ',', '.', ':', '"', '\'' };
-
     private const char INSIDE = '-';
     private const char OUTSIDE = '.';
     private const char CHARACTER_POSITION = '/';
     private const char WORD_SEPARATOR = ' ';
-
+    private static readonly char[] separators = { ' ', ',', '.', ':', '"', '\'' };
     private static readonly BitArray[] shufflings = new BitArray[]
     {
         new(0),
@@ -50,36 +61,28 @@ public class PerfectShuffle : IStaticCipher<string, string>
         new(new[] { true, true, false, false, true }),
     };
 
-    static CipherType IStaticCipher<string, string>.Type => CipherType.Calculation;
-
-    private static BitArray FindShufflings(Span<char> uLetters, char character)
-    {
-        for (int i = 0; i < 26; i++)
-        {
-            if (uLetters[i] == character)
-                return shufflings[i];
-        }
-        throw new ArgumentException($"{character}不在指定范围中", nameof(character));
-    }
+    /// <inheritdoc/>
+    public static CipherType Type => CipherType.Calculation;
 
     /// <inheritdoc/>
     [SkipLocalsInit]
     public static string Decrypt(string text)
     {
-        var words = text.Split(WORD_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
-        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters;
         Span<char> span = stackalloc char[26];
+
         var result = new StringBuilder();
+        var words = text.Split(WORD_SEPARATOR, StringSplitOptions.RemoveEmptyEntries);
         foreach (var word in words)
         {
             uLetters.CopyTo(span);
             foreach (var character in word)
             {
-                if (character == INSIDE)
+                if (character is INSIDE)
                     ShuffleInside(span);
-                else if (character == OUTSIDE)
+                else if (character is OUTSIDE)
                     ShuffleOutside(span);
-                else if (character == CHARACTER_POSITION)
+                else if (character is CHARACTER_POSITION)
                     result.Append(span[0]);
             }
             result.Append(WORD_SEPARATOR);
@@ -91,46 +94,51 @@ public class PerfectShuffle : IStaticCipher<string, string>
     /// 加密内容
     /// </summary>
     /// <remarks>
-    /// 如果<paramref name="randomize"/>为<see langword="true"/>，则每个单词有50%的可能性插入1次额外的洗牌。<br/>
-    /// 如果插入了1次额外的洗牌，那么将有25%的可能性插入第2次。
+    /// 如果<paramref name="randomize"/>为<see langword="true"/>，则每个字母都有50%的可能性插入1次额外的洗牌。<br/>
+    /// 如果已经插入了1次额外的洗牌，那么将有25%的可能性插入第2次。
     /// </remarks>
     /// <param name="text">要加密的文本</param>
     /// <param name="randomize">是否启用随机性</param>
     [SkipLocalsInit]
     public static string Encrypt(string text, bool randomize = false)
     {
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters;
+        Span<char> span = stackalloc char[26];
+
         var result = new StringBuilder();
         var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
-        Span<char> uLetters = GlobalTables.U_Letters.ToCharArray();
-        Span<char> span = stackalloc char[26];
         foreach (var word in words)
         {
             uLetters.CopyTo(span);
             foreach (var character in word)
             {
                 if (randomize && RandomHelper.TwoBits > 0)
+                    InsertRandomShuffling(result, span);
+
+                foreach (bool inside in FindShufflings(span, character))
                 {
-                    bool inside = RandomHelper.TrueOrFalse;
                     Shuffle(span, inside);
                     result.Append(inside ? INSIDE : OUTSIDE);
-                    if (RandomHelper.TwoBits == 0)
-                    {
-                        inside = RandomHelper.TrueOrFalse;
-                        Shuffle(span, inside);
-                        result.Append(inside ? INSIDE : OUTSIDE);
-                    }
-                }
-                var bits = FindShufflings(span, character);
-                for (int i = 0; i < bits.Length; i++)
-                {
-                    Shuffle(span, bits[i]);
-                    result.Append(bits[i] ? INSIDE : OUTSIDE);
                 }
                 result.Append(CHARACTER_POSITION);
             }
             result.Append(WORD_SEPARATOR);
         }
         return result.RemoveLast().ToString();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static void InsertRandomShuffling(StringBuilder result, Span<char> span)
+        {
+            bool inside = RandomHelper.TrueOrFalse;
+            Shuffle(span, inside);
+            result.Append(inside ? INSIDE : OUTSIDE);
+            if (RandomHelper.TwoBits == 0)
+            {
+                inside = RandomHelper.TrueOrFalse;
+                Shuffle(span, inside);
+                result.Append(inside ? INSIDE : OUTSIDE);
+            }
+        }
     }
 
     /// <summary>
@@ -138,7 +146,7 @@ public class PerfectShuffle : IStaticCipher<string, string>
     /// </summary>
     /// <remarks>
     /// 对于每个单词，它会分成为<paramref name="wordSplitCount"/>组。<br/>
-    /// 每一组分别穷举以得到最短的表达形式(这并不意味着总体是最短的)
+    /// 每一组分别穷举以得到最短的表达形式(这并不意味着总体是最短的)。
     /// </remarks>
     /// <param name="text">要加密的文本</param>
     /// <param name="wordSplitCount">单词分割数</param>
@@ -146,29 +154,32 @@ public class PerfectShuffle : IStaticCipher<string, string>
     [Obsolete("这个方法的速度很慢，使用`EncryptShortInsert`方法代替")]
     public static string EncryptShort(string text, int wordSplitCount = 4)
     {
-        var result = new StringBuilder();
-        var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
-        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
-        Span<char> span = stackalloc char[26];
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters;
         Span<char> originalSpan = stackalloc char[26];
+        Span<char> span = stackalloc char[26];
+        int[] oneElementArray = { int.MaxValue };
 
         var characterList = new List<char>();
-        int[] minPositions = new int[] { int.MaxValue };
-        var minShuffling = new BitArray(0);
+        var bestPositions = oneElementArray;
+        var bestShuffling = new BitArray(0);
 
+        var result = new StringBuilder();
+        var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
+        var repeatPosition = new List<int>();
         foreach (var word in words)
         {
             uLetters.CopyTo(originalSpan);
-            var repeatPosition = new List<int>();
+
+            int rIndex = 0, charCount = 0;
             var subWords = FilterWord(word, repeatPosition).Partition(wordSplitCount);
-            int repeatIndex = 0, characterCount = 0;
             for (int i = 0; i < subWords.Length; i++)
             {
                 string subWord = subWords[i];
                 if (subWord.Length == 1)
                 {
-                    minShuffling = FindShufflings(originalSpan, subWord[0]);
-                    minPositions = new int[] { minShuffling.Length };
+                    bestShuffling = FindShufflings(originalSpan, subWord[0]);
+                    bestPositions = oneElementArray;
+                    bestPositions[0] = bestShuffling.Length;
                 }
                 else
                 {
@@ -178,20 +189,22 @@ public class PerfectShuffle : IStaticCipher<string, string>
                     {
                         for (int shuffeNumber = 0; shuffeNumber < (1 << shuffeCount); shuffeNumber++)
                         {
-                            var shuffling = shuffeNumber.ToBinary(shuffeCount);
                             originalSpan.CopyTo(span);
                             characterList.Add(span[0]);
+
+                            var shuffling = shuffeNumber.ToBinary(shuffeCount);
                             foreach (bool inside in shuffling)
                             {
                                 Shuffle(span, inside);
                                 characterList.Add(span[0]);
                             }
+
                             if (characterList.ContainsSubString(subWord, out int[] position))
                             {
-                                if (position[^1] < minPositions[^1])
+                                if (position[^1] < bestPositions[^1])
                                 {
-                                    minPositions = position;
-                                    minShuffling = shuffling;
+                                    bestPositions = position;
+                                    bestShuffling = shuffling;
                                     maxCount = shuffling.Count;
                                 }
                             }
@@ -200,62 +213,43 @@ public class PerfectShuffle : IStaticCipher<string, string>
                     }
                 }
 
-                for (int position = 0, shufflingIndex = 0; position < minShuffling.Length;)
+                for (int position = 0, pIndex = 0; position < bestShuffling.Length;)
                 {
-                    if (shufflingIndex < minPositions.Length &&
-                        position == minPositions[shufflingIndex])
+                    if (pIndex < bestPositions.Length && position == bestPositions[pIndex])
                     {
                         result.Append(CHARACTER_POSITION);
-                        shufflingIndex++;
-                        characterCount++;
+                        pIndex++; charCount++;
                     }
-                    if (repeatIndex < repeatPosition.Count &&
-                        repeatPosition[repeatIndex] == characterCount)
+                    if (rIndex < repeatPosition.Count && charCount == repeatPosition[rIndex])
                     {
                         result.Append(CHARACTER_POSITION);
-                        repeatIndex++;
-                        characterCount++;
+                        rIndex++; charCount++;
                     }
                     else
                     {
-                        result.Append(minShuffling[position] ? INSIDE : OUTSIDE);
+                        result.Append(bestShuffling[position] ? INSIDE : OUTSIDE);
                         position++;
                     }
                 }
-                if (minPositions[^1] == minShuffling.Length)
+
+                if (bestPositions[^1] == bestShuffling.Length)
                 {
                     result.Append(CHARACTER_POSITION);
-                    characterCount++;
+                    charCount++;
                 }
-                while (repeatIndex < repeatPosition.Count &&
-                    repeatPosition[repeatIndex] == characterCount)
+                while (rIndex < repeatPosition.Count && charCount == repeatPosition[rIndex])
                 {
                     result.Append(CHARACTER_POSITION);
-                    repeatIndex++;
-                    characterCount++;
+                    rIndex++; charCount++;
                 }
 
                 if (i < subWords.Length - 1)
-                    Shuffle(originalSpan, minShuffling);
-                minPositions[^1] = int.MaxValue;
+                    Shuffle(originalSpan, bestShuffling);
+                bestPositions[^1] = int.MaxValue;
             }
             result.Append(WORD_SEPARATOR);
         }
         return result.RemoveLast().ToString();
-    }
-
-    private static string FilterWord(string word, List<int> repeatPosition)
-    {
-        var filteredWord = new StringBuilder();
-        filteredWord.Append(word[0]);
-        for (int i = 1; i < word.Length; i++)
-        {
-            if (filteredWord[^1] == word[i])
-                repeatPosition.Add(i);
-            else
-                filteredWord.Append(word[i]);
-        }
-        return filteredWord.ToString();
     }
 
     /// <summary>
@@ -270,31 +264,34 @@ public class PerfectShuffle : IStaticCipher<string, string>
     /// <param name="wordSplitCount">单词分割数</param>
     public static string EncryptShortInsert(string text, int insertCount = 5, int wordSplitCount = 5)
     {
+        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters;
+        Span<char> originalSpan = stackalloc char[26];
+        Span<char> span = stackalloc char[26];
+        Span<int> currentPosition = stackalloc int[wordSplitCount];
+        int[] oneElementArray = { int.MaxValue };
+
+        var bestPositions = oneElementArray;
+        var shufflingList = new List<BitArray>();
+        var bestShufflingList = new List<BitArray>();
+
         var result = new StringBuilder();
         var words = text.ToUpper().Split(separators, StringSplitOptions.RemoveEmptyEntries);
-        ReadOnlySpan<char> uLetters = GlobalTables.U_Letters.AsSpan();
-        Span<char> span = stackalloc char[26];
-        Span<char> originalSpan = stackalloc char[26];
-        Span<int> currentPosition = stackalloc int[wordSplitCount];
-
-        var shufflingList = new List<BitArray>();
-        int[] minPositions = new int[] { int.MaxValue };
-        var minShufflingList = new List<BitArray>();
-
+        var repeatPosition = new List<int>();
         foreach (var word in words)
         {
             uLetters.CopyTo(originalSpan);
-            var repeatPosition = new List<int>();
+
+            int rIndex = 0, charCount = 0;
             var subWords = FilterWord(word, repeatPosition).Partition(wordSplitCount);
-            int repeatIndex = 0, characterCount = 0;
             for (int i = 0; i < subWords.Length; i++)
             {
                 string subWord = subWords[i];
                 if (subWord.Length == 1)
                 {
                     var shuffling = FindShufflings(originalSpan, subWord[0]);
-                    minPositions = new int[] { shuffling.Length };
-                    minShufflingList.Add(shuffling);
+                    bestPositions = oneElementArray;
+                    bestPositions[0] = shuffling.Length;
+                    bestShufflingList.Add(shuffling);
                 }
                 else
                 {
@@ -302,83 +299,116 @@ public class PerfectShuffle : IStaticCipher<string, string>
                     {
                         for (int shuffeNumber = 0; shuffeNumber < (1 << shuffeCount); shuffeNumber++)
                         {
-                            var shuffling = shuffeNumber.ToBinary(shuffeCount);
                             originalSpan.CopyTo(span);
+                            var position = currentPosition[..subWord.Length];
+
+                            var shuffling = shuffeNumber.ToBinary(shuffeCount);
                             shufflingList.Add(shuffling);
                             Shuffle(span, shuffling);
-                            var position = currentPosition[..subWord.Length];
-                            int characterPosition = shuffling.Length;
+
+                            int charPosition = shuffling.Length;
                             int currentIndex = 0;
                             foreach (var character in subWord)
                             {
                                 shuffling = FindShufflings(span, character);
                                 Shuffle(span, shuffling);
                                 shufflingList.Add(shuffling);
-                                characterPosition += shuffling.Length;
-                                position[currentIndex++] = characterPosition;
+                                charPosition += shuffling.Length;
+                                position[currentIndex++] = charPosition;
                             }
-                            if (currentPosition[^1] < minPositions[^1])
+
+                            if (currentPosition[^1] < bestPositions[^1])
                             {
-                                minPositions = position.ToArray();
-                                minShufflingList.Clear();
-                                minShufflingList.AddRange(shufflingList);
+                                bestPositions = position.ToArray();
+                                bestShufflingList.Clear();
+                                bestShufflingList.AddRange(shufflingList);
                             }
                             shufflingList.Clear();
                         }
                     }
                 }
-                int shufflingCount = minShufflingList.Sum(bits => bits.Length);
-                var minShuffling = new BitArray(shufflingCount);
+
+                int shufflingCount = bestShufflingList.Sum(bits => bits.Length);
+                var bestShuffling = new BitArray(shufflingCount);
                 shufflingCount = 0;
-                foreach (var item in minShufflingList)
+                foreach (var item in bestShufflingList)
                 {
                     foreach (bool subItem in item)
                     {
-                        minShuffling[shufflingCount++] = subItem;
+                        bestShuffling[shufflingCount++] = subItem;
                     }
                 }
-                for (int position = 0, shufflingIndex = 0; position < minShuffling.Length;)
+
+                for (int position = 0, sIndex = 0; position < bestShuffling.Length;)
                 {
-                    if (shufflingIndex < minPositions.Length &&
-                        position == minPositions[shufflingIndex])
+                    if (sIndex < bestPositions.Length && position == bestPositions[sIndex])
                     {
                         result.Append(CHARACTER_POSITION);
-                        shufflingIndex++;
-                        characterCount++;
+                        sIndex++; charCount++;
                     }
-                    if (repeatIndex < repeatPosition.Count &&
-                        repeatPosition[repeatIndex] == characterCount)
+                    if (rIndex < repeatPosition.Count && charCount == repeatPosition[rIndex])
                     {
                         result.Append(CHARACTER_POSITION);
-                        repeatIndex++;
-                        characterCount++;
+                        rIndex++; charCount++;
                     }
                     else
                     {
-                        result.Append(minShuffling[position] ? INSIDE : OUTSIDE);
+                        result.Append(bestShuffling[position] ? INSIDE : OUTSIDE);
                         position++;
                     }
                 }
-                if (minPositions[^1] == minShuffling.Length)
+
+                if (bestPositions[^1] == bestShuffling.Length)
                 {
                     result.Append(CHARACTER_POSITION);
-                    characterCount++;
+                    charCount++;
                 }
-                while (repeatIndex < repeatPosition.Count &&
-                    repeatPosition[repeatIndex] == characterCount)
+                while (rIndex < repeatPosition.Count && charCount == repeatPosition[rIndex])
                 {
                     result.Append(CHARACTER_POSITION);
-                    repeatIndex++;
-                    characterCount++;
+                    rIndex++; charCount++;
                 }
+
                 if (i < subWords.Length - 1)
-                    Shuffle(originalSpan, minShuffling);
-                minPositions[^1] = int.MaxValue;
-                minShufflingList.Clear();
+                    Shuffle(originalSpan, bestShuffling);
+                bestPositions[^1] = int.MaxValue;
+                bestShufflingList.Clear();
             }
             result.Append(WORD_SEPARATOR);
         }
         return result.RemoveLast().ToString();
+    }
+
+    private static BitArray FindShufflings(Span<char> permut, char character)
+    {
+        for (int i = 0; i < 26; i++)
+            if (permut[i] == character)
+                return shufflings[i];
+        throw new ArgumentException($"{character}不在指定范围中", nameof(character));
+    }
+
+    private static string FilterWord(string word, List<int> repeatPosition)
+    {
+        repeatPosition.Clear();
+        int count = word.Length;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        span[0] = word[0];
+        for (int i = count = 1; i < word.Length; i++)
+        {
+            if (span[count - 1] == word[i])
+                repeatPosition.Add(i);
+            else
+                span[count++] = word[i];
+        }
+        return new(span[..count]);
+    }
+
+    private static void Shuffle(Span<char> letterSpan, BitArray bits)
+    {
+        foreach (bool inside in bits)
+        {
+            Shuffle(letterSpan, inside);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -388,14 +418,6 @@ public class PerfectShuffle : IStaticCipher<string, string>
             ShuffleInside(letterSpan);
         else
             ShuffleOutside(letterSpan);
-    }
-
-    private static void Shuffle(Span<char> letterSpan, BitArray bits)
-    {
-        foreach (bool inside in bits)
-        {
-            Shuffle(letterSpan, inside);
-        }
     }
 
     [SkipLocalsInit]
@@ -421,8 +443,4 @@ public class PerfectShuffle : IStaticCipher<string, string>
         for (int i = half; i < copy.Length; i++)
             letterSpan[((i - half) << 1) + 1] = copy[i];
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string IStaticCipher<string, string>.Encrypt(string plainText) => Encrypt(plainText);
-
 }

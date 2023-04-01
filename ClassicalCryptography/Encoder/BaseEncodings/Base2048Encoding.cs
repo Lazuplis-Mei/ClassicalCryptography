@@ -1,14 +1,14 @@
 ﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// <a href="https://github.com/qntm/base2048">Base2048编码</a>
+/// <see href="https://github.com/qntm/base2048">Base2048编码</see>
 /// </summary>
 [Introduction("Base2048编码", "https://github.com/qntm/base2048")]
 [ReferenceFrom("https://github.com/qntm/base2048/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
 public class Base2048Encoding : IEncoding
 {
-    const int BITS_PER_CHAR = 11;
-    const int BITS_PER_BYTE = 8;
+    private const int BITS_PER_CHAR = 11;
+    private const int BITS_PER_BYTE = 8;
 
     private static readonly string[] pairStrings =
     {

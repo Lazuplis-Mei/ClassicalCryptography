@@ -31,7 +31,7 @@ public partial class PinyinNineKey : IStaticCipher<string, string>
     public static string LettersToCodes(string text)
     {
         var count = text.Length << 1;
-        Span<char> span = count.CanAllocateString() ? stackalloc char[count] : new char[count];
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
         for (int i = 0; i < count; i += 2)
         {
             var code = keyboards[char.ToUpper(text[i >> 1])];
@@ -84,7 +84,7 @@ public partial class PinyinNineKey : IStaticCipher<string, string>
     public static string FromCodes(string text)
     {
         var count = text.Length >> 1;
-        Span<char> span = count.CanAllocateString() ? stackalloc char[count] : new char[count];
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
         for (int i = 0; i < count; i++)
         {
             span[i] = keyboards.Inverse[Convert.ToByte(text.Substring(i << 1, 2))];

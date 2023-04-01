@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Calculation;
 using ClassicalCryptography.Calculation.RSASteganograph;
+using ClassicalCryptography.Calculation.ShortHide5;
 using ClassicalCryptography.Encoder;
 using ClassicalCryptography.Encoder.BaseEncodings;
 using ClassicalCryptography.Encoder.PLEncodings;

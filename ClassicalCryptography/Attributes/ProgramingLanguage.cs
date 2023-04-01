@@ -6,22 +6,22 @@
 public enum ProgramingLanguage
 {
     /// <summary>
-    /// Python
+    /// <see href="https://www.python.org"/>
     /// </summary>
     Python,
 
     /// <summary>
-    /// JavaScript
+    /// <see href="https://developer.mozilla.org/zh-CN/docs/Glossary/JavaScript"/>
     /// </summary>
     JavaScript,
 
     /// <summary>
-    /// PHP
+    /// <see href="https://www.php.net"/>
     /// </summary>
     PHP,
 
     /// <summary>
-    /// CSharp
+    /// <see href="https://learn.microsoft.com/zh-cn/dotnet/csharp"/>
     /// </summary>
     CSharp,
 }

@@ -1,10 +1,26 @@
 ﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
-
 /// <summary>
-/// <a href="https://en.wikipedia.org/wiki/Ascii85">Base85编码，代码请参考</a>
+/// Base85编码
 /// </summary>
-[ReferenceFrom("https://github.com/ikorin24/Base85/blob/master/Base85/Base85.cs", ProgramingLanguage.CSharp, License.Apache2)]
+/// <remarks>
+/// <list type="bullet">
+///     <item>
+///         <term>参考资料</term>
+///         <description>
+///             <see href="https://en.wikipedia.org/wiki/Ascii85">wikipedia/Ascii85</see>
+///         </description>
+///     </item>
+///     <item>
+///         <term>在线工具</term>
+///         <description>
+///             <see href="http://www.hiencode.com/base85.html">hiencode/base85</see>
+///         </description>
+///     </item>
+/// </list>
+/// </remarks>
+[ReferenceFrom("https://github.com/ikorin24/Base85/blob/master/Base85/Base85.cs", ProgramingLanguage.CSharp, License.Apache2_0)]
+[Obsolete("这个版本的实现功能单一，且逻辑混乱，使用`TuupolaBase85Encoding`代替")]
 public class Base85Encoding : IEncoding
 {
     /// <inheritdoc/>

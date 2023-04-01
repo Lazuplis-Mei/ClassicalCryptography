@@ -1,32 +1,32 @@
 ﻿namespace ClassicalCryptography.Attributes;
 
 /// <summary>
-/// 开源代码的许可协议
+/// <see href="https://choosealicense.com/appendix/">开源代码的许可协议</see>
 /// </summary>
 public enum License
 {
     /// <summary>
-    /// 没有协议
+    /// 该代码没有任何协议
     /// </summary>
     None,
 
     /// <summary>
-    /// 无条件许可
+    /// <see href="https://choosealicense.com/licenses/unlicense/">The Unlicense</see>
     /// </summary>
     Unlicense,
 
     /// <summary>
-    /// MIT协议
+    /// <see href="https://choosealicense.com/licenses/mit/">MIT Licenses</see>
     /// </summary>
     MIT,
 
     /// <summary>
-    /// Apache License 2.0
+    /// <see href="https://choosealicense.com/licenses/apache-2.0/">Apache License 2.0</see>
     /// </summary>
-    Apache2,
+    Apache2_0,
 
     /// <summary>
-    /// GNU GENERAL PUBLIC LICENSE Version 2
+    /// <see href="https://choosealicense.com/licenses/gpl-2.0/">GNU General Public License v2.0</see>
     /// </summary>
-    GPL2
+    GPL2_0,
 }

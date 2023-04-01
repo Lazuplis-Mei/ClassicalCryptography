@@ -93,7 +93,7 @@ public class Brainfuck : IStaticCipher<string, string>
     /// 为文本生成brainfuck代码
     /// </summary>
     /// <param name="text">要编码的字符串</param>
-    [ReferenceFrom("https://github.com/splitbrain/ook/blob/master/util.php", ProgramingLanguage.PHP, License.GPL2)]
+    [ReferenceFrom("https://github.com/splitbrain/ook/blob/master/util.php", ProgramingLanguage.PHP, License.GPL2_0)]
     public static string GenerateCode(string text)
     {
         int value = 0;

@@ -3,77 +3,87 @@
 namespace ClassicalCryptography.Calculation.RSASteganograph;
 
 /// <summary>
-/// 使用<a href="https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test">
-/// MillerRabin算法
-/// </a>检测质数<br/>
+/// 使用MillerRabin算法的质数检测工具
 /// </summary>
 /// <remarks>
-/// <a href="https://planetcalc.com/8995/">在线工具</a>
+/// <list type="bullet">
+///     <item>
+///         <term>参考资料</term>
+///         <description>
+///             <see href="https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test">wikipedia/Miller–Rabin_primality_test</see>
+///         </description>
+///     </item>
+///     <item>
+///         <term>在线工具</term>
+///         <description>
+///             <see href="https://planetcalc.com/8995/">Miller–Rabin primality test</see>
+///         </description>
+///     </item>
+/// </list>
 /// </remarks>
-[ReferenceFrom("https://github.com/CharlesWilliams127/MillerRabinAlgorithm/blob/master/MillerRabinAlgorithm/Program.cs")]
-public static class MillerRabinPrimalityTester
+[ReferenceFrom("https://github.com/IOL0ol1/PrimalityTest/blob/0faadb9d39fb1dcb1c5218654a601ccf56730773/PrimalityTest/Utils/BigIntegerEx.cs")]
+public static partial class MillerRabinPrimalityTester
 {
-    /// <summary>
-    /// 检测结果
-    /// </summary>
-    public enum TestResult
-    {
-        /// <summary>
-        /// 不是质数
-        /// </summary>
-        NOT_PRIME,
-
-        /// <summary>
-        /// 通过检测的质数
-        /// </summary>
-        TRUSTED_PRIME,
-
-        /// <summary>
-        /// 一定是质数
-        /// </summary>
-        IS_PRIME,
-    }
-
     /// <summary>
     /// 默认的重复次数，这将提供0.9999999999854481的准确率
     /// </summary>
     public const int TEST_REPEAT_COUNT = 18;
 
+    private const int SEARCH_END = 10000;
+    private const int PARALLEL_NOT_FOUND = -1;
+
+    private static readonly int[] smallPrimes =
+    {
+        02, 03, 05, 07, 11,
+        13, 17, 19, 23, 29,
+        31, 37, 41, 43, 47,
+        53, 59, 61, 67, 71,
+        73, 79, 83, 89, 97,
+    };
+
     /// <summary>
-    /// 求大于<paramref name="number"/>的下一个质数
+    /// 并行查找大于等于<paramref name="number"/>的下一个质数
     /// </summary>
     public static BigInteger NextPrime(this BigInteger number)
     {
-        if (number.IsEven)
-            number++;
-        const int PARALLEL_NOT_FOUND = -1;
+        if (number.IsEven) number++;
+
         int n = PARALLEL_NOT_FOUND;
-        Parallel.For(0, 10000, (i, loop) =>
+        Parallel.For(0, SEARCH_END, (i, loop) =>
         {
-            if ((number + (i << 1)).IsPrime())
+            int di = i << 1;
+            if ((number + di).IsPrime())
             {
-                n = i << 1;
+                n = di;
                 loop.Break();
             }
         });
-        if (n != PARALLEL_NOT_FOUND)
+
+        if (n is not PARALLEL_NOT_FOUND)
             return number + n;
-        number += 20000;
+
+        number += 2 * SEARCH_END;
         while (!number.IsPrime())
             number += 2;
+
         return number;
     }
 
     /// <summary>
-    /// 并行查找大于<paramref name="number"/>的质数(不保证是第一个质数)
+    /// 并行查找大于<paramref name="number"/>的某个质数
     /// </summary>
-    public static BigInteger ParallelFindPrime(this BigInteger number)
+    /// <remarks>
+    /// 相比较<see cref="NextPrime"/><br/>
+    /// 此方法的唯一区别在于使用<see cref="ParallelLoopState.Stop"/><br/>
+    /// 而不是<see cref="ParallelLoopState.Break"/><br/>
+    /// 因此它在相同情况下可能会更快地得到结果，尽管结果可能会不同
+    /// </remarks>
+    public static BigInteger FindPrime(this BigInteger number)
     {
-        if (number.IsEven)
-            number--;
-        const int PARALLEL_NOT_FOUND = -1;
+        if (number.IsEven) number++;
+
         int n = PARALLEL_NOT_FOUND;
-        Parallel.For(0, 10000, (i, loop) =>
+        Parallel.For(0, SEARCH_END, (i, loop) =>
         {
             if ((number + (i << 1)).IsPrime())
             {
@@ -81,11 +91,14 @@ public static class MillerRabinPrimalityTester
                 loop.Stop();
             }
         });
-        if (n != PARALLEL_NOT_FOUND)
+
+        if (n is not PARALLEL_NOT_FOUND)
             return number + n;
-        number += 20000;
+
+        number += 2 * SEARCH_END;
         while (!number.IsPrime())
             number += 2;
+
         return number;
     }
 
@@ -94,7 +107,7 @@ public static class MillerRabinPrimalityTester
     /// </summary>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static double GetProbability(int testRepeatCount)
+    public static double GetAccuracy(int testRepeatCount)
     {
         return 1 - 1 / Math.Pow(4, testRepeatCount);
     }
@@ -103,6 +116,10 @@ public static class MillerRabinPrimalityTester
     /// 检测数值是否为质数
     /// </summary>
     /// <param name="number">待检测的数</param>
+    /// <returns>
+    /// <see langword="true"/> 如果<paramref name="number"/>是(或<strong>非常可能</strong>是)质数<br/>
+    /// <see langword="false"/> 如果<paramref name="number"/>不是质数
+    /// </returns>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPrime(this BigInteger number)
     {
@@ -120,6 +137,12 @@ public static class MillerRabinPrimalityTester
     /// </summary>
     /// <param name="number">待检测的数</param>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
+    /// <returns>
+    /// <see cref="TestResult.NOT_PRIME"/> 如果<paramref name="number"/>不是质数<br/>
+    /// <see cref="TestResult.TRUSTED_PRIME"/> 如果<paramref name="number"/><strong>非常可能</strong>是质数<br/>
+    /// <see cref="TestResult.IS_PRIME"/> 如果<paramref name="number"/>是质数
+    /// </returns>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TestResult IsPrime(BigInteger number, int testRepeatCount)
     {
         Guard.IsTrue(BigInteger.IsPositive(number));
@@ -130,14 +153,7 @@ public static class MillerRabinPrimalityTester
         if (number.IsEven)
             return TestResult.NOT_PRIME;
 
-        if (number % 03 == 0 || number % 05 == 0 || number % 07 == 0 ||
-            number % 11 == 0 || number % 13 == 0 || number % 17 == 0 ||
-            number % 19 == 0 || number % 23 == 0 || number % 29 == 0 ||
-            number % 31 == 0 || number % 37 == 0 || number % 41 == 0 ||
-            number % 43 == 0 || number % 47 == 0 || number % 53 == 0 ||
-            number % 59 == 0 || number % 61 == 0 || number % 67 == 0 ||
-            number % 71 == 0 || number % 73 == 0 || number % 79 == 0 ||
-            number % 83 == 0 || number % 89 == 0 || number % 97 == 0)
+        if (smallPrimes.Any(p => (number % p).IsZero))
             return TestResult.NOT_PRIME;
 
         return MillerRabin(number, testRepeatCount);
@@ -147,6 +163,10 @@ public static class MillerRabinPrimalityTester
     /// 检测是否为质数
     /// </summary>
     /// <param name="number">待检测的数</param>
+    /// <returns>
+    /// <see langword="true"/> 如果<paramref name="number"/>是(或<strong>非常可能</strong>是)质数<br/>
+    /// <see langword="false"/> 如果<paramref name="number"/>不是质数
+    /// </returns>
     public static bool IsPrime(ulong number)
     {
         ulong quotient, remainder, divisor;
@@ -166,8 +186,16 @@ public static class MillerRabinPrimalityTester
     /// <summary>
     /// MillerRabin算法的概率性质数测试
     /// </summary>
+    /// <remarks>
+    /// 其中重复过程是并行计算的
+    /// </remarks>
     /// <param name="number">待检测的数</param>
     /// <param name="testRepeatCount">测试过程的重复次数</param>
+    /// <returns>
+    /// <see cref="TestResult.NOT_PRIME"/> 如果<paramref name="number"/>不是质数<br/>
+    /// <see cref="TestResult.TRUSTED_PRIME"/> 如果<paramref name="number"/><strong>非常可能</strong>是质数<br/>
+    /// <see cref="TestResult.IS_PRIME"/> 如果<paramref name="number"/>是质数
+    /// </returns>
     public static TestResult MillerRabin(BigInteger number, int testRepeatCount)
     {
         var m = number - 1;
@@ -184,24 +212,25 @@ public static class MillerRabinPrimalityTester
         }
 
         var testResult = TestResult.TRUSTED_PRIME;
-        for (int i = 0; i < testRepeatCount && testResult != TestResult.NOT_PRIME; i++)
+        Parallel.For(0, testRepeatCount, (i, loop) =>
         {
-            //如果有误，请更换为RandomBigInteger
+            if (testResult == TestResult.NOT_PRIME)
+                loop.Stop();
             var x = RandomHelper.RandomBigInt(m);
             testResult = MillerRabinInternal(number, x, q, k);
-        }
+        });
         return testResult;
     }
 
     private static TestResult MillerRabinInternal(BigInteger n, BigInteger x, BigInteger q, int k)
     {
-        BigInteger m = n - 1;
+        var m = n - 1;
         var y = BigInteger.ModPow(x, q, n);
 
         if (y.IsOne || y == m)
             return TestResult.TRUSTED_PRIME;
 
-        for (var i = 1; i < k; i++)
+        for (int i = 1; i < k; i++)
         {
             y = BigInteger.ModPow(y, 2, n);
             if (y == m)

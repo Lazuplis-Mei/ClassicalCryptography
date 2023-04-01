@@ -79,7 +79,7 @@ public static class TranspositionHelper
     [SkipLocalsInit]
     public static string AssembleText(this ushort[] order, string text)
     {
-        Span<char> buffer = order.Length.CanAllocateString()
+        Span<char> buffer = order.Length.CanAllocString()
             ? stackalloc char[order.Length] : new char[order.Length];
 
         for (int i = 0; i < order.Length; i++)
@@ -95,7 +95,7 @@ public static class TranspositionHelper
     [SkipLocalsInit]
     public static string AssembleTextInverse(this ushort[] order, string text)
     {
-        Span<char> buffer = order.Length.CanAllocateString()
+        Span<char> buffer = order.Length.CanAllocString()
             ? stackalloc char[order.Length] : new char[order.Length];
 
         for (int i = 0; i < order.Length; i++)
@@ -114,7 +114,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocateString()
+        Span<char> buffer = size.CanAllocString()
             ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
@@ -135,7 +135,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocateString()
+        Span<char> buffer = size.CanAllocString()
             ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
@@ -156,7 +156,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocateString()
+        Span<char> buffer = size.CanAllocString()
             ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
@@ -177,7 +177,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocateString()
+        Span<char> buffer = size.CanAllocString()
             ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)

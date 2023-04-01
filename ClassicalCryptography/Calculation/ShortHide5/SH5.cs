@@ -8,10 +8,12 @@ namespace ClassicalCryptography.Calculation.ShortHide5;
 /// <summary>
 /// ShortHide5密文结果的结构
 /// </summary>
-public partial class SH5 : IEnumerable<int>
+public readonly partial struct SH5 : IEnumerable<int>
 {
+    #region 只读字段
+
     /// <summary>
-    /// <a href="https://www.bilibili.com/read/cv15676311">标准的1组SH5推荐字母表</a>
+    /// <see href="https://www.bilibili.com/read/cv15676311">标准的1组SH5推荐字母表</see>
     /// </summary>
     public static readonly string AlphaBetSingle = "EADIHTNORFS";
 
@@ -46,24 +48,23 @@ public partial class SH5 : IEnumerable<int>
     public readonly SH5Level Level;
 
     /// <summary>
-    /// 当前SH5结构的字母表
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public string GetAlphaBet() => Level switch
-    {
-        SH5Level.Single => AlphaBetSingle,
-        SH5Level.Double => AlphaBetDouble,
-        SH5Level.Trible => AlphaBetTriple,
-        _ => throw new Exception("不存在的字母表"),
-    };
-
-    /// <summary>
     /// 前缀X的数量(2组SH5独有的)
     /// </summary>
     public readonly int PrefixCount;
 
+    #endregion 只读字段
+
     /// <summary>
-    /// 前缀X
+    /// 一组的SH5结构
+    /// </summary>
+    public SH5(int u, ulong v)
+    {
+        Pair1 = (u, v);
+        Level = SH5Level.Single;
+    }
+
+    /// <summary>
+    /// 2组SH5的前缀X
     /// </summary>
     public string Prefix
     {
@@ -81,6 +82,78 @@ public partial class SH5 : IEnumerable<int>
     }
 
     /// <summary>
+    /// 两组的SH5结构
+    /// </summary>
+    public SH5(int u1, ulong v1, int u2, ulong v2, int prefixCount = 0)
+    {
+        Pair1 = (u1, v1);
+        Pair2 = (u2, v2);
+        Level = SH5Level.Double;
+        PrefixCount = prefixCount;
+    }
+
+    /// <summary>
+    /// 三组的SH5结构
+    /// </summary>
+    public SH5(int u1, ulong v1, int u2, ulong v2, int u3, ulong v3)
+    {
+        Pair1 = (u1, v1);
+        Pair2 = (u2, v2);
+        Pair3 = (u3, v3);
+        Level = SH5Level.Trible;
+    }
+
+    [GeneratedRegex("[A-Z][0-9a-z]+")]
+    private static partial Regex SH5GroupRegex();
+
+    /// <summary>
+    /// 表示一个SH5结构
+    /// </summary>
+    /// <remarks>
+    /// 一个正确的SH5结构应该符合如下的正则表达式<br/>
+    /// <c>"X*([A-Z][0-9a-z]+){1,3}"</c>
+    /// </remarks>
+    public SH5(string SH5Patten)
+    {
+        var matches = SH5GroupRegex().Matches(SH5Patten);
+        Level = (SH5Level)matches.Count;
+        Guard.IsTrue(Enum.IsDefined(Level));
+
+        ReadOnlySpan<char> matchValue;
+        switch (Level)
+        {
+            case SH5Level.Single:
+                matchValue = matches[0].ValueSpan;
+                Pair1 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                break;
+            case SH5Level.Double:
+                matchValue = matches[0].ValueSpan;
+                Pair1 = (DoubleAlphaBet(matchValue[0]), FromBase36(matchValue[1..]));
+                matchValue = matches[1].ValueSpan;
+                Pair2 = (DoubleAlphaBet(matchValue[0]), FromBase36(matchValue[1..]));
+                PrefixCount = GetPrefixCount(SH5Patten);
+                break;
+            case SH5Level.Trible:
+                matchValue = matches[0].ValueSpan;
+                Pair1 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                matchValue = matches[1].ValueSpan;
+                Pair2 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                matchValue = matches[2].ValueSpan;
+                Pair3 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                break;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int DoubleAlphaBet(char character) => character switch
+        {
+            'X' => 0,
+            <= 'W' => character - 'A' + 1,
+            <= 'Z' => character - 'A',
+            _ => throw new ArgumentException("字符不在2组SH5的字母表中", nameof(character))
+        };
+    }
+
+    /// <summary>
     /// 获得前缀X数量
     /// </summary>
     public static int GetPrefixCount(string word)
@@ -92,170 +165,63 @@ public partial class SH5 : IEnumerable<int>
     }
 
     /// <summary>
-    /// 仅一组的SH5结构
+    /// 当前SH5结构的字母表
     /// </summary>
-    public SH5(int u, ulong v)
-    {
-        Pair1.U = u;
-        Pair1.V = v;
-        Level = SH5Level.Single;
-    }
-
-    /// <summary>
-    /// 两组的SH5结构
-    /// </summary>
-    public SH5(int u1, ulong v1, int u2, ulong v2, int prefixCount = 0)
-    {
-        Pair1.U = u1;
-        Pair1.V = v1;
-        Pair2.U = u2;
-        Pair2.V = v2;
-        Level = SH5Level.Double;
-        PrefixCount = prefixCount;
-    }
-
-    /// <summary>
-    /// 三组的SH5结构
-    /// </summary>
-    public SH5(int u1, ulong v1, int u2, ulong v2, int u3, ulong v3)
-    {
-        Pair1.U = u1;
-        Pair1.V = v1;
-        Pair2.U = u2;
-        Pair2.V = v2;
-        Pair3.U = u3;
-        Pair3.V = v3;
-        Level = SH5Level.Trible;
-    }
-
-    [GeneratedRegex("[A-Z][0-9a-z]+")]
-    private static partial Regex SH5GroupRegex();
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int DoubleAlphaBet_IndexOf(char character) => character switch
+    public string GetAlphaBet() => Level switch
     {
-        'X' => 0,
-        < 'X' => character - 'A' + 1,
-        <= 'Z' => character - 'A',
-        _ => throw new ArgumentException("字符不在2组SH5的字母表中", nameof(character))
+        SH5Level.Single => AlphaBetSingle,
+        SH5Level.Double => AlphaBetDouble,
+        SH5Level.Trible => AlphaBetTriple,
+        _ => throw new Exception("不存在的字母表"),
     };
-
-    /// <summary>
-    /// 表示一个SH5结构，它应该符合1到3个如下的正则表达式<br/>
-    /// <c>[A-Z][0-9a-z]+</c>
-    /// </summary>
-    public SH5(string sh5Pattens)
-    {
-        var matches = SH5GroupRegex().Matches(sh5Pattens);
-        Level = (SH5Level)matches.Count;
-        Guard.IsTrue(Enum.IsDefined(Level));
-
-        ReadOnlySpan<char> sh5Patten;
-        switch (Level)
-        {
-            case SH5Level.Single:
-                sh5Patten = matches[0].ValueSpan;
-                Pair1.U = sh5Patten[0].LetterNumber();
-                Pair1.V = FromBase36(sh5Patten[1..]);
-                break;
-            case SH5Level.Double:
-                sh5Patten = matches[0].ValueSpan;
-                Pair1.U = DoubleAlphaBet_IndexOf(sh5Patten[0]);
-                Pair1.V = FromBase36(sh5Patten[1..]);
-                sh5Patten = matches[1].ValueSpan;
-                Pair2.U = DoubleAlphaBet_IndexOf(sh5Patten[0]);
-                Pair2.V = FromBase36(sh5Patten[1..]);
-                PrefixCount = GetPrefixCount(sh5Pattens);
-                break;
-            case SH5Level.Trible:
-                sh5Patten = matches[0].ValueSpan;
-                Pair1.U = sh5Patten[0].LetterNumber();
-                Pair1.V = FromBase36(sh5Patten[1..]);
-                sh5Patten = matches[1].ValueSpan;
-                Pair2.U = sh5Patten[0].LetterNumber();
-                Pair2.V = FromBase36(sh5Patten[1..]);
-                sh5Patten = matches[2].ValueSpan;
-                Pair3.U = sh5Patten[0].LetterNumber();
-                Pair3.V = FromBase36(sh5Patten[1..]);
-                break;
-        }
-    }
 
     /// <summary>
     /// SH5结构的字符串形式
     /// </summary>
-    public override string ToString()
+    public override string ToString() => Level switch
     {
-        var result = new StringBuilder();
-        switch (Level)
-        {
-            case SH5Level.Single:
-                result.Append(U_Letters[Pair1.U - 1]);
-                result.Append(ToBase36(Pair1.V));
-                break;
-            case SH5Level.Double:
-                result.Append(Prefix);
-                result.Append(AlphaBetDouble[Pair1.U]);
-                result.Append(ToBase36(Pair1.V));
-                result.Append(AlphaBetDouble[Pair2.U]);
-                result.Append(ToBase36(Pair2.V));
-                break;
-            case SH5Level.Trible:
-                result.Append(U_Letters[Pair1.U - 1]);
-                result.Append(ToBase36(Pair1.V));
-                result.Append(U_Letters[Pair2.U - 1]);
-                result.Append(ToBase36(Pair2.V));
-                result.Append(U_Letters[Pair3.U - 1]);
-                result.Append(ToBase36(Pair3.V));
-                break;
-        }
-        return result.ToString();
-    }
+        SH5Level.Single => $"{U_Letters[Pair1.U - 1]}{ToBase36(Pair1.V)}",
+        SH5Level.Double => $"{Prefix}{AlphaBetDouble[Pair1.U]}{ToBase36(Pair1.V)}{AlphaBetDouble[Pair2.U]}{ToBase36(Pair2.V)}",
+        SH5Level.Trible => $"{U_Letters[Pair1.U - 1]}{ToBase36(Pair1.V)}{U_Letters[Pair2.U - 1]}{ToBase36(Pair2.V)}{U_Letters[Pair3.U - 1]}{ToBase36(Pair3.V)}",
+        _ => string.Empty
+    };
 
     /// <summary>
     /// 倒序计算SH5的结果
     /// </summary>
     public IEnumerator<int> GetEnumerator()
     {
-        ulong v1, v2, v3;
-
+        var (u1, v1) = Pair1;
+        var (u2, v2) = Pair2;
+        var (u3, v3) = Pair3;
         switch (Level)
         {
             case SH5Level.Single:
-                v1 = Pair1.V;
                 while (v1 != 0)
                 {
                     //额外的计算规则在 https://www.bilibili.com/read/cv15676311 中有解释
-                    yield return Pair1.U * (int)(v1 % 5) + Pair1.U / AlphaBetSingle.Length;
+                    yield return u1 * (int)(v1 % 5) + u1 / AlphaBetSingle.Length;
                     v1 /= 5;
                 }
                 yield break;
             case SH5Level.Double:
-                v1 = Pair1.V;
-                v2 = Pair2.V;
                 while (v1 != 0 || v2 != 0)
                 {
-                    yield return Pair1.U * (int)(v1 % 5) + Pair2.U * (int)(v2 % 5);
-                    v1 /= 5;
-                    v2 /= 5;
+                    yield return u1 * (int)(v1 % 5) + u2 * (int)(v2 % 5);
+                    v1 /= 5; v2 /= 5;
                 }
                 yield break;
             case SH5Level.Trible:
-                v1 = Pair1.V;
-                v2 = Pair2.V;
-                v3 = Pair3.V;
                 while (v1 != 0 || v2 != 0 || v3 != 0)
                 {
-                    yield return Pair1.U * (int)(v1 % 5)
-                        + Pair2.U * (int)(v2 % 5)
-                        + Pair3.U * (int)(v3 % 5);
-                    v1 /= 5;
-                    v2 /= 5;
-                    v3 /= 5;
+                    yield return u1 * (int)(v1 % 5) + u2 * (int)(v2 % 5) + u3 * (int)(v3 % 5);
+                    v1 /= 5; v2 /= 5; v3 /= 5;
                 }
                 yield break;
         }
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
 }
