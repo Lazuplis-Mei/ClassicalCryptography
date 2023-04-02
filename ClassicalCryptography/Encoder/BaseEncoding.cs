@@ -226,13 +226,20 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 使用指定表(如<see cref="Utils.GlobalTables.Base36"/>等)编码
+    /// 使用指定表(如<see cref="GlobalTables.Base36"/>等)编码
     /// </summary>
     public static string ToBase(string input, string table)
     {
         var bytes = Encoding.GetBytes(input);
         var number = new BigInteger(bytes, true, true);
+        return NumberToBase(number, table);
+    }
 
+    /// <summary>
+    /// 使用指定表编码整数
+    /// </summary>
+    public static string NumberToBase(BigInteger number, string table)
+    {
         var stack = new Stack<char>();
         while (!number.IsZero)
         {
@@ -243,9 +250,19 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 使用指定表(如<see cref="Utils.GlobalTables.Base36"/>等)编码
+    /// 使用指定表(如<see cref="GlobalTables.Base36"/>等)编码
     /// </summary>
     public static string FromBase(string input, string table)
+    {
+        BigInteger number = NumberFromBase(input, table);
+        var bytes = number.ToByteArray(true, true);
+        return Encoding.GetString(bytes);
+    }
+
+    /// <summary>
+    /// 使用指定表解码整数
+    /// </summary>
+    public static BigInteger NumberFromBase(string input, string table)
     {
         var number = BigInteger.Zero;
         int baseNumber = table.Length;
@@ -254,8 +271,8 @@ public static partial class BaseEncoding
             var poweredNumber = BigInteger.Pow(baseNumber, input.Length - i - 1);
             number += table.IndexOf(input[i]) * poweredNumber;
         }
-        var bytes = number.ToByteArray(true, true);
-        return Encoding.GetString(bytes);
+
+        return number;
     }
 
     [GeneratedRegex("(?<Hex>(=[0-9a-fA-F]{2})+)|(?<Other>[^=]+)")]

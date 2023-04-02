@@ -2,12 +2,11 @@
 
 internal class LorenzRandom : Random
 {
-    private double x, y, z;
     private readonly double rayleigh;
     private readonly double prandtl;
     private readonly double beta;
     private readonly double dt;
-
+    private double x, y, z;
     public LorenzRandom(int seed)
     {
         var random = new Random(seed);
@@ -18,17 +17,6 @@ internal class LorenzRandom : Random
         prandtl = 28.0;
         beta = 8.0 / 3.0;
         dt = 0.01;
-    }
-
-    protected override double Sample()
-    {
-        double dx = rayleigh * (y - x);
-        double dy = x * (prandtl - z) - y;
-        double dz = x * y - beta * z;
-        x += dx * dt;
-        y += dy * dt;
-        z += dz * dt;
-        return x;
     }
 
     public override int Next()
@@ -58,5 +46,16 @@ internal class LorenzRandom : Random
     public override double NextDouble()
     {
         return Sample();
+    }
+
+    protected override double Sample()
+    {
+        double dx = rayleigh * (y - x);
+        double dy = x * (prandtl - z) - y;
+        double dz = x * y - beta * z;
+        x += dx * dt;
+        y += dy * dt;
+        z += dz * dt;
+        return x - Math.Floor(x);
     }
 }

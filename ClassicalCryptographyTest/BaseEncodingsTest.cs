@@ -99,6 +99,26 @@ namespace ClassicalCryptographyTest
         }
 
         [TestMethod]
+        [DataRow("NICETRY", "pdW/wr8M<")]
+        [DataRow("是的", ">9SvnNUg")]
+        [DataRow("Hello, world!!!!", "nm=QNz.92Pz/PV8aT50L")]
+        public void TestBase85ZeroMQ(string text, string encodingText)
+        {
+            byte[] bytes = BaseEncoding.Encoding.GetBytes(text);
+            Assert.AreEqual(encodingText, TuupolaBase85Encoding.ZeroMQ.Encode(bytes));
+            Assert.IsTrue(bytes.SequenceEqual(TuupolaBase85Encoding.ZeroMQ.Decode(encodingText)));
+        }
+
+        [TestMethod]
+        [DataRow("Hello world!", "NM&qnZy<MXa%^NF")]
+        public void TestBase85RFC1924(string text, string encodingText)
+        {
+            byte[] bytes = BaseEncoding.Encoding.GetBytes(text);
+            Assert.AreEqual(encodingText, TuupolaBase85Encoding.RFC1924.Encode(bytes));
+            Assert.IsTrue(bytes.SequenceEqual(TuupolaBase85Encoding.RFC1924.Decode(encodingText)));
+        }
+
+        [TestMethod]
         [DataRow("012=Q是的ABC", "012=3DQ=E6=98=AF=E7=9A=84ABC")]
         public void TestQuotedPrintable(string text, string encodingText)
         {

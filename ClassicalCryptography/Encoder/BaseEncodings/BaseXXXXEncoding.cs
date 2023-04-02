@@ -26,42 +26,31 @@ internal class BaseXXXXEncoding
                 int first = pairString[i];
                 int last = pairString[i + 1];
                 for (int codePoint = first; codePoint <= last; codePoint++)
-                {
                     encodeRepertoire.Add((char)codePoint);
-                }
             }
             int numZBits = BITS_PER_CHAR - BITS_PER_BYTE * r;
             lookupE.Add(numZBits, encodeRepertoire);
             for (int z = 0; z < encodeRepertoire.Count; z++)
-            {
-                char chr = encodeRepertoire[z];
-                lookupD[chr] = (numZBits, z);
-            }
+                lookupD[encodeRepertoire[z]] = (numZBits, z);
         }
     }
 
-    public string Encode(byte[] uint8Array)
+    public string Encode(byte[] bytes)
     {
-        int length = uint8Array.Length;
-        var str = new StringBuilder();
-        int z = 0;
-        int numZBits = 0;
-        for (int i = 0; i < length; i++)
+        var result = new StringBuilder();
+        int z = 0, numZBits = 0;
+        for (int i = 0; i < bytes.Length; i++)
         {
-            byte uint8 = uint8Array[i];
-
             for (int j = BITS_PER_BYTE - 1; j >= 0; j--)
             {
-                int bit = uint8 >> j & 1;
-
+                int bit = (bytes[i] >> j) & 1;
                 z = (z << 1) + bit;
                 numZBits++;
 
                 if (numZBits == BITS_PER_CHAR)
                 {
-                    str.Append(lookupE[numZBits][z]);
-                    z = 0;
-                    numZBits = 0;
+                    result.Append(lookupE[numZBits][z]);
+                    z = numZBits = 0;
                 }
             }
         }
@@ -73,58 +62,49 @@ internal class BaseXXXXEncoding
                 numZBits++;
             }
 
-            str.Append(lookupE[numZBits][z]);
+            result.Append(lookupE[numZBits][z]);
         }
-        return str.ToString();
+        return result.ToString();
     }
 
     public byte[] Decode(string str)
     {
         int length = str.Length;
 
-        var uint8Array = new byte[(length * BITS_PER_CHAR / BITS_PER_BYTE)];
-        int numUint8s = 0;
-        byte uint8 = 0;
-        int numUint8Bits = 0;
+        var bytes = new byte[(length * BITS_PER_CHAR / BITS_PER_BYTE)];
+        int byteCount = 0, bitsCount = 0;
+        byte value = 0;
 
         for (int i = 0; i < length; i++)
         {
-            char chr = str[i];
+            if (!lookupD.ContainsKey(str[i]))
+                throw new Exception($"无法识别的字符:{str[i]}");
 
-            if (!lookupD.ContainsKey(chr))
-            {
-                throw new Exception($"Unrecognised character: ${chr}");
-            }
-
-            var (numZBits, z) = lookupD[chr];
+            var (numZBits, z) = lookupD[str[i]];
 
             if (numZBits != BITS_PER_CHAR && i != length - 1)
-            {
-                throw new Exception($"Secondary character found before end of input at position {i}");
-            }
+                throw new Exception($"输入序列已结束:{i}");
 
             for (int j = numZBits - 1; j >= 0; j--)
             {
                 int bit = z >> j & 1;
 
-                uint8 = (byte)((uint8 << 1) + bit);
-                numUint8Bits++;
+                value = (byte)((value << 1) + bit);
+                bitsCount++;
 
-                if (numUint8Bits == BITS_PER_BYTE)
+                if (bitsCount == BITS_PER_BYTE)
                 {
-                    uint8Array[numUint8s] = uint8;
-                    numUint8s++;
-                    uint8 = 0;
-                    numUint8Bits = 0;
+                    bytes[byteCount] = value;
+                    byteCount++;
+                    value = 0;
+                    bitsCount = 0;
                 }
             }
         }
 
-        if (uint8 != (1 << numUint8Bits) - 1)
-        {
-            throw new Exception("Padding mismatch");
-        }
+        if (value != (1 << bitsCount) - 1)
+            throw new Exception("填充不匹配");
 
-        return uint8Array[..numUint8s];
+        return bytes[..byteCount];
     }
 }

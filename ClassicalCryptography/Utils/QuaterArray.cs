@@ -8,10 +8,7 @@ namespace ClassicalCryptography.Utils;
 public class QuaterArray : IEnumerable<int>
 {
     private readonly byte[] array;
-    /// <summary>
-    /// 元素个数
-    /// </summary>
-    public int Count { get; }
+
     /// <summary>
     /// 4进制数组
     /// </summary>
@@ -31,6 +28,10 @@ public class QuaterArray : IEnumerable<int>
     }
 
     /// <summary>
+    /// 元素个数
+    /// </summary>
+    public int Count { get; }
+    /// <summary>
     /// 设置和获取元素
     /// </summary>
     /// <param name="index"></param>
@@ -40,60 +41,43 @@ public class QuaterArray : IEnumerable<int>
     {
         get
         {
-            if (index < 0 || index >= Count)
-                throw new IndexOutOfRangeException();
-            byte val = array[index >> 2];
+            Guard.IsInRange(index, 0, Count);
+            byte value = array[index >> 2];
             return (index & 0B11) switch
             {
-                0B00 => (val >> 6),
-                0B01 => ((val >> 4) & 0B11),
-                0B10 => ((val >> 2) & 0B11),
-                //0B11
-                _ => (val & 0B11),
+                0B00 => (value >> 6),
+                0B01 => ((value >> 4) & 0B11),
+                0B10 => ((value >> 2) & 0B11),
+                _ => (value & 0B11),
             };
         }
         set
         {
-            if (index < 0 || index >= Count)
-                throw new IndexOutOfRangeException();
+            Guard.IsInRange(index, 0, Count);
             value &= 0B11;
+            int i = index >> 2;
             switch (index & 0B11)
             {
                 case 0B00:
-                    array[index >> 2] &= 0B00111111;
-                    array[index >> 2] |= (byte)(value << 6);
+                    array[i] &= 0B00111111;
+                    array[i] |= (byte)(value << 6);
                     break;
                 case 0B01:
-                    array[index >> 2] &= 0B11001111;
-                    array[index >> 2] |= (byte)(value << 4);
+                    array[i] &= 0B11001111;
+                    array[i] |= (byte)(value << 4);
                     break;
                 case 0B10:
-                    array[index >> 2] &= 0B11110011;
-                    array[index >> 2] |= (byte)(value << 2);
+                    array[i] &= 0B11110011;
+                    array[i] |= (byte)(value << 2);
                     break;
-                default://3
-                    array[index >> 2] &= 0B11111100;
-                    array[index >> 2] |= (byte)(value);
+                default:
+                    array[i] &= 0B11111100;
+                    array[i] |= (byte)(value);
                     break;
             }
         }
     }
 
-    /// <summary>
-    /// 迭代器
-    /// </summary>
-    public IEnumerator<int> GetEnumerator()
-    {
-        for (int i = 0; i < Count; i++)
-            yield return this[i];
-    }
-    /// <summary>
-    /// 字符串形式(Count:Base64)
-    /// </summary>
-    public override string ToString()
-    {
-        return $"{Count}:{Convert.ToBase64String(array)}";
-    }
     /// <summary>
     /// 从字符串创建
     /// </summary>
@@ -104,6 +88,23 @@ public class QuaterArray : IEnumerable<int>
         int count = int.Parse(str[..si++]);
         byte[] arr = Convert.FromBase64String(str[si..]);
         return new QuaterArray(count, arr);
+    }
+
+    /// <summary>
+    /// 迭代器
+    /// </summary>
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 0; i < Count; i++)
+            yield return this[i];
+    }
+
+    /// <summary>
+    /// 字符串形式(Count:Base64)
+    /// </summary>
+    public override string ToString()
+    {
+        return $"{Count}:{Convert.ToBase64String(array)}";
     }
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

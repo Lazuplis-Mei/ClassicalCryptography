@@ -1,9 +1,8 @@
 ﻿namespace ClassicalCryptography.Interfaces;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-
-
 
 /// <summary>
 /// 换位密码使用的扩展方法
@@ -14,6 +13,7 @@ public static class TranspositionHelper
     /// 补充字符
     /// </summary>
     public static char PaddingChar { get; set; } = '`';
+
     /// <summary>
     /// 字符不足时使用的补充字符
     /// </summary>
@@ -79,10 +79,10 @@ public static class TranspositionHelper
     [SkipLocalsInit]
     public static string AssembleText(this ushort[] order, string text)
     {
-        Span<char> buffer = order.Length.CanAllocString()
-            ? stackalloc char[order.Length] : new char[order.Length];
+        int length = order.Length;
+        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : new char[length];
 
-        for (int i = 0; i < order.Length; i++)
+        for (int i = 0; i < length; i++)
             buffer[i] = order[i] < text.Length ? text[order[i]] : GetPaddingChar();
         return new string(buffer);
     }
@@ -95,10 +95,10 @@ public static class TranspositionHelper
     [SkipLocalsInit]
     public static string AssembleTextInverse(this ushort[] order, string text)
     {
-        Span<char> buffer = order.Length.CanAllocString()
-            ? stackalloc char[order.Length] : new char[order.Length];
+        int length = order.Length;
+        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : new char[length];
 
-        for (int i = 0; i < order.Length; i++)
+        for (int i = 0; i < length; i++)
             buffer[order[i]] = i < text.Length ? text[i] : GetPaddingChar();
         return new string(buffer);
     }
@@ -114,8 +114,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString()
-            ? stackalloc char[size] : new char[size];
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -135,8 +134,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString()
-            ? stackalloc char[size] : new char[size];
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -156,8 +154,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString()
-            ? stackalloc char[size] : new char[size];
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -177,8 +174,7 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString()
-            ? stackalloc char[size] : new char[size];
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -293,7 +289,6 @@ public static class TranspositionHelper
         return result;
     }
 
-
     /// <summary>
     /// 多重置换(二维)
     /// </summary>
@@ -344,7 +339,6 @@ public static class TranspositionHelper
         }
         return result;
     }
-
 
     /// <summary>
     /// 最小公倍数

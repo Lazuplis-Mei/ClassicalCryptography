@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Encoder;
+using ClassicalCryptography.Encoder.BaseEncodings;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ClassicalCryptographyTest
@@ -29,6 +30,14 @@ namespace ClassicalCryptographyTest
 
             Assert.AreEqual(encodingText, BrailleEncoding.EncodeString(text));
             Assert.AreEqual(text, BrailleEncoding.DecodeString(encodingText));
+        }
+
+        [TestMethod]
+        [DataRow("2001:db8:100:f101::1", "9R}vSQZ1W=8fRv3*HAqn")]
+        public void TestBase85Ipv6(string text, string encodingText)
+        {
+            Assert.AreEqual(encodingText, WebEncoding.Base85Ipv6Encode(text));
+            Assert.AreEqual(text, WebEncoding.Base85Ipv6Decode(encodingText));
         }
 
     }

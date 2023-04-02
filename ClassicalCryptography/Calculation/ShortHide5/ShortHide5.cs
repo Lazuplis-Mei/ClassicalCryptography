@@ -35,7 +35,7 @@ public static class ShortHide5
             {
                 for (int i = 0; i < 5; i++) for (int j = 0; j < 5; j++)
                         span2D[i, j] = AlphaBetDouble[(u1 * i + u2 * j) % 26];
-                doubleAlphaBets[u1 - 1, u2 - 1] = new(span2D.AsSpan());
+                doubleAlphaBets[u1 - 1, u2 - 1] = new(span2D.ToFlatArray());
             }
         }
     }
@@ -52,7 +52,7 @@ public static class ShortHide5
     public static string DecryptSH5(SH5 cipher)
     {
         var alphaBet = cipher.GetAlphaBet();
-        int index = 28;
+        int index = 28;//Math.Log(ulong.MaxValue, 5)=27.6
         Span<char> text = stackalloc char[index];
         foreach (var value in cipher)
             text[--index] = alphaBet[value % alphaBet.Length];

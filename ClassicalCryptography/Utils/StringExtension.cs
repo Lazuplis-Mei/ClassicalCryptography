@@ -13,7 +13,7 @@ internal static class StringExtension
     /// 字符串转换成可修改的内存
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Span<char> AsWriteableSpan(this string text)
+    public static Span<char> AsReadWriteSpan(this string text)
     {
         return MemoryMarshal.CreateSpan(ref text.DangerousGetReference(), text.Length);
     }
@@ -81,6 +81,7 @@ internal static class StringExtension
     /// <summary>
     /// 小写36进制字符
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Base36Number(this char character)
     {
         if (character is >= '0' and <= '9')
@@ -120,18 +121,6 @@ internal static class StringExtension
             if (text[i] == character)
                 result.Add(i);
         return result;
-    }
-
-    /// <summary>
-    /// 中文按UTF-8转换成Base64字符串
-    /// </summary>
-    /// <param name="text">中文字符串</param>
-    /// <param name="encoding">默认编码UTF8</param>
-    public static string ToBase64(this string text, Encoding? encoding = null)
-    {
-        encoding ??= Encoding.UTF8;
-        var bytes = encoding.GetBytes(text);
-        return Convert.ToBase64String(bytes);
     }
 
     /// <summary>
@@ -175,8 +164,7 @@ internal static class StringExtension
     [SkipLocalsInit]
     public static string Repeat(this char character, int count)
     {
-        Span<char> span = count.CanAllocString()
-            ? stackalloc char[count] : new char[count];
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
         span.Fill(character);
         return new(span);
     }

@@ -24,11 +24,6 @@ public interface IKey<T>
     IKey<T>? InversedKey { get; }
 
     /// <summary>
-    /// 返回密钥的文本形式
-    /// </summary>
-    string GetString();
-
-    /// <summary>
     /// 从文本格式创建密钥
     /// </summary>
     /// <param name="strKey">文本类型的密钥</param>
@@ -46,4 +41,8 @@ public interface IKey<T>
     /// <param name="textLength">加密内容的长度</param>
     static abstract BigInteger GetKeySpace(int textLength);
 
+    /// <summary>
+    /// 返回密钥的文本形式
+    /// </summary>
+    string GetString();
 }

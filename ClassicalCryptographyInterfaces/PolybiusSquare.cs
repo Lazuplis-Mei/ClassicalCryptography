@@ -1,9 +1,4 @@
-﻿using ClassicalCryptography.Interfaces;
-using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -15,6 +10,16 @@ namespace ClassicalCryptography.Interfaces;
 public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
 {
     private readonly (string Padding, string Alphabet) keyValue;
+
+    /// <summary>
+    /// 波利比奥斯方阵
+    /// </summary>
+    public PolybiusSquare(string padding, string alphabet)
+    {
+        if (alphabet.Length != padding.Length * padding.Length)
+            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}长度应为{nameof(padding)}长度的平方", nameof(alphabet));
+        keyValue = (padding, alphabet);
+    }
 
     /// <summary>
     /// 波利比奥斯方阵
@@ -32,16 +37,6 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     public IKey<(string Padding, string Alphabet)>? InversedKey => null;
 
     /// <summary>
-    /// 波利比奥斯方阵
-    /// </summary>
-    public PolybiusSquare(string padding, string alphabet)
-    {
-        if (alphabet.Length != padding.Length * padding.Length)
-            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}长度应为{nameof(padding)}长度的平方", nameof(alphabet));
-        keyValue = (padding, alphabet);
-    }
-
-    /// <summary>
     /// 从文本格式创建密钥，例如(ADFGX,BTALPDHOZKQFVSNGICUXMREWY)
     /// </summary>
     public static IKey<(string Padding, string Alphabet)> FromString(string strKey)
@@ -57,7 +52,7 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// </summary>
     /// <param name="textLength">参数将被忽略</param>
     [SkipLocalsInit]
-    public unsafe static IKey<(string Padding, string Alphabet)> GenerateKey(int textLength)
+    public static IKey<(string Padding, string Alphabet)> GenerateKey(int textLength)
     {
         const string ULetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -98,7 +93,7 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// </summary>
     public override string ToString()
     {
-        var strBuilder = new StringBuilder(78);//可能的大小
+        var strBuilder = new StringBuilder(80);//可能的大小
         strBuilder.Append("  ");
         strBuilder.AppendJoin(' ', (IEnumerable<char>)keyValue.Padding);
         strBuilder.AppendLine();
@@ -118,5 +113,4 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// 字符串形式
     /// </summary>
     public string GetString() => ToString();
-
 }

@@ -8,11 +8,12 @@ namespace ClassicalCryptography.Utils;
 /// </summary>
 internal static class MathExtension
 {
-
     /// <summary>
-    /// 求模逆元，请参考:<br/>
-    /// <see href="https://www.geeksforgeeks.org/multiplicative-inverse-under-modulo-m/">geeksforgeeks</see>
+    /// 求模逆元
     /// </summary>
+    /// <remarks>
+    /// <see href="https://www.geeksforgeeks.org/multiplicative-inverse-under-modulo-m/">geeksforgeeks/multiplicative-inverse-under-modulo-m</see>
+    /// </remarks>
     public static BigInteger ModularInverse(BigInteger a, BigInteger n)
     {
         BigInteger q, t, m = n, x = 1, y = 0;
@@ -39,12 +40,11 @@ internal static class MathExtension
     public static int ToInt32(this BitArray bits)
     {
         int number = 0;
-        int @base = 1;
-        for (int i = bits.Length - 1; i >= 0; i--)
+        for (int i = 0; i < bits.Length; i++)
         {
+            number <<= 1;
             if (bits[i])
-                number += @base;
-            @base <<= 1;
+                number++;
         }
         return number;
     }
@@ -70,9 +70,8 @@ internal static class MathExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int DivCeil(this int dividend, int divisor)
     {
-        int quotient = dividend / divisor;
-        quotient += dividend % divisor == 0 ? 0 : 1;
-        return quotient;
+        var (quotient, remainder) = Math.DivRem(dividend, divisor);
+        return remainder == 0 ? quotient : quotient + 1;
     }
 
     /// <summary>
@@ -89,16 +88,13 @@ internal static class MathExtension
     /// </summary>
     public static ulong Power(uint x, int y)
     {
+        Guard.IsGreaterThanOrEqualTo(y, 0);
         if (y == 0)
             return 1;
-        if (y < 0)
-            throw new Exception("不支持负指数");
 
         ulong result = x;
         for (int i = 1; i < y; i++)
-        {
             result *= x;
-        }
         return result;
     }
 
@@ -126,7 +122,6 @@ internal static class MathExtension
         return arr[n - 1];
     }
 
-
     /// <summary>
     /// 计算x的阶乘(朴素方法)
     /// </summary>
@@ -137,5 +132,4 @@ internal static class MathExtension
             result *= i;
         return result;
     }
-
 }

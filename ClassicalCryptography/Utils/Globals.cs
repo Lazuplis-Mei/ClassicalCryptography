@@ -1,6 +1,4 @@
-﻿using static System.Net.WebRequestMethods;
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ClassicalCryptographyTest")]
+﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ClassicalCryptographyTest")]
 
 namespace ClassicalCryptography.Utils;
 
@@ -69,7 +67,6 @@ public static class GlobalTables
     /// </summary>
     public static readonly string PrintableAsciis = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-
     #region 这些相对来说更不常用
 
     /// <summary>
@@ -132,6 +129,5 @@ public static class GlobalTables
     /// </summary>
     public static readonly string Ascii85_IPv6 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~";
 
-
-    #endregion
+    #endregion 这些相对来说更不常用
 }

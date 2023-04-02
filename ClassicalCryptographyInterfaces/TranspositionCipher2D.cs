@@ -8,36 +8,27 @@
 public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
 {
     /// <summary>
-    /// 是否按列进行加密/解密
-    /// </summary>
-    public bool ByColumn { get; set; }
-    /// <summary>
     /// 是否自动填充初始顺序
     /// </summary>
     protected bool FillOrder = true;
+
+    private Dictionary<int, ushort[,]>? keys;
+
+    /// <summary>
+    /// 是否按列进行加密/解密
+    /// </summary>
+    public bool ByColumn { get; set; }
 
     /// <summary>
     /// 密码类型(换位密码)
     /// </summary>
     public CipherType Type => CipherType.Transposition;
+
     /// <summary>
     /// 是否存储密钥
     /// </summary>
     public bool StoreKey { get; set; }
-    private Dictionary<int, ushort[,]>? keys;
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
-    /// <param name="key">密钥</param>
-    protected abstract (int Width, int Height) Partition(int textLength, IKey<T> key);
 
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    /// <param name="key">密钥</param>
-    protected abstract ushort[,] Transpose(ushort[,] indexes, IKey<T> key);
     /// <summary>
     /// 加密指定的文本
     /// </summary>
@@ -49,32 +40,6 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         if (ByColumn)
             return order.AssembleTextByColumn(plainText);
         return order.AssembleTextByRow(plainText);
-    }
-
-    private ushort[,] GetOrder(int textLength, IKey<T> key)
-    {
-        (int width, int height) = Partition(textLength, key);
-        ushort[,] order;
-        if (StoreKey)
-        {
-            keys ??= new();
-            if (!keys.ContainsKey(key.GetHashCode()))
-            {
-                order = new ushort[width, height];
-                if (FillOrder)
-                    order.FillOrderByRow();
-                order = Transpose(order, key);
-                keys.Add(key.GetHashCode(), order);
-            }
-            return keys[key.GetHashCode()];
-        }
-        else
-        {
-            order = new ushort[width, height];
-            if (FillOrder)
-                order.FillOrderByRow();
-            return Transpose(order, key);
-        }
     }
 
     /// <summary>
@@ -120,8 +85,46 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         return order.AssembleTextByRowInverse(cipherText);
     }
 
-}
+    /// <summary>
+    /// 划分二维顺序矩阵
+    /// </summary>
+    /// <param name="textLength">原文长度</param>
+    /// <param name="key">密钥</param>
+    protected abstract (int Width, int Height) Partition(int textLength, IKey<T> key);
 
+    /// <summary>
+    /// 转换顺序
+    /// </summary>
+    /// <param name="indexes">正常顺序</param>
+    /// <param name="key">密钥</param>
+    protected abstract ushort[,] Transpose(ushort[,] indexes, IKey<T> key);
+
+    private ushort[,] GetOrder(int textLength, IKey<T> key)
+    {
+        (int width, int height) = Partition(textLength, key);
+        ushort[,] order;
+        if (StoreKey)
+        {
+            keys ??= new();
+            if (keys.TryGetValue(key.GetHashCode(), out ushort[,]? value))
+                return value;
+
+            order = new ushort[width, height];
+            if (FillOrder)
+                order.FillOrderByRow();
+            order = Transpose(order, key);
+            keys.Add(key.GetHashCode(), order);
+            return keys[key.GetHashCode()];
+        }
+        else
+        {
+            order = new ushort[width, height];
+            if (FillOrder)
+                order.FillOrderByRow();
+            return Transpose(order, key);
+        }
+    }
+}
 
 /// <summary>
 /// 换位密码(二维)
@@ -130,29 +133,20 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
 public abstract class TranspositionCipher2D : ICipher<string, string>
 {
     /// <summary>
-    /// 是否按列进行加密/解密
-    /// </summary>
-    public bool ByColumn { get; set; }
-    /// <summary>
     /// 是否自动填充初始顺序
     /// </summary>
     protected bool FillOrder = true;
+
+    /// <summary>
+    /// 是否按列进行加密/解密
+    /// </summary>
+    public bool ByColumn { get; set; }
+
     /// <summary>
     /// 密码类型(换位密码)
     /// </summary>
     public CipherType Type => CipherType.Transposition;
 
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
-    protected abstract (int Width, int Height) Partition(int textLength);
-
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    protected abstract ushort[,] Transpose(ushort[,] indexes);
     /// <summary>
     /// 加密指定的文本
     /// </summary>
@@ -217,4 +211,15 @@ public abstract class TranspositionCipher2D : ICipher<string, string>
         return Transpose(order).AssembleTextByRowInverse(cipherText);
     }
 
+    /// <summary>
+    /// 划分二维顺序矩阵
+    /// </summary>
+    /// <param name="textLength">原文长度</param>
+    protected abstract (int Width, int Height) Partition(int textLength);
+
+    /// <summary>
+    /// 转换顺序
+    /// </summary>
+    /// <param name="indexes">正常顺序</param>
+    protected abstract ushort[,] Transpose(ushort[,] indexes);
 }

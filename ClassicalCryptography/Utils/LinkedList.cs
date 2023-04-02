@@ -67,7 +67,7 @@ internal class LinkedList
     {
         var result = new List<ushort>();
         var node = First;
-        while (node != null)
+        while (node is not null)
         {
             result.Add(node.Value);
             node = node.Next;

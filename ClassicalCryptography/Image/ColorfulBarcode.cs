@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using ClassicalCryptography.Encoder;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.CompilerServices;
@@ -34,7 +35,7 @@ public class ColorfulBarcode
     /// <param name="useBase64">是否使用base64</param>
     public unsafe static Bitmap Encode(string text, bool useBase64 = false)
     {
-        var inputString = useBase64 ? text.ToBase64() : text;
+        var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 3;
         var text1 = inputString[..index];
         var text2 = inputString[index..(index + index)];
@@ -72,7 +73,7 @@ public class ColorfulBarcode
     /// <param name="useBase64">是否使用base64</param>
     public unsafe static Bitmap EncodeSixColor(string text, bool useBase64 = false)
     {
-        var inputString = useBase64 ? text.ToBase64() : text;
+        var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 6;
         var text1 = inputString[..index];
         var text2 = inputString[index..(index + index)];

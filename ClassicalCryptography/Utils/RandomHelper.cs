@@ -8,20 +8,23 @@ namespace ClassicalCryptography.Utils;
 internal static class RandomHelper
 {
     /// <summary>
-    /// 随机的字节值
-    /// </summary>
-    public static byte RandomByte(byte maxValue)
-    {
-        return (byte)Random.Shared.Next(maxValue);
-    }
-    /// <summary>
     /// 随机的真值
     /// </summary>
     public static bool TrueOrFalse => Random.Shared.NextDouble() <= 0.5;
+
     /// <summary>
     /// 随机的4进制数
     /// </summary>
     public static byte TwoBits => (byte)(Random.Shared.Next() & 0B11);
+
+    /// <summary>
+    /// 随机的字节值
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte RandomByte(byte maxValue)
+    {
+        return (byte)Random.Shared.Next(maxValue);
+    }
 
     /// <summary>
     /// 获得随机的排列
@@ -61,12 +64,11 @@ internal static class RandomHelper
     /// <param name="count">数量</param>
     public static List<int> RandomSample(int max, int count)
     {
-        if (count > max || count <= 0)
-            throw new ArgumentException("不正确的数量", nameof(count));
+        Guard.IsInRange(count, 0, max);
+
         var list = new List<int>(count);
-        for (int i = 0; i < count; i++)
+        for (int temp, i = 0; i < count; i++)
         {
-            int temp;
             do
                 temp = Random.Shared.Next(max);
             while (list.Contains(temp));
@@ -87,12 +89,11 @@ internal static class RandomHelper
         return array;
     }
 
-
     /// <summary>
     /// 产生不大于<paramref name="maxValue"/>的随机数
     /// </summary>
     /// <param name="maxValue">最大值</param>
-    [SkipLocalsInit]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BigInteger RandomBigInt(BigInteger maxValue)
     {
         if (maxValue <= long.MaxValue)
@@ -106,6 +107,7 @@ internal static class RandomHelper
     /// <summary>
     /// 随机的列表项目
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T RandomItem<T>(this List<T> list)
     {
         Guard.HasSizeGreaterThan(list, 0);
@@ -117,6 +119,7 @@ internal static class RandomHelper
     /// <summary>
     /// 随机的数组项目
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T RandomItem<T>(this T[] array)
     {
         return array[Random.Shared.Next(array.Length)];
@@ -125,6 +128,7 @@ internal static class RandomHelper
     /// <summary>
     /// 返回并移除随机的列表项目
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T PopRandomItem<T>(this List<T> list)
     {
         var item = list.RandomItem();
