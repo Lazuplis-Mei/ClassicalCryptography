@@ -1281,4 +1281,4 @@ MorseMoonlight.ExportWav(morseCode, "E:/MorseMoonlight.wav");
 ### PascalianPuzzleCipher
 
 * 帕斯卡谜题密码
-* *此功能正在开发中*
+* *(暂时性的提示)试着挑战它吧*
