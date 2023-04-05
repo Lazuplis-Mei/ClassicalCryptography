@@ -1,7 +1,4 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
+﻿using System.Runtime.CompilerServices;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Undefined;
@@ -10,25 +7,15 @@ namespace ClassicalCryptography.Undefined;
 /// 旗语路径密码
 /// </summary>
 [Introduction("旗语路径密码", "以字母代表的旗语作为路径的指向，去除路径上的字母。")]
-public partial class SemaphorePathCipher : ICipher<string, string[]>
+public static partial class SemaphorePathCipher
 {
-    /// <summary>
-    /// 旗语字母记号(忽略作用)
-    /// </summary>
-    public const char FLetter = 'J';
-    /// <summary>
-    /// 旗语数字记号(忽略作用)
-    /// </summary>
-    public const char FDigits = '%';
-    /// <summary>
-    /// 旗语取消记号(忽略作用)
-    /// </summary>
-    public const char FCancel = '#';
-
     /// <summary>
     /// 旗语字母
     /// </summary>
-    public static readonly string FLetters = $"ABCDEFGHIJKLMNOPQRSTUVWXYZ{FDigits}{FCancel}";
+    public static readonly string FLetters = $"{GlobalTables.U_Letters}%#";
+
+    #region 符号路径定义
+
     private static readonly (int dx, int dy) U = (0, -1);
     private static readonly (int dx, int dy) D = (0, 1);
     private static readonly (int dx, int dy) L = (-1, 0);
@@ -37,21 +24,21 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
     private static readonly (int dx, int dy) UR = (1, -1);
     private static readonly (int dx, int dy) DL = (-1, 1);
     private static readonly (int dx, int dy) DR = (1, 1);
-    private static readonly (int dx, int dy)[] diffs = { U, D, L, R, UL, UR, DL, DR };
+    private static readonly (int dx, int dy)[] directions = { U, D, L, R, UL, UR, DL, DR };
 
     private static readonly ((int dx, int dy) In, (int dx, int dy) Out)[] semaphores =
     {
-        (DL, D),      //A(1)
-        (L, D),       //B(2)
-        (UL, D),      //C(3)
-        (U, D),       //D(4)
-        (D, UR),      //E(5)
-        (D, R),       //F(6)
-        (D, DR),      //G(7)
-        (L, DL),      //H(8)
-        (UL, DL),     //I(9)
-        (U, R),       //J(字母记号)
-        (DL, U),      //K(0)
+        (DL, D),      //A
+        (L, D),       //B
+        (UL, D),      //C
+        (U, D),       //D
+        (D, UR),      //E
+        (D, R),       //F
+        (D, DR),      //G
+        (L, DL),      //H
+        (UL, DL),     //I
+        (U, R),       //J
+        (DL, U),      //K
         (DL, UR),     //L
         (DL, R),      //M
         (DL, DR),     //N
@@ -70,10 +57,13 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
         (U, UR),      //数字记号(%)
         (UL, DR),     //取消(#)
     };
+
+    #endregion 符号路径定义
+
     /// <summary>
     /// 未定义的密码类型
     /// </summary>
-    public CipherType Type => CipherType.Undefined;
+    public static CipherType Type => CipherType.Undefined;
 
     /// <summary>
     /// 生成字符矩阵
@@ -81,13 +71,14 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
     /// <param name="textLength">文字长度</param>
     /// <param name="height">矩阵高度</param>
     /// <param name="width">矩阵宽度</param>
-    /// <param name="tolerance">结果的容忍度</param>
+    /// <param name="tolerance">结果长度允许的填充数</param>
     /// <param name="retry">重试次数</param>
     public static char[,] GenerateMatrix(int textLength, int height, int width, int tolerance = 0, int retry = 200)
     {
         int length = width * height;
         var block = new List<(int x, int y)>(length);
         var queue = new Queue<(int x, int y)>();
+
         while (retry != 0)
         {
             RandomHelper.RandomSample(length - 1, textLength)
@@ -98,10 +89,10 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
             queue.Enqueue((x, y));
             while (queue.Count > 0)
             {
-                (int x, int y) npos = queue.Dequeue();
-                if ((x, y) == (0, 0) || diffs.Contains((npos.x - x, npos.y - y)))
+                (int x, int y) next = queue.Dequeue();
+                if ((x, y) == (0, 0) || directions.Contains((next.x - x, next.y - y)))
                 {
-                    (x, y) = npos;
+                    (x, y) = next;
                     block.Add((x, y));
                     if (block.Count >= length - tolerance && block.Count <= length)
                     {
@@ -122,13 +113,13 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
                         return matrix;
                     }
                 LContinue:
-                    foreach (var (dx, dy) in diffs)
+                    foreach (var (dx, dy) in directions)
                     {
-                        npos = (x + dx, y + dy);
-                        if (npos.x >= 0 && npos.y >= 0 &&
-                            npos.x < width && npos.y < height &&
-                            !queue.Contains(npos) && !block.Contains(npos))
-                            queue.Enqueue(npos);
+                        next = (x + dx, y + dy);
+                        if (next.x >= 0 && next.y >= 0 &&
+                            next.x < width && next.y < height &&
+                            !queue.Contains(next) && !block.Contains(next))
+                            queue.Enqueue(next);
                     }
                 }
             }
@@ -140,6 +131,104 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
         throw new Exception("超过重试次数");
     }
 
+    /// <summary>
+    /// 填充文本到字符矩阵
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="characterMatrix"></param>
+    [SkipLocalsInit]
+    public static string[] FillText(string text, char[,] characterMatrix)
+    {
+        int width = characterMatrix.GetLength(0);
+        int height = characterMatrix.GetLength(1);
+        Span<char> span = stackalloc char[width];
+        string[] result = new string[height];
+        for (int y = 0, i = 0; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                span[x] = characterMatrix[x, y];
+                if (span[x] == '\0')
+                    span[x] = i >= text.Length ? TranspositionHelper.GetPaddingChar() : text[i++];
+            }
+            result[y] = new string(span);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// 提取其中的文本
+    /// </summary>
+    public static string GetText(string[] lines)
+    {
+        int height = lines.Length;
+        int width = lines[0].Length;
+        var result = new StringBuilder();
+        var visited = new BitMatrix(width, height);
+
+        (int x, int y) from = (-1, 0);
+        var (x, y) = (0, 0);
+
+        while (x >= 0 && x < width && y >= 0 && y < height)
+        {
+            int i = FLetters.IndexOf(lines[y][x]);
+            if (i == -1 || visited[x, y])
+                throw new FormatException("不正确的字符矩阵");
+
+            visited[x, y] = true;
+            var (In, Out) = semaphores[i];
+            var flag = (from.x - x, from.y - y);
+            from = (x, y);
+
+            if (flag == In)
+            {
+                x += Out.dx;
+                y += Out.dy;
+            }
+            else if (flag == Out)
+            {
+                x += In.dx;
+                y += In.dy;
+            }
+            else
+            {
+                throw new FormatException("不正确的字符矩阵");
+            }
+        }
+
+        for (y = 0; y < height; y++)
+            for (x = 0; x < width; x++)
+                if (!visited[x, y])
+                    result.Append(lines[y][x]);
+
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// 加密指定的文本
+    /// </summary>
+    public static string[] Encrypt(string plainText)
+    {
+        int size = (plainText.Length * 3).SqrtCeil();
+        char[,]? characterMatrix = null;
+        int tolerance = 0;
+        while (tolerance <= 10)
+        {
+            try
+            {
+                characterMatrix = GenerateMatrix(plainText.Length, size, size, tolerance);
+                break;
+            }
+            catch
+            {
+                tolerance += 2;
+            }
+        }
+        if (characterMatrix is null)
+            throw new Exception("超过重试容忍次数");
+        return FillText(plainText, characterMatrix);
+    }
+
     private static void FillMatrix(char[,] matrix, List<(int x, int y)> block, int textLength)
     {
         (int x, int y) from = (-1, 0);
@@ -149,154 +238,12 @@ public partial class SemaphorePathCipher : ICipher<string, string[]>
             var flag1 = (from.x - block[i].x, from.y - block[i].y);
             from = block[i];
             var flag2 = (block[i + 1].x - from.x, block[i + 1].y - from.y);
-            int fi = Array.IndexOf(semaphores, (flag1, flag2));
-            if (fi == -1)
-                fi = Array.IndexOf(semaphores, (flag2, flag1));
-            matrix[from.x, from.y] = FLetters[fi];
+
+            int j = Array.IndexOf(semaphores, (flag1, flag2));
+            if (j == -1)
+                j = Array.IndexOf(semaphores, (flag2, flag1));
+
+            matrix[from.x, from.y] = FLetters[j];
         }
-    }
-
-    /// <summary>
-    /// 填充文本到字符矩阵
-    /// </summary>
-    /// <param name="text"></param>
-    /// <param name="cMatrix"></param>
-    [SkipLocalsInit]
-    public static string[] FillText(string text, char[,] cMatrix)
-    {
-        int width = cMatrix.GetLength(0);
-        int height = cMatrix.GetLength(1);
-        Span<char> span = stackalloc char[width];
-        string[] result = new string[height];
-        for (int y = 0, i = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-                span[x] = cMatrix[x, y] == '\0' ?
-                    (i >= text.Length ? TranspositionHelper.GetPaddingChar() : text[i++])
-                    : cMatrix[x, y];
-            result[y] = new string(span);
-        }
-        return result;
-    }
-
-    /// <summary>
-    /// 提取其中的文本
-    /// </summary>
-    public static string GetText(string[] strMatrix)
-    {
-        int height = strMatrix.Length;
-        int width = strMatrix[0].Length;
-        var strBuilder = new StringBuilder();
-        var visited = new BitMatrix(width, height);
-        (int x, int y) from = (-1, 0);
-        var (x, y) = (0, 0);
-        while (x >= 0 && x < width && y >= 0 && y < height)
-        {
-            int si = FLetters.IndexOf(strMatrix[y][x]);
-            if (si != -1 && !visited[x, y])
-            {
-                visited[x, y] = true;
-                var (In, Out) = semaphores[si];
-                var flag = (from.x - x, from.y - y);
-                from = (x, y);
-                if (flag == In)
-                {
-                    x += Out.dx;
-                    y += Out.dy;
-                }
-                else if (flag == Out)
-                {
-                    x += In.dx;
-                    y += In.dy;
-                }
-                else
-                    throw new FormatException("不正确的字符矩阵");
-            }
-            else
-                throw new FormatException("不正确的字符矩阵");
-        }
-        for (y = 0; y < height; y++)
-            for (x = 0; x < width; x++)
-                if (!visited[x, y])
-                    strBuilder.Append(strMatrix[y][x]);
-
-        return strBuilder.ToString();
-    }
-
-    /// <summary>
-    /// 加密指定的文本
-    /// </summary>
-    public string[] Encrypt(string plainText)
-    {
-        int len = (plainText.Length * 3).SqrtCeil();
-        char[,]? cMatrix = null;
-        int t = 0;
-        while (t <= 10)
-        {
-            try
-            {
-                cMatrix = GenerateMatrix(plainText.Length, len, len, t);
-                break;
-            }
-            catch
-            {
-                t += 2;
-            }
-        }
-        if (cMatrix is null)
-            throw new Exception("超过重试容忍次数");
-        return FillText(plainText, cMatrix);
-    }
-
-    /// <summary>
-    /// 解密字符矩阵
-    /// </summary>
-    public string Decrypt(string[] cipherText) => GetText(cipherText);
-
-
-    private const int lineWidth = 5;
-    private const int figureSize = 60;
-    private const int midPosition = figureSize / 2;
-    private static readonly Point centerPoint = new(midPosition, midPosition);
-    private static readonly Point[] points = { default, centerPoint, default };
-
-    /// <summary>
-    /// 图片保存的格式
-    /// </summary>
-    [SupportedOSPlatform("windows")]
-    public static ImageFormat ImgFormat { get; set; } = ImageFormat.Png;
-
-    /// <summary>
-    /// 绘制旗语路径
-    /// </summary>
-    [SupportedOSPlatform("windows")]
-    public static void DrawSemaphores(char[,] cMatrix, string imagePath)
-    {
-        int width = cMatrix.GetLength(0);
-        int height = cMatrix.GetLength(1);
-        using var bitmap = new Bitmap(figureSize * width, figureSize * height);
-        using var graphics = Graphics.FromImage(bitmap);
-        using var pen = new Pen(Color.Black, lineWidth);
-        for (int y = 0; y < height; y++)
-        {
-            for (int x = 0; x < width; x++)
-            {
-                int fi = FLetters.IndexOf(cMatrix[x, y]);
-                if (fi != -1)
-                {
-                    var (In, Out) = semaphores[fi];
-                    points[0] = centerPoint;
-                    points[0].X += In.dx * midPosition;
-                    points[0].Y += In.dy * midPosition;
-                    points[2] = centerPoint;
-                    points[2].X += Out.dx * midPosition;
-                    points[2].Y += Out.dy * midPosition;
-                    graphics.DrawLines(pen, points);
-                }
-                graphics.TranslateTransform(figureSize, 0);
-            }
-            graphics.TranslateTransform(-bitmap.Width, figureSize);
-        }
-        bitmap.Save(imagePath, ImgFormat);
     }
 }

@@ -1,15 +1,17 @@
-﻿using System.Diagnostics;
+﻿using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Undefined;
 
-
 /// <summary>
-/// <see href="https://www.youtube.com/watch?v=9JN5f7_3YmQ">帕斯卡谜题密码</see>
+/// 帕斯卡谜题密码
 /// </summary>
-[Introduction("帕斯卡谜题密码", "https://www.youtube.com/watch?v=9JN5f7_3YmQ")]
+/// <remarks>
+/// 请参考: <see href="https://www.youtube.com/watch?v=9JN5f7_3YmQ">youtube/9JN5f7_3YmQ</see><br/>
+/// 对3进制数组进行某种特定的转换
+/// </remarks>
+[Introduction("帕斯卡谜题密码", "对3进制数组进行某种特定的转换")]
 public static class PascalianPuzzleCipher
 {
-
     /// <summary>
     /// 字符编码
     /// </summary>
@@ -21,6 +23,7 @@ public static class PascalianPuzzleCipher
     public static byte[] Transform(byte[] bytes)
     {
         var array = BaseConverter.ToBase3(bytes);
+
         for (int j = 0; j < array.Count - 1; j++)
             for (int i = array.Count - 1; i > j; i--)
                 array[i] = (6 - (array[i] + array[i - 1])) % 3;
@@ -29,19 +32,14 @@ public static class PascalianPuzzleCipher
     }
 
     /// <summary>
-    /// 编码字节
+    /// 编码字符串为字节数组
     /// </summary>
-    public static byte[] Encode(string text)
-    {
-        return Transform(Encoding.GetBytes(text));
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte[] EncodeStrng(string text) => Transform(Encoding.GetBytes(text));
 
     /// <summary>
-    /// 解码字节
+    /// 解码字节数组为字符串
     /// </summary>
-    public static string Decode(byte[] bytes)
-    {
-        return Encoding.GetString(Transform(bytes));
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string DecodeBytes(byte[] bytes) => Encoding.GetString(Transform(bytes));
 }

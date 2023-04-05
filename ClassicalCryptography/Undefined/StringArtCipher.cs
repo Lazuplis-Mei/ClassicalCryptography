@@ -7,7 +7,7 @@ namespace ClassicalCryptography.Undefined;
 /// <see href="https://en.wikipedia.org/wiki/String_art"/>
 /// </summary>
 [Introduction("弦艺术密码", "https://en.wikipedia.org/wiki/String_art")]
-public class StringArtCipher : IStaticCipher<string, string>
+public class StringArtCipher
 {
     //2和Z在事实上是相同的
     private static readonly string[] eulerianFont = new[]
@@ -41,17 +41,17 @@ public class StringArtCipher : IStaticCipher<string, string>
 
     private static readonly BidirectionalDictionary<char, string> fontMap;
 
-    /// <summary>
-    /// 替换密码
-    /// </summary>
-    public static CipherType Type => CipherType.Substitution;
-
     static StringArtCipher()
     {
         fontMap = new();
         for (int i = 0; i < 36; i++)
             fontMap.Add(Base36_LD[i], eulerianFont[i]);
     }
+
+    /// <summary>
+    /// 替换密码
+    /// </summary>
+    public static CipherType Type => CipherType.Substitution;
 
     /// <summary>
     /// 使用欧拉字体加密
@@ -62,8 +62,7 @@ public class StringArtCipher : IStaticCipher<string, string>
         for (int i = 0; i < text.Length; i++)
             if (fontMap.TryGetValue(char.ToLower(text[i]), out string value))
                 result.Append(value).Append('/');
-        result.RemoveLast();
-        return result.ToString();
+        return result.RemoveLast().ToString();
     }
 
     /// <summary>
@@ -72,9 +71,10 @@ public class StringArtCipher : IStaticCipher<string, string>
     public static string Decrypt(string text)
     {
         var pairs = text.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        Span<char> span = pairs.Length <= StackLimit.MAX_CHAR_SIZE ?
-            stackalloc char[pairs.Length] : new char[pairs.Length];
-        for (int i = 0; i < pairs.Length; i++)
+        int length = pairs.Length;
+        Span<char> span = length.CanAllocString() ? stackalloc char[length] : new char[length];
+
+        for (int i = 0; i < length; i++)
         {
             if (fontMap.Inverse.TryGetValue(pairs[i], out char value))
                 span[i] = value;
@@ -83,5 +83,4 @@ public class StringArtCipher : IStaticCipher<string, string>
         }
         return new(span);
     }
-
 }

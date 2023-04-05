@@ -1,13 +1,12 @@
-﻿using System.Drawing.Imaging;
+﻿using CommunityToolkit.HighPerformance;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.Versioning;
-using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Image;
 
-
 /// <summary>
-/// 摩尔纹密码
+/// 摩尔纹图像
 /// </summary>
 [Introduction("摩尔纹", "通过密集的条形图案隐藏信息")]
 [SupportedOSPlatform("windows")]
@@ -27,6 +26,7 @@ public static class MoirePattern
     /// 前景颜色2
     /// </summary>
     public static Color Foreground2 { get; set; } = Color.FromArgb(255, 20, 20, 20);
+
     /// <summary>
     /// 背景颜色
     /// </summary>
@@ -37,14 +37,6 @@ public static class MoirePattern
     /// </summary>
     public static Font Font { get; set; } = new Font("微软雅黑", 24);
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static void SetCenterPoint(ref this RectangleF rect, Bitmap bitmap)
-    {
-        var centerX = (bitmap.Width - rect.Width) / 2;
-        var centerY = (bitmap.Height - rect.Height) / 2;
-        rect.Location = new PointF(centerX, centerY);
-    }
-
     /// <summary>
     /// 绘制单个字符串
     /// </summary>
@@ -54,23 +46,22 @@ public static class MoirePattern
     /// <param name="pattenType">条纹模式</param>
     /// <param name="embedded">是否使用嵌入式的条纹</param>
     /// <returns>带有条纹的图形</returns>
-    public unsafe static Bitmap DrawText(string text, int imageWidth, int imageHeight, Func<int, int, bool> pattenType, bool embedded = false)
+    public static unsafe Bitmap DrawText(string text, int imageWidth, int imageHeight, Func<int, int, bool> pattenType, bool embedded = false)
     {
         var bitmap = new Bitmap(imageWidth, imageHeight);
         using var graphics = Graphics.FromImage(bitmap);
+
         var textSize = graphics.MeasureString(text, Font);
         var rectF = new RectangleF(Point.Empty, textSize);
-        rectF.SetCenterPoint(bitmap);
+        bitmap.SetCenterPoint(ref rectF);
         graphics.DrawString(text, Font, Brushes.Black, rectF);
-
 
         var background = Background.ToArgb();
         var foreground = Foreground.ToArgb();
         var foreground2 = Foreground2.ToArgb();
 
-        var rect = new Rectangle(0, 0, imageWidth, imageHeight);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
 
         for (int x = 0; x < imageWidth; x++)
         {
@@ -80,26 +71,26 @@ public static class MoirePattern
                 {
                     if (embedded)
                     {
-                        if (dataSpan[x + y * imageWidth] == 0)
-                            dataSpan[x + y * imageWidth] = foreground2;
+                        if (dataSpan[x, y] == 0)
+                            dataSpan[x, y] = foreground2;
                         continue;
                     }
-                    if (dataSpan[x + y * imageWidth] == 0)
-                        dataSpan[x + y * imageWidth] = foreground;
+                    if (dataSpan[x, y] == 0)
+                        dataSpan[x, y] = foreground;
                     else
-                        dataSpan[x + y * imageWidth] = background;
+                        dataSpan[x, y] = background;
                 }
                 else
                 {
                     if (embedded)
                     {
-                        dataSpan[x + y * imageWidth] = background;
+                        dataSpan[x, y] = background;
                         continue;
                     }
-                    if (dataSpan[x + y * imageWidth] == 0)
-                        dataSpan[x + y * imageWidth] = background;
+                    if (dataSpan[x, y] == 0)
+                        dataSpan[x, y] = background;
                     else
-                        dataSpan[x + y * imageWidth] = foreground;
+                        dataSpan[x, y] = foreground;
                 }
             }
         }
@@ -115,16 +106,15 @@ public static class MoirePattern
     /// <param name="pattenType">条纹类型</param>
     /// <param name="embedded">是否是嵌入式</param>
     /// <param name="removePatten">是否移除条纹(仅对非嵌入式有效)</param>
-    public unsafe static Bitmap FillPatten(Bitmap bitmap, Func<int, int, bool> pattenType, bool embedded = false, bool removePatten = false)
+    public static unsafe Bitmap FillPatten(Bitmap bitmap, Func<int, int, bool> pattenType, bool embedded = false, bool removePatten = false)
     {
         var background = Background.ToArgb();
         var foreground = Foreground.ToArgb();
         int imageWidth = bitmap.Width;
         int imageHeight = bitmap.Height;
 
-        var rect = new Rectangle(0, 0, imageWidth, imageHeight);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
 
         for (int x = 0; x < imageWidth; x++)
         {
@@ -132,15 +122,15 @@ public static class MoirePattern
             {
                 if (embedded)
                 {
-                    if (dataSpan[x + y * imageWidth] != foreground)
-                        dataSpan[x + y * imageWidth] = background;
+                    if (dataSpan[x, y] != foreground)
+                        dataSpan[x, y] = background;
                 }
                 else if (pattenType(x, y))
                 {
-                    if (dataSpan[x + y * imageWidth] != foreground)
-                        dataSpan[x + y * imageWidth] = foreground;
+                    if (dataSpan[x, y] != foreground)
+                        dataSpan[x, y] = foreground;
                     else if (removePatten)
-                        dataSpan[x + y * imageWidth] = background;
+                        dataSpan[x, y] = background;
                 }
             }
         }
@@ -152,7 +142,7 @@ public static class MoirePattern
     /// <summary>
     /// 在条纹缝隙中绘制多个文字
     /// </summary>
-    public unsafe static Bitmap DrawTexts(string[] texts, int imageWidth, int imageHeight)
+    public static unsafe Bitmap DrawTexts(string[] texts, int imageWidth, int imageHeight)
     {
         Guard.HasSizeGreaterThan(texts, 1);
 
@@ -162,13 +152,12 @@ public static class MoirePattern
         var brush = new SolidBrush(Foreground);
         var textSize = graphics.MeasureString(texts[0], Font);
         var rectF = new RectangleF(Point.Empty, textSize);
-        rectF.SetCenterPoint(bitmap);
+        bitmap.SetCenterPoint(ref rectF);
         graphics.Clear(Background);
         graphics.DrawString(texts[0], Font, brush, rectF);
 
-        var rect = new Rectangle(0, 0, imageWidth, imageHeight);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), imageWidth * imageHeight);
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
 
         using var bufferBitmap = new Bitmap(imageWidth, imageHeight);
         using var bufferGraphics = Graphics.FromImage(bufferBitmap);
@@ -177,17 +166,17 @@ public static class MoirePattern
         {
             textSize = bufferGraphics.MeasureString(texts[i], Font);
             rectF = new RectangleF(Point.Empty, textSize);
-            rectF.SetCenterPoint(bufferBitmap);
+            bufferBitmap.SetCenterPoint(ref rectF);
             bufferGraphics.Clear(Background);
             bufferGraphics.DrawString(texts[i], Font, brush, rectF);
 
-            var bufferData = bufferBitmap.LockBits(rect, ImageLockMode.ReadWrite, bufferBitmap.PixelFormat);
-            var bufferDataSpan = new Span<int>(bufferData.Scan0.ToPointer(), imageWidth * imageHeight);
+            var bufferData = bufferBitmap.LockBits();
+            var bufferDataSpan = bufferData.AsSpan2D<int>();
 
             for (int x = 0; x < imageWidth; x++)
                 for (int y = 0; y < imageHeight; y++)
                     if (x % texts.Length == i)
-                        dataSpan[x + y * imageWidth] = bufferDataSpan[x + y * imageWidth];
+                        dataSpan[x, y] = bufferDataSpan[x, y];
 
             bufferBitmap.UnlockBits(bufferData);
         }
@@ -222,7 +211,5 @@ public static class MoirePattern
         var bitmaps = FillPattens(bitmap, count);
         for (int i = 0; i < bitmaps.Length; i++)
             bitmaps[i].Save(Path.Combine(path, $"{hashCode}_{i}.png"));
-
     }
-
 }

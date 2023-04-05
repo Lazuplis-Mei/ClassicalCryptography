@@ -10,21 +10,23 @@ namespace ClassicalCryptography.Image;
 /// </summary>
 [SupportedOSPlatform("windows")]
 [Introduction("猪圈密码", "一种以格子为基础的替代式密码。")]
-public partial class PigpenCipher : IImageEncoder<string>
+public partial class PigpenCipher
 {
-
     /// <summary>
     /// 每行字母数
     /// </summary>
     public static int LetterPerLine { get; set; } = 20;
+
     /// <summary>
     /// 文字笔刷
     /// </summary>
     public static Brush Foreground { get; set; } = Brushes.Black;
+
     /// <summary>
     /// 背景色
     /// </summary>
     public static Color? Background { get; set; } = Color.White;
+
     /// <summary>
     /// 额外字符笔刷
     /// </summary>
@@ -48,11 +50,13 @@ public partial class PigpenCipher : IImageEncoder<string>
     private static readonly Point MT = new(CENTER_POSITION, PADDING);
     private static readonly Point MR = new(NEGATIVE_PADDING, CENTER_POSITION);
     private static readonly Point MB = new(CENTER_POSITION, NEGATIVE_PADDING);
-    private static readonly Rectangle rect = Rectangle.FromLTRB(
-    PADDING, PADDING, NEGATIVE_PADDING, NEGATIVE_PADDING);
-    private static readonly Rectangle dotRect = new(
-        DOT_POSITION, DOT_POSITION, DOT_SIZE, DOT_SIZE);
+
+    private static readonly Rectangle rect = Rectangle.FromLTRB(PADDING, PADDING, NEGATIVE_PADDING, NEGATIVE_PADDING);
+
+    private static readonly Rectangle dotRect = new(DOT_POSITION, DOT_POSITION, DOT_SIZE, DOT_SIZE);
+
     private static readonly Font font = new("Consolas", 26);
+
     private static readonly StringFormat format = new()
     {
         Alignment = StringAlignment.Center,
@@ -112,7 +116,7 @@ public partial class PigpenCipher : IImageEncoder<string>
         //省略了重复的
     };
 
-    #endregion
+    #endregion 常量
 
     /// <summary>
     /// 加密成图像
@@ -154,9 +158,9 @@ public partial class PigpenCipher : IImageEncoder<string>
                     graphics.FillRectangle(Foreground, rect);
                     graphics.DrawString(plainText[i].ToString(), font, Extraground, rect, format);
                 }
-                graphics.TranslateTransform(FIGURE_SIZE, 0);
+                graphics.Translate(FIGURE_SIZE);
             }
-            graphics.TranslateTransform(-graphics.Transform.OffsetX, FIGURE_SIZE);
+            graphics.TranslateBreakLine(FIGURE_SIZE);
         }
         return bitmap;
     }
@@ -174,7 +178,7 @@ public partial class PigpenCipher : IImageEncoder<string>
             {
                 if (CheckBlackBox(bitmap, x, y))
                 {
-                    strBuilder.Append('.');
+                    strBuilder.Append('?');
                     continue;
                 }
                 var hasDot = CheckDot(bitmap, x, y);
@@ -191,15 +195,14 @@ public partial class PigpenCipher : IImageEncoder<string>
             }
             strBuilder.AppendLine();
         }
-        strBuilder.Remove(strBuilder.Length - 2, 2);
-        return strBuilder.ToString();
+        return strBuilder.Remove(strBuilder.Length - 2, 2).ToString();
     }
 
     [SkipLocalsInit]
     private static string Purify(string text, out int line)
     {
-        Span<char> str = text.Length <= StackLimit.MAX_CHAR_SIZE
-            ? stackalloc char[text.Length] : new char[text.Length];
+        int length = text.Length;
+        Span<char> str = length.CanAllocString() ? stackalloc char[length] : new char[length];
         int count = 0;
         line = 0;
         foreach (char c in text)
@@ -216,7 +219,4 @@ public partial class PigpenCipher : IImageEncoder<string>
         }
         return new string(str[..count]);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static Bitmap IImageEncoder<string>.Encode(string plain) => Encrypt(plain);
 }

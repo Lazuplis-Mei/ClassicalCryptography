@@ -216,16 +216,6 @@ public static class TranspositionHelper
     /// <param name="order">顺序</param>
     public static int GetPeriod(ushort[,] order)
     {
-        /*
-        //额外空间的方法
-        ushort[] order = new ushort[order.Length];
-        int width = order.GetLength(0);
-        int height = order.GetLength(1);
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                order[x * height + y] = order[x, y];
-        return GetPeriod(order);
-        */
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         var cycles = new List<int>();

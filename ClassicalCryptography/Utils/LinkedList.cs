@@ -2,17 +2,12 @@
 
 internal class LinkedList
 {
-    public class Node
-    {
-        public ushort Value;
-        public Node? Next;
-        public Node(ushort value) => Value = value;
-    }
-
     public Node First;
+
     public Node Last;
+
     public Node Current;
-    public bool IsEnd => Current.Next == null;
+
     public LinkedList(ushort[] arr)
     {
         if (arr == null || arr.Length == 0)
@@ -23,12 +18,16 @@ internal class LinkedList
         Last = Current;
         Current = First;
     }
+
     private LinkedList(Node first, Node last)
     {
-        this.First = first;
-        this.Last = last;
+        First = first;
+        Last = last;
         Current = first;
     }
+
+    public bool IsEnd => Current.Next == null;
+
     public bool MoveStep(int n)
     {
         for (int i = 0; i < n; i++)
@@ -73,5 +72,13 @@ internal class LinkedList
             node = node.Next;
         }
         return result.ToArray();
+    }
+
+    public class Node
+    {
+        public ushort Value;
+        public Node? Next;
+
+        public Node(ushort value) => Value = value;
     }
 }

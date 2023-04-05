@@ -17,7 +17,7 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     public PolybiusSquare(string padding, string alphabet)
     {
         if (alphabet.Length != padding.Length * padding.Length)
-            throw new ArgumentException($"长度不匹配，{nameof(alphabet)}长度应为{nameof(padding)}长度的平方", nameof(alphabet));
+            throw new ArgumentException($"长度不匹配，alphabet长度应为padding长度的平方", nameof(alphabet));
         keyValue = (padding, alphabet);
     }
 
@@ -41,7 +41,8 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// </summary>
     public static IKey<(string Padding, string Alphabet)> FromString(string strKey)
     {
-        var keys = strKey.Split(new[] { ' ', ',' });
+        char[] separator = { ' ', ',', ':' };
+        var keys = strKey.Split(separator, StringSplitOptions.RemoveEmptyEntries);
         if (keys.Length != 2)
             throw new ArgumentException("应为2组字符", nameof(strKey));
         return new PolybiusSquare(keys[0], keys[1]);
@@ -93,20 +94,18 @@ public class PolybiusSquare : IKey<(string Padding, string Alphabet)>
     /// </summary>
     public override string ToString()
     {
-        var strBuilder = new StringBuilder(80);//可能的大小
-        strBuilder.Append("  ");
-        strBuilder.AppendJoin(' ', (IEnumerable<char>)keyValue.Padding);
-        strBuilder.AppendLine();
-        int paddingLen = keyValue.Padding.Length;
-        for (int i = 0; i < paddingLen; i++)
+        (string padding, string alphabet) = keyValue;
+        var result = new StringBuilder(80);//可能的大小
+        result.Append("  ").AppendJoin(' ', (IEnumerable<char>)padding).AppendLine();
+        int length = padding.Length;
+        for (int i = 0; i < length; i++)
         {
-            strBuilder.Append(keyValue.Padding[i]);
-            strBuilder.Append(' ');
-            strBuilder.AppendJoin(' ', (IEnumerable<char>)keyValue.Alphabet.Substring(paddingLen * i, paddingLen));
-            strBuilder.AppendLine();
+            result.Append(padding[i]).Append(' ');
+            result.AppendJoin(' ', (IEnumerable<char>)alphabet.Substring(length * i, length));
+            result.AppendLine();
         }
-        strBuilder.Remove(strBuilder.Length - 2, 2);
-        return strBuilder.ToString();
+        result.Remove(result.Length - 2, 2);
+        return result.ToString();
     }
 
     /// <summary>

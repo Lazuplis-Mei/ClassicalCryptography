@@ -18,6 +18,11 @@ public static class NotMosaic
     public static bool NoOverlap { get; set; } = false;
 
     /// <summary>
+    /// 使用洛伦兹混沌随机数
+    /// </summary>
+    public static bool UseLorenzRandom { get; set; } = false;
+
+    /// <summary>
     /// 掩码
     /// </summary>
     public static int Mask { get; set; } = 0B11000000_11000000_11000000;
@@ -51,21 +56,23 @@ public static class NotMosaic
     private static unsafe Bitmap EncryptInternal(Bitmap bitmap, EncryptRegions encryptRegions, string? password)
     {
         var regionBytes = encryptRegions.ToBytes();
-        Random random;
+        int seed;
         if (encryptRegions.IncludePassword)
-            random = new(BitConverter.ToInt32(Crc32.Hash(Encoding.UTF8.GetBytes(password!))));
+            seed = BitConverter.ToInt32(Crc32.Hash(Encoding.UTF8.GetBytes(password!)));
         else
-            random = new(BitConverter.ToInt32(Crc32.Hash(regionBytes)));
-        
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span2D<int>(data.Scan0.ToPointer(), bitmap.Height, bitmap.Width, 0);
+            seed = BitConverter.ToInt32(Crc32.Hash(regionBytes));
+        var random = UseLorenzRandom ? new LorenzRandom(seed) : new Random(seed);
+
+        const int MAX = 0xFFFFFF;
+
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
         foreach (var region in encryptRegions.Regions)
         {
             var span2D = dataSpan.Slice(region.Y, region.X, region.Height, region.Width);
             for (int x = 0; x < span2D.Width; x++)
                 for (int y = 0; y < span2D.Height; y++)
-                    span2D[y, x] ^= random.Next(0xFFFFFF) & Mask;
+                    span2D[y, x] ^= random.Next(MAX) & Mask;
         }
         bitmap.UnlockBits(data);
         return bitmap;

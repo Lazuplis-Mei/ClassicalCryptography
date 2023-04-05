@@ -2,19 +2,23 @@
 
 namespace ClassicalCryptography.Transposition;
 
-
 public partial class TakeTranslateCipher
 {
     /// <summary>
     /// 取后平移密码的密钥
     /// </summary>
+    [Introduction("取后平移密码的密钥", "n为每次取出个数，k为每次平移个数")]
     public class Key : IKey<(int N, int K)>
     {
         /// <summary>
-        /// 默认密钥
+        /// 默认密钥(1,1)
         /// </summary>
         public static readonly Key Default = new(1, 1);
+
         private readonly (int N, int K) keyValue;
+
+        private Key(int N, int K) => keyValue = (N, K);
+
         /// <summary>
         /// (N,K)
         /// </summary>
@@ -24,11 +28,11 @@ public partial class TakeTranslateCipher
         /// 密钥不可逆
         /// </summary>
         public bool CanInverse => false;
+
         /// <summary>
-        /// 密钥不可逆，将为null
+        /// 密钥不可逆，将始终为null
         /// </summary>
         public IKey<(int N, int K)>? InversedKey => null;
-        private Key(int N, int K) => keyValue = (N, K);
 
         /// <summary>
         /// 从文本格式创建密钥(10~//)参考<see cref="VChar64"/>
@@ -44,8 +48,9 @@ public partial class TakeTranslateCipher
                 throw new FormatException("不正确的格式");
             return new Key(n, k);
         }
+
         /// <summary>
-        /// 产生随机密钥(值不会大于64)
+        /// 产生随机密钥(值的范围小于64)
         /// </summary>
         /// <param name="textLength">加密内容的长度</param>
         public static IKey<(int N, int K)> GenerateKey(int textLength)
@@ -55,24 +60,20 @@ public partial class TakeTranslateCipher
             int k = Random.Shared.Next(0, length);
             return new Key(n, k);
         }
-        /// <summary>
-        /// 获得密钥的空间
-        /// </summary>
-        /// <param name="textLength">加密内容的长度</param>
+
+        /// <inheritdoc/>
         public static BigInteger GetKeySpace(int textLength)
         {
             return Math.Min(textLength * textLength, 4032);
         }
-        /// <summary>
-        /// 字符串形式
-        /// </summary>
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             return $"{VChar64[KeyValue.N]}{VChar64[KeyValue.K]}";
         }
-        /// <summary>
-        /// 字符串形式
-        /// </summary>
+
+        /// <inheritdoc/>
         public string GetString() => ToString();
 
         /// <inheritdoc/>

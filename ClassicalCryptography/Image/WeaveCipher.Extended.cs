@@ -6,11 +6,11 @@ namespace ClassicalCryptography.Image;
 
 public partial class WeaveCipher
 {
-
     private static readonly Point pointLT = Point.Empty;
     private static readonly Point pointLB = new(0, BLOCK_SIZE);
     private static readonly Point pointRT = new(BLOCK_SIZE, 0);
     private static readonly Point pointRB = new(BLOCK_SIZE, BLOCK_SIZE);
+
     private static readonly Point[][] trigs = new[]
     {
         new[] { pointLT, pointLB, pointRB },
@@ -54,8 +54,7 @@ public partial class WeaveCipher
         var bytes = Encoding.UTF8.GetBytes(text).AsSpan();
         int h = (bytes.Length + bytes.Length % 2) / 2;
         int size = h - h / 2;
-        Span<byte> bytes4 = size.CanAlloc()
-            ? stackalloc byte[size] : new byte[size];
+        Span<byte> bytes4 = size.CanAlloc() ? stackalloc byte[size] : new byte[size];
         var bytes1 = bytes[..(h / 2)];
         var bytes2 = bytes[(h / 2)..h];
         var bytes3 = bytes.Slice(h, h / 2);
@@ -136,14 +135,13 @@ public partial class WeaveCipher
                 int k = 2 * (y % 2);
                 graphics.FillPolygon(matrix[x, y] ? Foreground : Background, trigs[k]);
                 graphics.FillPolygon(matrix[x + 1, y] ? Foreground : Background, trigs[k + 1]);
-                graphics.TranslateTransform(BLOCK_SIZE, 0);
+                graphics.Translate(BLOCK_SIZE);
                 graphics.FillPolygon(matrix[x + 2, y] ? Foreground : Background, trigs[2 - k]);
                 graphics.FillPolygon(matrix[x + 3, y] ? Foreground : Background, trigs[3 - k]);
-                graphics.TranslateTransform(BLOCK_SIZE, 0);
+                graphics.Translate(BLOCK_SIZE);
             }
-            graphics.TranslateTransform(-graphics.Transform.OffsetX, BLOCK_SIZE);
+            graphics.TranslateBreakLine(BLOCK_SIZE);
         }
         return bitmap;
     }
-
 }

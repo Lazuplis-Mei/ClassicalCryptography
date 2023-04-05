@@ -20,10 +20,10 @@ public sealed class IntroductionAttribute : Attribute
     /// 描述性信息
     /// </summary>
     /// <param name="name">名称</param>
-    /// <param name="intro">简介</param>
-    public IntroductionAttribute(string name, string intro)
+    /// <param name="introduction">简介</param>
+    public IntroductionAttribute(string name, string introduction)
     {
         Name = name;
-        Introduction = intro;
+        Introduction = introduction;
     }
 }

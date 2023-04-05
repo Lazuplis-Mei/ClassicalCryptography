@@ -25,12 +25,12 @@ namespace ClassicalCryptography.Calculation.RSASteganograph;
 public static partial class MillerRabinPrimalityTester
 {
     /// <summary>
-    /// 默认的重复次数，这将提供0.9999999999854481的准确率
+    /// 默认的重复次数，这将提供 <c>99.99999999854481%</c> 的准确率
     /// </summary>
     public const int TEST_REPEAT_COUNT = 18;
 
     private const int SEARCH_END = 10000;
-    private const int PARALLEL_NOT_FOUND = -1;
+    private const int NOT_FOUND = -1;
 
     private static readonly int[] smallPrimes =
     {
@@ -48,7 +48,7 @@ public static partial class MillerRabinPrimalityTester
     {
         if (number.IsEven) number++;
 
-        int n = PARALLEL_NOT_FOUND;
+        int n = NOT_FOUND;
         Parallel.For(0, SEARCH_END, (i, loop) =>
         {
             int di = i << 1;
@@ -59,7 +59,7 @@ public static partial class MillerRabinPrimalityTester
             }
         });
 
-        if (n is not PARALLEL_NOT_FOUND)
+        if (n is not NOT_FOUND)
             return number + n;
 
         number += 2 * SEARCH_END;
@@ -82,7 +82,7 @@ public static partial class MillerRabinPrimalityTester
     {
         if (number.IsEven) number++;
 
-        int n = PARALLEL_NOT_FOUND;
+        int n = NOT_FOUND;
         Parallel.For(0, SEARCH_END, (i, loop) =>
         {
             if ((number + (i << 1)).IsPrime())
@@ -92,7 +92,7 @@ public static partial class MillerRabinPrimalityTester
             }
         });
 
-        if (n is not PARALLEL_NOT_FOUND)
+        if (n is not NOT_FOUND)
             return number + n;
 
         number += 2 * SEARCH_END;

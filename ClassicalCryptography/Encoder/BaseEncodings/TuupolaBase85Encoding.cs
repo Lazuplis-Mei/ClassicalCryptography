@@ -99,16 +99,18 @@ public class TuupolaBase85Encoding
         Span<byte> byteSpan = MemoryMarshal.AsBytes(span);
 
         span[^1] = 0;
-        for (int i = 0; i < bytes.Length; i += 4)
+        length = (length - 1) << 2;
+        int i;
+        for (i = 0; i < length; i += 4)
         {
             byteSpan[i + 3] = bytes[i];
-            if (i + 1 < bytes.Length)
-                byteSpan[i + 2] = bytes[i + 1];
-            if (i + 2 < bytes.Length)
-                byteSpan[i + 1] = bytes[i + 2];
-            if (i + 3 < bytes.Length)
-                byteSpan[i] = bytes[i + 3];
+            byteSpan[i + 2] = bytes[i + 1];
+            byteSpan[i + 1] = bytes[i + 2];
+            byteSpan[i] = bytes[i + 3];
         }
+        for (int j = 0; j < 4; j++)
+            if (i + j < bytes.Length)
+                byteSpan[i - j + 3] = bytes[i + j];
 
         var result = new StringBuilder();
         result.Append(Prefix);

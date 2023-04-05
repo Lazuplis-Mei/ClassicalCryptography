@@ -20,7 +20,7 @@
 这一类型的密码包括以下几个
 
 * [倒序密码](#ReverseCipher)
-* [取平移密码](#TakeTranslateCipher)
+* [取后平移密码](#TakeTranslateCipher)
 * [三角形排列密码](#TriangleCipher)
 * [约瑟夫环密码](#JosephusCipher)
 * [栅栏密码](#RailFenceCipher)
@@ -32,26 +32,24 @@
 倒序密码
 
 * 无密钥
-* 加密过程
-
-1. 文字从右向左读出
-
+* 加密过程为文字从右向左读出
 * 演示代码
 
 ```csharp
-var cipher = new ReverseCipher();
-cipher.Encrypt("012345");//543210
+ReverseCipher.Cipher.Encrypt("012345");
+//> 543210
 ```
 
 ----------------------------------------
 
 ### TakeTranslateCipher
 
-取平移密码
+取后平移密码
 
 * 密钥$(n,k)$
 * 密钥不可逆
-* 加密过程
+* 密钥的字符串形式为两个`VChar64`字符(这意味着n与k不会超过63)
+* 加密过程流程图
 
 ```mermaid
 graph TB
@@ -73,7 +71,7 @@ D-->G(结束)
 
 * 演示过程
 
-|          | 1 | 2 |  3  |  4  |  5  |  6  |  7  | 8 |
+|   结果   | 1 | 2 |  3  |  4  |  5  |  6  |  7  | 8 |
 | -------- | - | - | :-: | :-: | :-: | :-: | :-: | - |
 | 12       |   |   | [3] | [4] | [5] |  6  |  7  | 8 |
 | 12       |   |   |  6  |  7  |  8  |  3  |  4  | 5 |
@@ -85,9 +83,9 @@ D-->G(结束)
 * 演示代码
 
 ```csharp
-var cipher = new TakeTranslateCipher();
 var key = TakeTranslateCipher.Key.FromString("23");
-cipher.Encrypt("12345678", key)//12675834
+TakeTranslateCipher.Cipher.Encrypt("12345678", key);
+//> 12675834
 ```
 
 ----------------------------------------
@@ -97,7 +95,7 @@ cipher.Encrypt("12345678", key)//12675834
 三角形排列密码
 
 * 无密钥
-* 补充字符\(默认\`\)
+* 补足长度到下一个平方数
 
 1. 文字按行排列成(等腰直角)三角形
 2. 按列读出文字
@@ -118,8 +116,8 @@ cipher.Encrypt("12345678", key)//12675834
 * 演示代码
 
 ```csharp
-var cipher = new TriangleCipher();
-cipher.Encrypt("123456789");//526137489
+TriangleCipher.Cipher.Encrypt("123456789");
+//> 526137489
 ```
 
 ----------------------------------------
@@ -130,6 +128,7 @@ cipher.Encrypt("123456789");//526137489
 
 * 密钥$m$
 * 密钥不可逆
+* 加密过程
 
 1. 想象所有人围成一个环，开始报数
 2. 当报到第$m$个人，那个人就出列
@@ -144,7 +143,7 @@ cipher.Encrypt("123456789");//526137489
 
 * 演示过程
 
-|        |  1  |  2  |  3  |  4  |  5  |  6  |
+|  结果  |  1  |  2  |  3  |  4  |  5  |  6  |
 | ------ | :-: | :-: | :-: | :-: | :-: | :-: |
 | 3      |  1  |  2  | [1] |  4  |  5  |  6  |
 | 36     |  1  |  2  | [1] |  4  |  5  | [2] |
@@ -156,9 +155,9 @@ cipher.Encrypt("123456789");//526137489
 * 演示代码
 
 ```csharp
-var cipher = new JosephusCipher();
 var key = JosephusCipher.Key.FromString("3");
-cipher.Encrypt("123456", key);//364251
+JosephusCipher.Cipher.Encrypt("123456", key);
+//> 364251
 ```
 
 [^1]: [wikipedia/Josephus_problem](https://en.wikipedia.org/wiki/Josephus_problem)
@@ -169,11 +168,12 @@ cipher.Encrypt("123456", key);//364251
 
 栅栏密码
 
-* 密钥\(每组字数$n$\)
+* 密钥(每组字数$n$)
+* 加密过程(尽管与原始的解释不同，但更直观)
 
 1. 将文字按行排列成$n$列
 2. 按列依次读出文字
-
+ 
 * 演示输入
 
 |         文本        | 密钥 |         结果        |
@@ -194,12 +194,12 @@ cipher.Encrypt("123456", key);//364251
 * 演示代码
 
 ```csharp
-var cipher = new RailFenceCipher();
 var key = RailFenceCipher.Key.FromString("3");
-cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
+RailFenceCipher.Cipher.Encrypt("RailFenceCipherTest", key);
+//> RlnChTtaFcieeieeprs
 ```
 
-[^5]:[wikipedia/Rail_fence](https://en.wikipedia.org/wiki/Rail_fence_cipher)
+[^5]:[wikipedia/Rail_fence_cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)
 
 ----------------------------------------
 
@@ -228,11 +228,11 @@ cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 
 周期/列置换密码
 
-* 密钥\(多组排列对\)
-* 补充字符\(默认\`\)
+* 密钥(多组排列对)
+* 补足长度到宽度为排列对中最大值的矩形
 
 1. 将文字排列成一个矩形
-2. 宽度依据排列长度而定
+2. 宽度为排列对中最大值
 3. 根据排列对交换文字的列
 4. 依据排列数的顺序依次读出文字
 
@@ -268,9 +268,9 @@ cipher.Encrypt("RailFenceCipherTest", key);//RlnChTtaFcieeieeprs
 * 演示代码
 
 ```csharp
-var cipher = new CycleTranspose();
 var key = CycleTranspose.Key.FromString("(1,2,4)(3,5)");
-cipher.Encrypt("Sitdownplease!", key);//dSoitlwenp!a`se
+CycleTranspose.Cipher.Encrypt("Sitdownplease!", key);
+//> dSoitlwenp!a`se
 ```
 
 ----------------------------------------

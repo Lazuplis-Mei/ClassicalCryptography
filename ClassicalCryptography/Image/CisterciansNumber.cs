@@ -8,9 +8,8 @@ namespace ClassicalCryptography.Image;
 /// <a href="https://en.wikipedia.org/wiki/Cistercian_numerals">僧侣密码数字</a>，又叫西多会修道士数字系统
 /// </summary>
 [SupportedOSPlatform("windows")]
-public class CisterciansNumerals : IImageEncoder<ulong>
+public class CisterciansNumerals
 {
-
     /// <summary>
     /// 前景色
     /// </summary>
@@ -94,7 +93,7 @@ public class CisterciansNumerals : IImageEncoder<ulong>
         new[] { MD, LD, LB, MB },
     };
 
-    #endregion
+    #endregion 常量
 
     /// <summary>
     /// 就数字转换成僧侣密码
@@ -104,11 +103,12 @@ public class CisterciansNumerals : IImageEncoder<ulong>
         var digits = BaseConverter.ToBase10000(number);
         int length = digits.Length;
         var bitmap = new Bitmap(FIGURE_WIDTH * length, FIGURE_HEIGHT);
+        using var pen = new Pen(Foreground, LINE_WIDTH);
         using var graphics = Graphics.FromImage(bitmap);
         if (Background.HasValue)
             graphics.Clear(Background.Value);
-        using var pen = new Pen(Foreground, LINE_WIDTH);
         graphics.SmoothingMode = SmoothingMode.AntiAlias;
+
         for (int i = 0; i < length; i++)
         {
             var digit = digits[i];
@@ -126,7 +126,7 @@ public class CisterciansNumerals : IImageEncoder<ulong>
                 graphics.DrawLines(pen, figures3[n3 - 1]);
             if (n4 != 0)
                 graphics.DrawLines(pen, figures4[n4 - 1]);
-            graphics.TranslateTransform(FIGURE_WIDTH, 0);
+            graphics.Translate(FIGURE_WIDTH);
         }
         return bitmap;
     }

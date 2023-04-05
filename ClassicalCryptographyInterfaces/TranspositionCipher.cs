@@ -89,14 +89,15 @@ public abstract class TranspositionCipher<T> : ICipher<string, string, T>
         if (StoreKey)
         {
             keys ??= new();
-            if (keys.TryGetValue(key.GetHashCode(), out ushort[]? value))
+            int hashCode = HashCode.Combine(key.GetHashCode(), textLength);
+            if (keys.TryGetValue(hashCode, out ushort[]? value))
                 return value;
 
             order = new ushort[textLength];
             if (FillOrder)
                 order.FillOrder();
             order = Transpose(order, key);
-            keys.Add(key.GetHashCode(), order);
+            keys.Add(hashCode, order);
         }
         else
         {

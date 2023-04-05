@@ -106,15 +106,16 @@ public abstract class TranspositionCipher2D<T> : ICipher<string, string, T>
         if (StoreKey)
         {
             keys ??= new();
-            if (keys.TryGetValue(key.GetHashCode(), out ushort[,]? value))
+            int hashCode = HashCode.Combine(key.GetHashCode(), textLength);
+            if (keys.TryGetValue(hashCode, out ushort[,]? value))
                 return value;
 
             order = new ushort[width, height];
             if (FillOrder)
                 order.FillOrderByRow();
             order = Transpose(order, key);
-            keys.Add(key.GetHashCode(), order);
-            return keys[key.GetHashCode()];
+            keys.Add(hashCode, order);
+            return order;
         }
         else
         {

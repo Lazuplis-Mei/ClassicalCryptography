@@ -1,8 +1,8 @@
 ﻿using ClassicalCryptography.Encoder;
+using CommunityToolkit.HighPerformance;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using ZXing;
 using ZXing.QrCode;
@@ -17,48 +17,52 @@ namespace ClassicalCryptography.Image;
 [SupportedOSPlatform("windows")]
 public class ColorfulBarcode
 {
-
-    /// <summary>
-    /// 图形密码
-    /// </summary>
-    static CipherType Type => CipherType.Image;
-
     /// <summary>
     /// 二维码图像的边长
     /// </summary>
     public const int IMAGE_SIZE = 600;
 
     /// <summary>
+    /// 图形密码
+    /// </summary>
+    private static CipherType Type => CipherType.Image;
+
+    /// <summary>
     /// 编码彩色二维码
     /// </summary>
     /// <param name="text">要编码的字符串</param>
     /// <param name="useBase64">是否使用base64</param>
-    public unsafe static Bitmap Encode(string text, bool useBase64 = false)
+    public static unsafe Bitmap Encode(string text, bool useBase64 = false)
     {
         var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 3;
         var text1 = inputString[..index];
         var text2 = inputString[index..(index + index)];
         var text3 = inputString[(index + index)..];
+
         var bitmap = new Bitmap(IMAGE_SIZE, IMAGE_SIZE);
         var writer = new QRCodeWriter();
         var bits1 = writer.encode(text1, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE);
         var bits2 = writer.encode(text2, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE);
         var bits3 = writer.encode(text3, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE);
+
         bits2.rotate90();
         bits3.rotate180();
 
-        var rect = new Rectangle(0, 0, IMAGE_SIZE, IMAGE_SIZE);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), IMAGE_SIZE * IMAGE_SIZE);
+        const byte ZERO = 0;
+        const byte MAX = 255;
+
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
+
         for (int x = 0; x < IMAGE_SIZE; x++)
         {
             for (int y = 0; y < IMAGE_SIZE; y++)
             {
-                dataSpan[x + y * IMAGE_SIZE] = Color.FromArgb(255,
-                    bits1[x, y] ? 0 : 255,
-                    bits2[x, y] ? 0 : 255,
-                    bits3[x, y] ? 0 : 255).ToArgb();
+                byte red = bits1[x, y] ? ZERO : MAX;
+                byte green = bits2[x, y] ? ZERO : MAX;
+                byte blue = bits3[x, y] ? ZERO : MAX;
+                dataSpan[x, y] = BitsHelper.CombineInt32(MAX, red, green, blue);
             }
         }
 
@@ -71,7 +75,7 @@ public class ColorfulBarcode
     /// </summary>
     /// <param name="text">要编码的字符串</param>
     /// <param name="useBase64">是否使用base64</param>
-    public unsafe static Bitmap EncodeSixColor(string text, bool useBase64 = false)
+    public static unsafe Bitmap EncodeSixColor(string text, bool useBase64 = false)
     {
         var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 6;
@@ -81,12 +85,14 @@ public class ColorfulBarcode
         var text4 = inputString[(index * 3)..(index * 4)];
         var text5 = inputString[(index * 4)..(index * 5)];
         var text6 = inputString[(index * 5)..];
+
         var bitmap = new Bitmap(IMAGE_SIZE, IMAGE_SIZE);
         var writer = new QRCodeWriter();
         var option = new Dictionary<EncodeHintType, object>
         {
             { EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M }
         };
+
         var bits1 = writer.encode(text1, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE, option);
         var bits2 = writer.encode(text2, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE, option);
         var bits3 = writer.encode(text3, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE, option);
@@ -99,25 +105,22 @@ public class ColorfulBarcode
         bits4.rotate180();
         bits5.rotate180();
         bits6.rotate90();
+
         const byte HColor = 0B1010_1010;
         const byte LColor = unchecked((byte)~HColor);
 
-        var rect = new Rectangle(0, 0, IMAGE_SIZE, IMAGE_SIZE);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
 
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), IMAGE_SIZE * IMAGE_SIZE);
         for (int x = 0; x < IMAGE_SIZE; x++)
         {
             for (int y = 0; y < IMAGE_SIZE; y++)
             {
                 int red, green, blue;
-                red = bits1[x, y] ? 0 : HColor;
-                red += bits2[x, y] ? 0 : LColor;
-                green = bits3[x, y] ? 0 : HColor;
-                green += bits4[x, y] ? 0 : LColor;
-                blue = bits5[x, y] ? 0 : HColor;
-                blue += bits6[x, y] ? 0 : LColor;
-                dataSpan[x + y * IMAGE_SIZE] = Color.FromArgb(255, red, green, blue).ToArgb();
+                red = (bits1[x, y] ? 0 : HColor) + (bits2[x, y] ? 0 : LColor);
+                green = (bits3[x, y] ? 0 : HColor) + (bits4[x, y] ? 0 : LColor);
+                blue = (bits5[x, y] ? 0 : HColor) + (bits6[x, y] ? 0 : LColor);
+                dataSpan[x, y] = BitsHelper.CombineInt32(255, (byte)red, (byte)green, (byte)blue);
             }
         }
 
@@ -128,52 +131,53 @@ public class ColorfulBarcode
     /// <summary>
     /// 识别(3色的)彩色二维码
     /// </summary>
-    public unsafe static string Recognize(Bitmap bitmap)
+    public static unsafe string Recognize(Bitmap bitmap)
     {
         using var redBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var greenBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var blueBitmap = new Bitmap(bitmap.Width, bitmap.Height);
 
-        int white = Color.White.ToArgb();
-        int black = Color.Black.ToArgb();
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+        const uint WHITE = 0xFFFFFFFF;
+        const uint BLACK = 0xFF000000;
+        const byte HALF = 0B01111111;
+
         var orgbBitmaps = new[] { bitmap, redBitmap, greenBitmap, blueBitmap };
         var orgbDatas = new BitmapData[orgbBitmaps.Length];
-        var orgbDataSpan = new int*[orgbBitmaps.Length];
+        var orgbDataSpan = new uint*[orgbBitmaps.Length];
+
         for (int i = 0; i < orgbBitmaps.Length; i++)
         {
-            orgbDatas[i] = orgbBitmaps[i].LockBits(rect, ImageLockMode.ReadWrite, orgbBitmaps[i].PixelFormat);
-            orgbDataSpan[i] = (int*)orgbDatas[i].Scan0;
+            orgbDatas[i] = orgbBitmaps[i].LockBits();
+            orgbDataSpan[i] = (uint*)orgbDatas[i].Scan0;
         }
 
         for (int x = 0; x < bitmap.Width; x++)
         {
             for (int y = 0; y < bitmap.Height; y++)
             {
-                var color = Color.FromArgb(orgbDataSpan[0][x + y * bitmap.Width]);
                 int index = x + y * bitmap.Width;
-                orgbDataSpan[1][index] = color.R > 127 ? white : black;
-                orgbDataSpan[2][index] = color.G > 127 ? white : black;
-                orgbDataSpan[3][index] = color.B > 127 ? white : black;
+                BitsHelper.DecomposeUInt32(orgbDataSpan[0][index], out _, out byte red, out byte green, out byte blue);
+                orgbDataSpan[1][index] = red > HALF ? WHITE : BLACK;
+                orgbDataSpan[2][index] = green > HALF ? WHITE : BLACK;
+                orgbDataSpan[3][index] = blue > HALF ? WHITE : BLACK;
             }
         }
 
         for (int i = 0; i < orgbBitmaps.Length; i++)
-        {
             orgbBitmaps[i].UnlockBits(orgbDatas[i]);
-        }
 
         var reader = new ZXing.Windows.Compatibility.BarcodeReader();
-        var result = reader.Decode(redBitmap).Text;
-        result += reader.Decode(greenBitmap).Text;
-        result += reader.Decode(blueBitmap).Text;
-        return result;
+        var result = new StringBuilder();
+        result.Append(reader.Decode(redBitmap).Text);
+        result.Append(reader.Decode(greenBitmap).Text);
+        result.Append(reader.Decode(blueBitmap).Text);
+        return result.ToString();
     }
 
     /// <summary>
     /// 识别(6色的)彩色二维码
     /// </summary>
-    public unsafe static string RecognizeSixColor(Bitmap bitmap)
+    public static unsafe string RecognizeSixColor(Bitmap bitmap)
     {
         using var redBitmap1 = new Bitmap(bitmap.Width, bitmap.Height);
         using var redBitmap2 = new Bitmap(bitmap.Width, bitmap.Height);
@@ -182,108 +186,74 @@ public class ColorfulBarcode
         using var blueBitmap1 = new Bitmap(bitmap.Width, bitmap.Height);
         using var blueBitmap2 = new Bitmap(bitmap.Width, bitmap.Height);
 
-        int white = Color.White.ToArgb();
-        int black = Color.Black.ToArgb();
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var orgbBitmaps = new[] { bitmap, redBitmap1, redBitmap2,
-            greenBitmap1, greenBitmap2, blueBitmap1, blueBitmap2 };
-        var orgbDatas = new BitmapData[orgbBitmaps.Length];
+        const uint WHITE = 0xFFFFFFFF;
+        const uint BLACK = 0xFF000000;
 
-        var orgbDataSpan = new int*[orgbBitmaps.Length];
+        var orgbBitmaps = new[] { bitmap, redBitmap1, redBitmap2, greenBitmap1, greenBitmap2, blueBitmap1, blueBitmap2 };
+        var orgbDatas = new BitmapData[orgbBitmaps.Length];
+        var orgbDataSpan = new uint*[orgbBitmaps.Length];
         for (int i = 0; i < orgbBitmaps.Length; i++)
         {
-            orgbDatas[i] = orgbBitmaps[i].LockBits(rect, ImageLockMode.ReadWrite, orgbBitmaps[i].PixelFormat);
-            orgbDataSpan[i] = (int*)orgbDatas[i].Scan0;
+            orgbDatas[i] = orgbBitmaps[i].LockBits();
+            orgbDataSpan[i] = (uint*)orgbDatas[i].Scan0;
         }
 
         for (int x = 0; x < bitmap.Width; x++)
         {
             for (int y = 0; y < bitmap.Height; y++)
             {
-                var color = Color.FromArgb(orgbDataSpan[0][x + y * bitmap.Width]);
                 int index = x + y * bitmap.Width;
-                switch (color.R)
-                {
-                    case >= 192:
-                        orgbDataSpan[1][index] = white;
-                        orgbDataSpan[2][index] = white;
-                        break;
-                    case >= 128:
-                        orgbDataSpan[1][index] = white;
-                        orgbDataSpan[2][index] = black;
-                        break;
-                    case >= 64:
-                        orgbDataSpan[1][index] = black;
-                        orgbDataSpan[2][index] = white;
-                        break;
-                    default:
-                        orgbDataSpan[1][index] = black;
-                        orgbDataSpan[2][index] = black;
-                        break;
-                }
+                BitsHelper.DecomposeUInt32(orgbDataSpan[0][index], out _, out byte red, out byte green, out byte blue);
+                SetBlackWhite(red, 1);
+                SetBlackWhite(green, 3);
+                SetBlackWhite(blue, 5);
 
-                switch (color.G)
+                void SetBlackWhite(byte colorValue, int i)
                 {
-                    case >= 192:
-                        orgbDataSpan[3][index] = white;
-                        orgbDataSpan[4][index] = white;
-                        break;
-                    case >= 128:
-                        orgbDataSpan[3][index] = white;
-                        orgbDataSpan[4][index] = black;
-                        break;
-                    case >= 64:
-                        orgbDataSpan[3][index] = black;
-                        orgbDataSpan[4][index] = white;
-                        break;
-                    default:
-                        orgbDataSpan[3][index] = black;
-                        orgbDataSpan[4][index] = black;
-                        break;
-                }
-
-                switch (color.B)
-                {
-                    case >= 192:
-                        orgbDataSpan[5][index] = white;
-                        orgbDataSpan[6][index] = white;
-                        break;
-                    case >= 128:
-                        orgbDataSpan[5][index] = white;
-                        orgbDataSpan[6][index] = black;
-                        break;
-                    case >= 64:
-                        orgbDataSpan[5][index] = black;
-                        orgbDataSpan[6][index] = white;
-                        break;
-                    default:
-                        orgbDataSpan[5][index] = black;
-                        orgbDataSpan[6][index] = black;
-                        break;
+                    int j = i + 1;
+                    switch (colorValue)
+                    {
+                        case >= 192:
+                            orgbDataSpan[i][index] = WHITE;
+                            orgbDataSpan[j][index] = WHITE;
+                            break;
+                        case >= 128:
+                            orgbDataSpan[i][index] = WHITE;
+                            orgbDataSpan[j][index] = BLACK;
+                            break;
+                        case >= 64:
+                            orgbDataSpan[i][index] = BLACK;
+                            orgbDataSpan[j][index] = WHITE;
+                            break;
+                        default:
+                            orgbDataSpan[i][index] = BLACK;
+                            orgbDataSpan[j][index] = BLACK;
+                            break;
+                    }
                 }
             }
         }
 
         for (int i = 0; i < orgbBitmaps.Length; i++)
-        {
             orgbBitmaps[i].UnlockBits(orgbDatas[i]);
-        }
 
         var reader = new ZXing.Windows.Compatibility.BarcodeReader();
-        var result = reader.Decode(redBitmap1).Text;
-        result += reader.Decode(redBitmap2).Text;
-        result += reader.Decode(greenBitmap1).Text;
+        var result = new StringBuilder();
+        result.Append(reader.Decode(redBitmap1).Text);
+        result.Append(reader.Decode(redBitmap2).Text);
+        result.Append(reader.Decode(greenBitmap1).Text);
+
         var mayBeNullResult = reader.Decode(greenBitmap2);
         if (mayBeNullResult is null)
         {
             greenBitmap2.RotateFlip(RotateFlipType.Rotate270FlipNone);
             mayBeNullResult = reader.Decode(greenBitmap2);
-            Debug.WriteLine($"`{mayBeNullResult.Text}` 二维码在旋转后无法识别");
+            Debug.WriteLine($"`{mayBeNullResult.Text}`二维码在旋转后无法识别");
         }
-        result += mayBeNullResult.Text;
-        result += reader.Decode(blueBitmap1).Text;
-        result += reader.Decode(blueBitmap2).Text;
-        return result;
-    }
 
+        result.Append(mayBeNullResult.Text);
+        result.Append(reader.Decode(blueBitmap1).Text);
+        result.Append(reader.Decode(blueBitmap2).Text);
+        return result.ToString();
+    }
 }

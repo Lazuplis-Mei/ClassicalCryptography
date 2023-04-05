@@ -31,6 +31,7 @@ public class QuaterArray : IEnumerable<int>
     /// 元素个数
     /// </summary>
     public int Count { get; }
+
     /// <summary>
     /// 设置和获取元素
     /// </summary>
@@ -106,5 +107,6 @@ public class QuaterArray : IEnumerable<int>
     {
         return $"{Count}:{Convert.ToBase64String(array)}";
     }
+
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.HighPerformance;
-using System.Drawing;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Xml;
@@ -123,18 +122,7 @@ internal static class StringExtension
         return result;
     }
 
-    /// <summary>
-    /// Base64字符串按UTF-8转换成中文
-    /// </summary>
-    /// <param name="base64">中文字符串</param>
-    /// <param name="encoding">默认编码UTF8</param>
-    public static string FromBase64(this string base64, Encoding? encoding = null)
-    {
-        encoding ??= Encoding.UTF8;
-        var bytes = Convert.FromBase64String(base64);
-        return encoding.GetString(bytes);
-    }
-
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPrintable(this char c) => c is >= ' ' and not (char)0x7F;
 
     public static string[] Partition(this string self, int length)
@@ -150,9 +138,7 @@ internal static class StringExtension
     {
         var result = new T[self.Length / length];
         for (int i = 0; i < result.Length; i++)
-        {
             result[i] = converter(self.Substring(i * length, length));
-        }
         return result;
     }
 

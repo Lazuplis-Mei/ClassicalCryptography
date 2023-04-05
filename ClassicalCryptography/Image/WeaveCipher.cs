@@ -1,6 +1,4 @@
 ﻿using System.Drawing;
-using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using ZXing.Common;
 
@@ -16,27 +14,69 @@ namespace ClassicalCryptography.Image;
 /// </remarks>
 [Introduction("编织图形密码", "https://tieba.baidu.com/p/7814788182")]
 [SupportedOSPlatform("windows")]
-public partial class WeaveCipher : IImageEncoder<string>
+public partial class WeaveCipher
 {
+    private const int BLOCK_SIZE = 16;
+    private const int MID_POINT = BLOCK_SIZE / 2;
 
     /// <summary>
     /// 前景颜色
     /// </summary>
     public static Brush Foreground { get; set; } = Brushes.Black;
+
     /// <summary>
     /// 背景颜色
     /// </summary>
     public static Brush Background { get; set; } = Brushes.White;
-    /// <summary>
-    /// 图片保存的格式
-    /// </summary>
-    public static ImageFormat ImgFormat { get; set; } = ImageFormat.Png;
 
     /// <summary>
-    /// 图形单元的尺寸
+    /// 字符编码
     /// </summary>
-    public const int BLOCK_SIZE = 16;
-    private const int MID_POINT = BLOCK_SIZE / 2;
+    public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    /// <summary>
+    /// 加密为图像
+    /// </summary>
+    public static Bitmap Encrypt(Span<byte> bytes1, Span<byte> bytes2)
+    {
+        var bits1 = new BitArray();
+        var bits2 = new BitArray();
+
+        for (int i = 0; i < bytes1.Length; i++)
+            bits1.appendBits(bytes1[i], 8);
+        for (int i = 0; i < bytes2.Length; i++)
+            bits2.appendBits(bytes2[i], 8);
+
+        return BitsToImage(EncryptBits(bits1, bits2));
+    }
+
+    /// <summary>
+    /// 加密为图像
+    /// </summary>
+    public static Bitmap Encrypt(string text)
+    {
+        var bytes = Encoding.GetBytes(text).AsSpan();
+        var bytes1 = bytes[..(bytes.Length / 2)];
+        var bytes2 = bytes[(bytes.Length / 2)..];
+        return Encrypt(bytes1, bytes2);
+    }
+
+    /// <summary>
+    /// 解密图像
+    /// </summary>
+    public static string Decrypt(Bitmap bitmap)
+    {
+        var columns = bitmap.Width / BLOCK_SIZE;
+        var rows = bitmap.Height / BLOCK_SIZE;
+        var bytes = new byte[(columns + rows) >> 3];
+        var bits = new BitArray();
+        for (int x = BLOCK_SIZE + MID_POINT; x < bitmap.Width; x += BLOCK_SIZE)
+            bits.appendBit(bitmap.GetPixel(x, MID_POINT) != bitmap.GetPixel(x - BLOCK_SIZE, MID_POINT));
+        for (int y = BLOCK_SIZE + MID_POINT; y < bitmap.Height; y += BLOCK_SIZE)
+            bits.appendBit(bitmap.GetPixel(MID_POINT, y) != bitmap.GetPixel(MID_POINT, y - BLOCK_SIZE));
+        bits.toBytes(0, bytes, 0, bytes.Length);
+        return Encoding.GetString(bytes);
+    }
 
     internal static BitMatrix EncryptBits(BitArray bits1, BitArray bits2)
     {
@@ -67,58 +107,4 @@ public partial class WeaveCipher : IImageEncoder<string>
         }
         return bitmap;
     }
-
-    /// <summary>
-    /// 加密为图像
-    /// </summary>
-    public static Bitmap Encrypt(Span<byte> bytes1, Span<byte> bytes2)
-    {
-        var bits1 = new BitArray();
-        var bits2 = new BitArray();
-
-        for (int i = 0; i < bytes1.Length; i++)
-            bits1.appendBits(bytes1[i], 8);
-        for (int i = 0; i < bytes2.Length; i++)
-            bits2.appendBits(bytes2[i], 8);
-
-        return BitsToImage(EncryptBits(bits1, bits2));
-    }
-
-    /// <summary>
-    /// 加密为图像
-    /// </summary>
-    public static Bitmap Encrypt(string text)
-    {
-        var bytes = Encoding.UTF8.GetBytes(text).AsSpan();
-        var bytes1 = bytes[..(bytes.Length / 2)];
-        var bytes2 = bytes[(bytes.Length / 2)..];
-        return Encrypt(bytes1, bytes2);
-    }
-
-
-    /// <summary>
-    /// 解密图像
-    /// </summary>
-    public static string Decrypt(Bitmap bitmap)
-    {
-        var columns = bitmap.Width / BLOCK_SIZE;
-        var rows = bitmap.Height / BLOCK_SIZE;
-        var bytes = new byte[(columns + rows) >> 3];
-        var bits = new BitArray();
-        for (int x = BLOCK_SIZE + MID_POINT; x < bitmap.Width; x += BLOCK_SIZE)
-        {
-            bits.appendBit(bitmap.GetPixel(x, MID_POINT) !=
-                bitmap.GetPixel(x - BLOCK_SIZE, MID_POINT));
-        }
-        for (int y = BLOCK_SIZE + MID_POINT; y < bitmap.Height; y += BLOCK_SIZE)
-        {
-            bits.appendBit(bitmap.GetPixel(MID_POINT, y) !=
-                bitmap.GetPixel(MID_POINT, y - BLOCK_SIZE));
-        }
-        bits.toBytes(0, bytes, 0, bytes.Length);
-        return Encoding.UTF8.GetString(bytes);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static Bitmap IImageEncoder<string>.Encode(string plain) => Encrypt(plain);
 }

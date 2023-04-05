@@ -1,30 +1,33 @@
 ﻿namespace ClassicalCryptography.Transposition;
 
 /// <summary>
-/// 约瑟夫置换
+/// 约瑟夫置换密码
 /// </summary>
-[Introduction("约瑟夫置换密码", "约瑟夫问题中，出列次序。")]
-public partial class JosephusCipher : TranspositionCipher<int>
+[Introduction("约瑟夫置换密码", "约瑟夫问题中的出列次序。")]
+public partial class JosephusCipher : TranspositionCipher<ushort>
 {
+    private static TranspositionCipher<ushort>? cipher;
+
     /// <summary>
-    /// 转换顺序
+    /// <see cref="JosephusCipher"/>的实例
     /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    /// <param name="key">密钥</param>
-    protected override ushort[] Transpose(ushort[] indexes, IKey<int> key)
+    public static TranspositionCipher<ushort> Cipher => cipher ??= new JosephusCipher();
+
+    /// <inheritdoc/>
+    protected override ushort[] Transpose(ushort[] indexes, IKey<ushort> key)
     {
-        int M = key.KeyValue;
+        int m = key.KeyValue;
         var linkedList = new LinkedList(indexes);
         linkedList.Last.Next = linkedList.First;
-        int p = 0;
-        linkedList.MoveStep(M - 2);
-        while (p < indexes.Length)
+        linkedList.MoveStep(m - 2);
+        int i = 0;
+        while (i < indexes.Length)
         {
-            var pre = linkedList.Current;
-            linkedList.Current = pre.Next!;
-            indexes[p++] = linkedList.Current.Value;
-            pre.Next = linkedList.Current.Next!;
-            linkedList.MoveStep(M - 1);
+            var current = linkedList.Current;
+            linkedList.Current = current.Next!;
+            indexes[i++] = linkedList.Current.Value;
+            current.Next = linkedList.Current.Next!;
+            linkedList.MoveStep(m - 1);
         }
         return indexes;
     }

@@ -25,8 +25,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string ToBase64URL(string input)
     {
-        var str = Convert.ToBase64String(Encoding.GetBytes(input));
-        return str.Replace('+', '-').Replace('/', '_').TrimEnd('=');
+        return K4os.Text.BaseX.Base64.Url.Encode(Encoding.GetBytes(input));
     }
 
     /// <summary>
@@ -42,17 +41,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string FromBase64URL(string input)
     {
-        input = input.Replace('_', '/').Replace('-', '+');
-        switch (input.Length % 4)
-        {
-            case 2:
-                input += "==";
-                break;
-            case 3:
-                input += "=";
-                break;
-        }
-        return Encoding.GetString(Convert.FromBase64String(input));
+        return Encoding.GetString(K4os.Text.BaseX.Base64.Url.Decode(input));
     }
 
     /// <summary>
@@ -214,7 +203,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string ToBase85(string input)
     {
-        return TuupolaBase85Encoding.Default.Encode(Encoding.GetBytes(input));
+        return K4os.Text.BaseX.Base85.ToBase85(Encoding.GetBytes(input));
     }
 
     /// <summary>
@@ -222,7 +211,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string FromBase85(string input)
     {
-        return Encoding.GetString(TuupolaBase85Encoding.Default.Decode(input));
+        return Encoding.GetString(K4os.Text.BaseX.Base85.FromBase85(input));
     }
 
     /// <summary>

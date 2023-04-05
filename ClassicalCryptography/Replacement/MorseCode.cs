@@ -6,7 +6,7 @@ namespace ClassicalCryptography.Replacement;
 /// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">摩斯密码</see>
 /// </summary>
 [Introduction("摩斯密码", "一种用信号时长和断续表示内容的代码")]
-public class MorseCode : ICipher<string, string>
+public class MorseCode
 {
     private const string standardLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static readonly string[] standardCodes =
@@ -127,17 +127,14 @@ public class MorseCode : ICipher<string, string>
     /// </summary>
     public static readonly MorseCode ShortDigit = new(shortDigits, shortDigitsCodes);
 
-
     private readonly string letters;
     private readonly string lowerLetters;
     private readonly string[] codes;
 
-    CipherType ICipher<string, string>.Type => CipherType.Substitution;
-
     private MorseCode(string letters, string[] codes)
     {
         this.letters = letters;
-        this.lowerLetters = letters.ToLower();
+        lowerLetters = letters.ToLower();
         this.codes = codes;
     }
 
@@ -207,9 +204,4 @@ public class MorseCode : ICipher<string, string>
         return string.Join(separator, result);
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    string ICipher<string, string>.Encrypt(string plainText) => ToMorse(plainText);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    string ICipher<string, string>.Decrypt(string cipherText) => FromMorse(cipherText);
 }

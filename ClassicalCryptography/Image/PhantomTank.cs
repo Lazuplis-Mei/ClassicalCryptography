@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
+﻿using ClassicalCryptography.Utils;
+using System.Drawing;
 using System.Runtime.Versioning;
 
 namespace ClassicalCryptography.Image;
@@ -14,6 +14,7 @@ public static class PhantomTank
     /// 前景权重
     /// </summary>
     public const double FOREGROUND_WEIGHT = 1.0;
+
     /// <summary>
     /// 背景权重
     /// </summary>
@@ -26,24 +27,30 @@ public static class PhantomTank
     {
         var maxWidth = Math.Max(foreGround.Width, backGround.Width);
         var maxHeight = Math.Max(foreGround.Height, backGround.Height);
+
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
-        var fdata = foreGround.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var fdataSpan = new Span<int>(fdata.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
-        var bdata = backGround.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var bdataSpan = new Span<int>(bdata.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
+
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan<int>();
+        var fdata = foreGround.LockBits();
+        var fdataSpan = fdata.AsSpan<int>();
+        var bdata = backGround.LockBits();
+        var bdataSpan = bdata.AsSpan<int>();
 
         for (int i = 0; i < dataSpan.Length; i++)
         {
-            double fColor = 255 * Color.FromArgb(fdataSpan[i]).GetBrightness() * FOREGROUND_WEIGHT;
-            double bColor = 255 * Color.FromArgb(bdataSpan[i]).GetBrightness() * BACKGROUNG_WEIGHT;
-            var alpha = Math.Min(255, (int)(255 - fColor + bColor));
-            int mean = (int)Math.Min(255, bColor / alpha * 255);
-            dataSpan[i] = Color.FromArgb(alpha, mean, mean, mean).ToArgb();
+            double fColor = Color.FromArgb(fdataSpan[i]).GetGrayscale() * FOREGROUND_WEIGHT;
+            double bColor = Color.FromArgb(bdataSpan[i]).GetGrayscale() * BACKGROUNG_WEIGHT;
+            byte alpha = (byte)Math.Min(255, (int)(255 + bColor - fColor));
+            if (alpha == 0)
+            {
+                dataSpan[i] = 0;
+                continue;
+            }
+            byte mean = (byte)Math.Min(255, bColor * 255.0 / alpha);
+            dataSpan[i] = BitsHelper.CombineInt32(alpha, mean, mean, mean);
         }
 
         bitmap.UnlockBits(data);
@@ -62,44 +69,25 @@ public static class PhantomTank
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
-        var rect = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
-        var data = bitmap.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var dataSpan = new Span<int>(data.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
-        var fdata = foreGround.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var fdataSpan = new Span<int>(fdata.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
-        var bdata = backGround.LockBits(rect, ImageLockMode.ReadWrite, bitmap.PixelFormat);
-        var bdataSpan = new Span<int>(bdata.Scan0.ToPointer(), bitmap.Width * bitmap.Height);
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan<int>();
+        var fdata = foreGround.LockBits();
+        var fdataSpan = fdata.AsSpan<int>();
+        var bdata = backGround.LockBits();
+        var bdataSpan = bdata.AsSpan<int>();
 
         for (int i = 0; i < dataSpan.Length; i++)
         {
-            var fColor = Color.FromArgb(fdataSpan[i]);
-            var bColor = Color.FromArgb(bdataSpan[i]);
-            int r = (int)(fColor.R * FOREGROUND_WEIGHT);
-            int g = (int)(fColor.G * FOREGROUND_WEIGHT);
-            int b = (int)(fColor.B * FOREGROUND_WEIGHT);
-            fColor = Color.FromArgb(fColor.A, r, g, b);
-            r = (int)(bColor.R * FOREGROUND_WEIGHT);
-            g = (int)(bColor.G * FOREGROUND_WEIGHT);
-            b = (int)(bColor.B * FOREGROUND_WEIGHT);
-            bColor = Color.FromArgb(bColor.A, r, g, b);
-            int dr = bColor.R - fColor.R;
-            int dg = bColor.G - fColor.G;
-            int db = bColor.B - fColor.B;
-            double coe_a = 8 + 255 / 256.0 + (dr - db) / 256.0;
-            double coe_b = 4 * dr + 8 * dg + 6 * db +
-                (dr - db) * (bColor.R + fColor.R) / 256.0 +
-                (dr * dr - db * db) / 512.0;
-            int alpha = (int)(255 + coe_b / (2 * coe_a));
-            if (alpha <= 0)
-                alpha = r = g = b = 0;
-            else
+            var fColor = Color.FromArgb(fdataSpan[i]).ApplyWeight(FOREGROUND_WEIGHT);
+            var bColor = Color.FromArgb(bdataSpan[i]).ApplyWeight(FOREGROUND_WEIGHT);
+            byte alpha = fColor.LABDistanceToAlpha(bColor);
+            if (alpha == 0)
             {
-                alpha = Math.Min(255, alpha);
-                r = (int)Math.Min(255, 255 * bColor.R * BACKGROUNG_WEIGHT / alpha);
-                g = (int)Math.Min(255, 255 * bColor.G * BACKGROUNG_WEIGHT / alpha);
-                b = (int)Math.Min(255, 255 * bColor.B * BACKGROUNG_WEIGHT / alpha);
+                dataSpan[i] = 0;
+                continue;
             }
-            dataSpan[i] = Color.FromArgb(alpha, r, g, b).ToArgb();
+            double weight = 255 * BACKGROUNG_WEIGHT / alpha;
+            dataSpan[i] = bColor.WithAlpha(alpha).ApplyWeight(weight).ToArgb();
         }
 
         bitmap.UnlockBits(data);
@@ -107,4 +95,5 @@ public static class PhantomTank
         backGround.Dispose();
         return bitmap;
     }
+
 }

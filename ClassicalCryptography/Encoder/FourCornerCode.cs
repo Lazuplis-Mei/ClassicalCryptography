@@ -10,12 +10,10 @@ namespace ClassicalCryptography.Encoder;
 /// 在线工具:<see href="https://www.qqxiuzi.cn/bianma/sijiaohaoma/">四角号码</see>
 /// </remarks>
 [Introduction("四角号码", "检索汉字的一种方法，依据汉字四个角的笔形编制的数字号码")]
-public class FourCornerCode : IStaticCipher<string, string>
+public class FourCornerCode
 {
     private static readonly Dictionary<int, string> fourCornerCodeData = new();
     private static bool dataLoaded = false;
-
-    static CipherType IStaticCipher<string, string>.Type => CipherType.Substitution;
 
     private static void LoadData()
     {
@@ -93,10 +91,4 @@ public class FourCornerCode : IStaticCipher<string, string>
         }
         return new(span[..^currentSpan.Length]);
     }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string IStaticCipher<string, string>.Encrypt(string plainText) => ToCodesString(plainText);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    static string IStaticCipher<string, string>.Decrypt(string cipherText) => FromCodeString(cipherText);
 }

@@ -1,0 +1,2790 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MidiLibrary</name>
+    </assembly>
+    <members>
+        <member name="T:Midi.MidiChannels">
+            <summary>
+            Represents the supported channels for the MIDI output device
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel0">
+            <summary>
+            Channel 0
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel1">
+            <summary>
+            Channel 1
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel2">
+            <summary>
+            Channel 2
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel3">
+            <summary>
+            Channel 3
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel4">
+            <summary>
+            Channel 4
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel5">
+            <summary>
+            Channel 5
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel6">
+            <summary>
+            Channel 6
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel7">
+            <summary>
+            Channel 7
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel8">
+            <summary>
+            Channel 8
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel9">
+            <summary>
+            Channel 9
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel10">
+            <summary>
+            Channel 10
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel11">
+            <summary>
+            Channel 11
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel12">
+            <summary>
+            Channel 12
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel13">
+            <summary>
+            Channel 13
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel14">
+            <summary>
+            Channel 14
+            </summary>
+        </member>
+        <member name="F:Midi.MidiChannels.Channel15">
+            <summary>
+            Channel 15
+            </summary>
+        </member>
+        <member name="T:Midi.MidiContext">
+            <summary>
+            Represents the current state of a playing MIDI sequence
+            </summary>
+        </member>
+        <member name="T:Midi.MidiContext.Channel">
+            <summary>
+            Represents the status of a MIDI channel
+            </summary>
+        </member>
+        <member name="M:Midi.MidiContext.Channel.#ctor">
+            <summary>
+            MIDI channel
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.Controls">
+            <summary>
+            Indicates the current MIDI CC values for the channel
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.Notes">
+            <summary>
+            Indicates the current MIDI note states for the channel
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.KeyPressure">
+            <summary>
+            Indicates the current MIDI aftertouch for the current key
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.ChannelPressure">
+            <summary>
+            Indicates the current MIDI aftertouch for the current channel
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.PitchWheel">
+            <summary>
+            Indicates the current position of the MIDI pitch wheel
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Channel.Program">
+            <summary>
+            Indicates the current MIDI patch for the channel
+            </summary>
+        </member>
+        <member name="M:Midi.MidiContext.#ctor(System.Int16)">
+            <summary>
+            Constructs a new instance of a MidiContext
+            </summary>
+            <param name="timeBase">the time base to use</param>
+        </member>
+        <member name="P:Midi.MidiContext.Channels">
+            <summary>
+            Indicates the channels for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.RunningStatus">
+            <summary>
+            Indicates the running status byte for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.ChannelPrefix">
+            <summary>
+            Indicates the channel prefix for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.MicroTempo">
+            <summary>
+            Indicates the micro tempo for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.TimeBase">
+            <summary>
+            Indicates the time base for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Ticks">
+            <summary>
+            Indicates the number of MIDI ticks that have elapsed
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.SystemTicks">
+            <summary>
+            Indicates the number of system ticks that have elapsed
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.Time">
+            <summary>
+            Indicates the time of the current position
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.TimeSignature">
+            <summary>
+            Indicates the time signature for the current MIDI context
+            </summary>
+        </member>
+        <member name="P:Midi.MidiContext.KeySignature">
+            <summary>
+            Indicates the key signature for the current MIDI context
+            </summary>
+        </member>
+        <member name="M:Midi.MidiContext.Process(Midi.MidiEvent)">
+            <summary>
+            Processes an event
+            </summary>
+            <param name="event">The event to process. The event.Message member can be null in which case the message part is not processed</param>
+        </member>
+        <member name="M:Midi.MidiContext.Process(Midi.MidiMessage)">
+            <summary>
+            Process a message, adjusting the MIDI context
+            </summary>
+            <param name="message">The message to process</param>
+        </member>
+        <member name="M:Midi.MidiContext.Clone">
+            <summary>
+            Creates a deep copy of the MIDI context
+            </summary>
+            <returns>A new copy of the MIDI context</returns>
+        </member>
+        <member name="T:Midi.MidiDevice">
+            <summary>
+            Represents a base class for MIDI input and output devices
+            </summary>
+        </member>
+        <member name="M:Midi.MidiDevice.Finalize">
+            <summary>
+            Closes the device if it's open
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Inputs">
+            <summary>
+            Indicates the available MIDI input devices
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Outputs">
+            <summary>
+            Indicates the available MIDI output devices
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Streams">
+            <summary>
+            Indicates the available MIDI streaming devices
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Name">
+            <summary>
+            Indicates the name of the MIDI device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Version">
+            <summary>
+            Indicates the version of the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.ManufacturerId">
+            <summary>
+            Indicates the manufacturer code for the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.ProductId">
+            <summary>
+            Indicates the product code for the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.Index">
+            <summary>
+            Indicates the index of the MIDI device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiDevice.IsOpen">
+            <summary>
+            Indicates whether or not this device is open
+            </summary>
+        </member>
+        <member name="M:Midi.MidiDevice.Open">
+            <summary>
+            Opens the MIDI device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiDevice.Close">
+            <summary>
+            Closes the MIDI device
+            </summary>
+        </member>
+        <member name="T:Midi.MidiEvent">
+            <summary>
+            Represents a single MIDI event
+            </summary>
+        </member>
+        <member name="M:Midi.MidiEvent.#ctor(System.Int32,Midi.MidiMessage)">
+            <summary>
+            Creates an event at the specified position with the specified MIDI message
+            </summary>
+            <param name="position">The position in MIDI ticks</param>
+            <param name="message">The MIDI message for this event</param>
+        </member>
+        <member name="P:Midi.MidiEvent.Position">
+            <summary>
+            Indicates the position in MIDI ticks
+            </summary>
+        </member>
+        <member name="P:Midi.MidiEvent.Message">
+            <summary>
+            Indicates the MIDI message associated with this event
+            </summary>
+        </member>
+        <member name="M:Midi.MidiEvent.Clone">
+            <summary>
+            Creates a deep copy of the MIDI event
+            </summary>
+            <returns>A new, equivelent MIDI event</returns>
+        </member>
+        <member name="M:Midi.MidiEvent.ToString">
+            <summary>
+            Returns a string representation of the event
+            </summary>
+            <returns>A string representation of the event</returns>
+        </member>
+        <member name="T:Midi.MidiFile">
+            <summary>
+            Represents a MIDI file
+            </summary>
+        </member>
+        <member name="M:Midi.MidiFile.#ctor(System.Int16,System.Int16)">
+            <summary>
+            Constructs a MIDI file of the specified type with the specified timebase
+            </summary>
+            <param name="type">The MIDI file type - either 0, 1 or 2</param>
+            <param name="timeBase">The timebase of the MIDI file in ticks/pulses per quarter note</param>
+            <remarks>Normally the default timebase in the API is 24, but that's undesirable for most MIDI files, so this defaults to 480, which is a much more realistic resolution</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.FilePath">
+            <summary>
+            Indicates the name of the file this was loaded from or saved to, if available, otherwise null
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.Name">
+            <summary>
+            Returns the internal name of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's name</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Copyright">
+            <summary>
+            Returns the copyright information of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's copyright metadata</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.MicroTempo">
+            <summary>
+            Indicates the MicroTempo of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's microtempo</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.MicroTempos">
+            <summary>
+            Indicates all of the MicroTempos of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's microtempos</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Tempo">
+            <summary>
+            Indicates the Tempo of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's tempo</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Tempos">
+            <summary>
+            Indicates all of the Tempos of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's tempos</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.TimeSignature">
+            <summary>
+            Indicates the time signature of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's time signature</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.TimeSignatures">
+            <summary>
+            Indicates all the time signatures of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's time signatures</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.KeySignature">
+            <summary>
+            Indicates the key signature of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's key signature</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.KeySignatures">
+            <summary>
+            Indicates all the key signatures of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's key signatures</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Duration">
+            <summary>
+            Indicates the duration of the MIDI file as a <see cref="T:System.TimeSpan"/>
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.DurationSystemTicks">
+            <summary>
+            Indicates the duration of the MIDI file in system ticks
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.Type">
+            <summary>
+            Indicates the type of the MIDI file
+            </summary>
+            <remarks>This can be 0, 1 or 2</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.TimeBase">
+            <summary>
+            Indicates the timebase of the MIDI file as ticks/pulses per quarter note
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.Tracks">
+            <summary>
+            Retrieves a list of all MIDI tracks in the file
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.Length">
+            <summary>
+            Indicates the total length of the MIDI file, in ticks/pulses
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.Comments">
+            <summary>
+            Indicates the comments of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's comments</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Markers">
+            <summary>
+            Indicates the MIDI Markers of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's markers</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.Lyrics">
+            <summary>
+            Indicates the lyrics of the MIDI file
+            </summary>
+            <remarks>This is derived from Track #0's lyrics</remarks>
+        </member>
+        <member name="P:Midi.MidiFile.FirstDownBeat">
+            <summary>
+            Indicates the position of the first beat of the MIDI file in pulses/ticks
+            </summary>
+        </member>
+        <member name="P:Midi.MidiFile.FirstNoteOn">
+            <summary>
+            Indicates the position of the first note on message in the MIDI file in pulses/ticks
+            </summary>
+        </member>
+        <member name="M:Midi.MidiFile.ReadFrom(System.IO.Stream)">
+            <summary>
+            Reads a MIDI file from the specified stream
+            </summary>
+            <param name="stream">The stream to read from</param>
+            <returns>A MIDI file object representing the MIDI data in the stream</returns>
+        </member>
+        <member name="M:Midi.MidiFile.ReadFrom(System.String)">
+            <summary>
+            Reads a MIDI file from the specified file
+            </summary>
+            <param name="filename">The filename</param>
+            <returns>A new instance representing the MIDI file</returns>
+        </member>
+        <member name="M:Midi.MidiFile.Preview(Midi.MidiOutputDevice,System.Boolean)">
+            <summary>
+            Plays the file over the specified device
+            </summary>
+            <param name="device">The MIDI output device to use</param>
+            <param name="loop">Indicates whether to loop playback or not</param>
+        </member>
+        <member name="M:Midi.MidiFile.Resample(System.Int16)">
+            <summary>
+            Changes the timebase of the MIDI file
+            </summary>
+            <param name="timeBase">The new timebase, in ticks/pulses per quarter note</param>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiFile.Transpose(System.SByte,System.Boolean,System.Boolean)">
+            <summary>
+            Transposes the notes in a file, optionally wrapping the note values
+            </summary>
+            <param name="noteAdjust">The number of MIDI notes to add or subtract</param>
+            <param name="wrap">True if out of range notes are wrapped, false if they are to be clipped</param>
+            <param name="noDrums">True if drum/percussion notes are to be left alone, otherwise false</param>
+            <returns>A new MIDI file with the notes transposed</returns>
+        </member>
+        <member name="M:Midi.MidiFile.Stretch(System.Double,System.Boolean)">
+            <summary>
+            Stretches or compresses the MIDI file events
+            </summary>
+            <remarks>If <paramref name="adjustTempo"/> is false this will change the playback speed of the MIDI</remarks>
+            <param name="diff">The differential for the size. 1 is the same length, .5 would be half the length and 2 would be twice the length</param>
+            <param name="adjustTempo">Indicates whether or not the tempo should be adjusted to compensate</param>
+            <returns>A new MIDI file that is stretched the specified amount</returns>
+        </member>
+        <member name="M:Midi.MidiFile.AdjustTempo(System.Double)">
+            <summary>
+            Adjusts the tempo of a MIDI file
+            </summary>
+            <param name="tempo">The new tempo</param>
+            <returns>A new file with an adjusted tempo. All other tempo messages are adjusted relatively to the first one</returns>
+        </member>
+        <member name="M:Midi.MidiFile.AdjustTempo(System.Int32)">
+            <summary>
+            Adjusts the tempo of a MIDI file
+            </summary>
+            <param name="microTempo">The new microtempo</param>
+            <returns>A new file with an adjusted tempo. All other tempo messages are adjusted relatively to the first one</returns>
+        </member>
+        <member name="M:Midi.MidiFile.ScaleTempo(System.Double)">
+            <summary>
+            Scales the tempo of a file to a new relative tempo
+            </summary>
+            <param name="diff">The relative difference in the tempo. Higher makes the tempo higher</param>
+            <returns>A new file with the adjusted tempo. All tempo messages are adjusted relatively</returns>
+        </member>
+        <member name="M:Midi.MidiFile.GetRange(System.Int32,System.Int32,System.Boolean,System.Boolean)">
+            <summary>
+            Gets a range of events as a new MidiFile
+            </summary>
+            <param name="start">The start in ticks</param>
+            <param name="length">The length, in ticks</param>
+            <param name="copyTimingAndPatchInfo">True to copy the current timing and patch info, otherwise false</param>
+            <param name="eliminateEmptyTracks">True to eliminate tracks that end up with no events, otherwise false</param>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiFile.ScaleVelocities(System.Double)">
+            <summary>
+            Scales the velocity levels
+            </summary>
+            <param name="multiplier">The multiplier</param>
+            <returns>A new MIDI file with the levels scaled</returns>
+        </member>
+        <member name="M:Midi.MidiFile.NormalizeVelocities">
+            <summary>
+            Normalizes the velocity levels
+            </summary>
+            <returns>A new MIDI file with the levels normalized</returns>
+        </member>
+        <member name="M:Midi.MidiFile.Clone">
+            <summary>   
+            Creates a deep copy of the MIDI file
+            </summary>
+            <returns>A new MIDI file that is equivelent to this MIDI file</returns>
+        </member>
+        <member name="M:Midi.MidiFile.WriteTo(System.IO.Stream)">
+            <summary>
+            Writes the MIDI file to the specified stream
+            </summary>
+            <param name="stream">The stream to write to</param>
+        </member>
+        <member name="M:Midi.MidiFile.WriteTo(System.String)">
+            <summary>
+            Writes the MIDI file to the specified file
+            </summary>
+            <param name="filename">The filename to write</param>
+        </member>
+        <member name="T:Midi.MidiInputEventHandler">
+            <summary>
+            Represents the delegate for the Input event
+            </summary>
+            <param name="sender">The sender</param>
+            <param name="args">The arguments</param>
+        </member>
+        <member name="T:Midi.MidiInputEventArgs">
+            <summary>
+            Represents the arguments to the Input event
+            </summary>
+            <param name="TimeStamp"> The timestamp of the message </param>
+            <param name="Message"> The message </param>
+        </member>
+        <member name="M:Midi.MidiInputEventArgs.#ctor(System.TimeSpan,Midi.MidiMessage)">
+            <summary>
+            Represents the arguments to the Input event
+            </summary>
+            <param name="TimeStamp"> The timestamp of the message </param>
+            <param name="Message"> The message </param>
+        </member>
+        <member name="P:Midi.MidiInputEventArgs.TimeStamp">
+            <summary> The timestamp of the message </summary>
+        </member>
+        <member name="P:Midi.MidiInputEventArgs.Message">
+            <summary> The message </summary>
+        </member>
+        <member name="T:Midi.MidiInputDevice">
+            <summary>
+            Represents a MIDI input device
+            </summary>
+        </member>
+        <member name="E:Midi.MidiInputDevice.Opened">
+            <summary>
+            Raised when the device is opened
+            </summary>
+        </member>
+        <member name="E:Midi.MidiInputDevice.Closed">
+            <summary>
+            Raised when the device is closed
+            </summary>
+        </member>
+        <member name="E:Midi.MidiInputDevice.TempoChanged">
+            <summary>
+            Raised when the tempo changes
+            </summary>
+        </member>
+        <member name="E:Midi.MidiInputDevice.Input">
+            <summary>
+            Raised when incoming messages occur
+            </summary>
+        </member>
+        <member name="E:Midi.MidiInputDevice.Error">
+            <summary>
+            Raised when incoming messages occur
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.State">
+            <summary>
+            Indicates the state of the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.IsOpen">
+            <summary>
+            Indicates whether the input device is open
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.TimeBase">
+            <summary>
+            Indicates the time base of the input used for recording
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.MicroTempo">
+            <summary>
+            Indicates the micro tempo used for recording
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.Tempo">
+            <summary>
+            Indicates the tempo used for recording
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.TempoSynchronizationEnabled">
+            <summary>
+            Indicates whether or not the system should respond to attempts
+            to synchronize the tempo using MIDI realtime time clock
+            messages
+            </summary>
+            <remarks>This is somewhat inaccurate, as .NET's latency is too high for an accurate measurement?</remarks>
+        </member>
+        <member name="P:Midi.MidiInputDevice.TempoSychronizationFrequency">
+            <summary>
+            Indicates the quantization factor to use for tempo synchronization
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.TempoSynchronizationMinimumMicroTempo">
+            <summary>
+            Indicates the minumum micro tempo for the tempo synchronization feature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.TempoSynchronizationMinimumTempo">
+            <summary>
+            Indicates the minumum tempo for the tempo synchronization feature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.Index">
+            <summary>
+            Indicates the index of the input device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.Name">
+            <summary>
+            Indicates the name of the input device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.Version">
+            <summary>
+            Indicates the version of the driver associated with the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.ProductId">
+            <summary>
+            Indicates the product code for the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiInputDevice.ManufacturerId">
+            <summary>
+            Indicates the manufacturer code for the device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.Open">
+            <summary>
+            Opens the MIDI input device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.Close">
+            <summary>
+            Closes the MIDI input device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.Start">
+            <summary>
+            Starts the MIDI input device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.Stop">
+            <summary>
+            Stops the MIDI input device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.Reset">
+            <summary>
+            Resets the MIDI input device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiInputDevice.StartRecording(System.Boolean)">
+            <summary>
+            Starts recording to a MIDI file
+            </summary>
+            <param name="waitForInput">True if recording should be deferred until MIDI input is recieved, otherwise false to start right away</param>
+        </member>
+        <member name="M:Midi.MidiInputDevice.EndRecording(System.Boolean)">
+            <summary>
+            Ends the current recording session, returning a MIDI file
+            </summary>
+            <param name="trimRemainder">Indicates whether or not the silent remainder of the recording (if any) is trimmed</param>
+            <returns>The MIDI file containing the recorded performance, or null if recording was never started.</returns>
+            <remarks>The returned file is always a type 1 MIDI file at the stream's timebase, and following the stream's tempo. The file consists of two tracks. Track 0 is a meta track containing the tempo map, and the other track contains the performance data</remarks>
+        </member>
+        <member name="T:Midi.MidiInputDeviceState">
+            <summary>
+            Indicates the state of the MIDI input device
+            </summary>
+        </member>
+        <member name="F:Midi.MidiInputDeviceState.Closed">
+            <summary>
+            The device is closed
+            </summary>
+        </member>
+        <member name="F:Midi.MidiInputDeviceState.Started">
+            <summary>
+            The device has been started
+            </summary>
+        </member>
+        <member name="F:Midi.MidiInputDeviceState.Stopped">
+            <summary>
+            The device is stopped
+            </summary>
+        </member>
+        <member name="T:Midi.MidiKeySignature">
+            <summary>
+            Represents a MIDI key signature
+            </summary>
+        </member>
+        <member name="M:Midi.MidiKeySignature.#ctor(System.SByte,System.Boolean)">
+            <summary>
+            Creates a new instance with the specified paramters
+            </summary>
+            <param name="sigCode">The signature code: negative for flats, positive for sharps (-7 to 7, inclusive)</param>
+            <param name="isMinor">Indicates whether or not the scale is minor</param>
+        </member>
+        <member name="P:Midi.MidiKeySignature.Default">
+            <summary>
+            Indicates the default value for the MIDI key signature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiKeySignature.SharpsCount">
+            <summary>
+            The number of sharps in the signature (0-7)
+            </summary>
+        </member>
+        <member name="P:Midi.MidiKeySignature.FlatsCount">
+            <summary>
+            The number of flats in the signature (0-7)
+            </summary>
+        </member>
+        <member name="P:Midi.MidiKeySignature.IsMinor">
+            <summary>
+            Indicates true if the scale is minor, otherwise false if it is major
+            </summary>
+        </member>
+        <member name="M:Midi.MidiKeySignature.ToString">
+            <summary>
+            Retrieves a string representation of the key signature
+            </summary>
+            <returns>A string representing the key signature</returns>
+        </member>
+        <member name="T:Midi.MidiMessage">
+            <summary>
+            Represents a MIDI message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessage.#ctor(System.Byte)">
+            <summary>
+            Creates a MIDI message with the specified status byte
+            </summary>
+            <param name="status">The MIDI status byte</param>
+        </member>
+        <member name="P:Midi.MidiMessage.Status">
+            <summary>
+            Indicates the MIDI status byte
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessage.Channel">
+            <summary>
+            Indicates the channel of the MIDI message. Only applies to MIDI channel messages, not MIDI system messages
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessage.PayloadLength">
+            <summary>
+            Indicates the length of the message payload
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessage.Clone">
+            <summary>
+            Creates a deep copy of the message
+            </summary>
+            <returns>A message that is equivelent to the specified message</returns>
+        </member>
+        <member name="M:Midi.MidiMessage.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageByte">
+            <summary>
+            Represents a MIDI message with a single payload byte
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageByte.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a MIDI message with the specified status and payload
+            </summary>
+            <param name="status">The MIDI status byte</param>
+            <param name="data1">The data byte</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageByte.Data1">
+            <summary>
+            Indicates the data byte for the MIDI message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageByte.PayloadLength">
+            <summary>
+            Indicates the payload length for this MIDI message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageByte.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageCC">
+            <summary>
+            Represents a MIDI continuous controller message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageCC.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI continuous controller message
+            </summary>
+            <param name="controlId">The MIDI controller id (0-127)</param>
+            <param name="value">The MIDI value (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageCC.ControlId">
+            <summary>
+            Indicates the assocated MIDI controller id
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageCC.Value">
+            <summary>
+            Indicates the value of the controller
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageCC.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageCC.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageChannelPitch">
+            <summary>
+            Represents a MIDI channel pitch/pitch wheel message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPitch.#ctor(System.Int16,System.Byte)">
+            <summary>
+            Creates a new MIDI channel pitch message
+            </summary>
+            <param name="pitch">The MIDI pressure (0-16383)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageChannelPitch.Pitch">
+            <summary>
+            Indicates the pitch of the channel (pitch wheel position)
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPitch.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPitch.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageChannelPressure">
+            <summary>
+            Represents a MIDI key pressure/aftertouch message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPressure.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI key pressure/aftertouch message
+            </summary>
+            <param name="pressure">The MIDI pressure (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageChannelPressure.Pressure">
+            <summary>
+            Indicates the pressure of the channel (aftertouch)
+            </summary>
+            <remarks>Indicates the single greatest pressure/aftertouch off all pressed notes</remarks>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPressure.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageChannelPressure.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageKeyPressure">
+            <summary>
+            Represents a MIDI key pressure/aftertouch message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageKeyPressure.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI key pressure/aftertouch message
+            </summary>
+            <param name="noteId">The MIDI note id (0-127)</param>
+            <param name="pressure">The MIDI pressure (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageKeyPressure.#ctor(System.String,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI key pressure/aftertouch message
+            </summary>
+            <param name="note">The MIDI note</param>
+            <param name="pressure">The MIDI pressure (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageKeyPressure.NoteId">
+            <summary>
+            Indicates the assocated MIDI note id
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageKeyPressure.Note">
+            <summary>
+            Indicates the note for the message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageKeyPressure.Pressure">
+            <summary>
+            Indicates the pressure of the note (aftertouch)
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageKeyPressure.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageKeyPressure.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMeta">
+            <summary>
+            Represents a MIDI meta-event message with an arbitrary length payload
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMeta.#ctor(System.Byte,System.Byte[])">
+            <summary>
+            Creates a MIDI message with the specified status, type and payload
+            </summary>
+            <param name="type">The type of the MIDI message</param>
+            <param name="data">The payload of the MIDI message, as bytes</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMeta.#ctor(System.Byte,System.String)">
+            <summary>
+            Creates a MIDI message with the specified status, type and payload
+            </summary>
+            <param name="type">The type of the MIDI message</param>
+            <param name="text">The payload of the MIDI message, as ASCII text</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMeta.Type">
+            <summary>
+            Indicates the type of the meta-message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMeta.PayloadLength">
+            <summary>
+            Indicates the payload length for this MIDI message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMeta.Data">
+            <summary>
+            Indicates the payload data, as bytes
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMeta.Text">
+            <summary>
+            Indicates the payload data, as ASCII text
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMeta.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMeta.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaChannelPrefix">
+            <summary>
+            Represents a MIDI channel prefix meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaChannelPrefix.#ctor(System.Byte)">
+            <summary>
+            Creates a new instance with the specified channel
+            </summary>
+            <param name="channelPrefix">The channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaChannelPrefix.ChannelPrefix">
+            <summary>
+            Indicates the channel for the channel prefix
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaChannelPrefix.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaChannelPrefix.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaCopyright">
+            <summary>
+            Represents a MIDI copyright meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCopyright.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCopyright.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCopyright.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaCuePoint">
+            <summary>
+            Represents a MIDI cue point meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCuePoint.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCuePoint.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaCuePoint.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaDevicePortName">
+            <summary>
+            Represents a MIDI device port name meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaDevicePortName.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaDevicePortName.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaDevicePortName.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaEndOfTrack">
+            <summary>
+            Represents a MIDI end of track meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaEndOfTrack.#ctor">
+            <summary>
+            Creates a new instance
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaEndOfTrack.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaEndOfTrack.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaInstrumentName">
+            <summary>
+            Represents a MIDI instrument name meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaInstrumentName.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaInstrumentName.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaInstrumentName.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaKeySignature">
+            <summary>
+            Represents a MIDI time signature meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaKeySignature.#ctor(Midi.MidiKeySignature)">
+            <summary>
+            Creates a new instance with the specified tempo
+            </summary>
+            <param name="keySignature">The time signature</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaKeySignature.KeySignature">
+            <summary>
+            Indicates the key signature
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaKeySignature.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaKeySignature.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaLyric">
+            <summary>
+            Represents a MIDI lyric meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaLyric.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaLyric.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaLyric.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaMarker">
+            <summary>
+            Represents a MIDI marker meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaMarker.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaMarker.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaMarker.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaPort">
+            <summary>
+            Represents a MIDI port meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaPort.#ctor(System.Byte)">
+            <summary>
+            Creates a new instance with the specified port
+            </summary>
+            <param name="port">The port (0-127)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaPort.Port">
+            <summary>
+            Indicates the port
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaPort.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaPort.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaSequenceNumber">
+            <summary>
+            Represents a MIDI sequence number meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceNumber.#ctor(System.Int16)">
+            <summary>
+            Creates a new message with the specified sequence number
+            </summary>
+            <param name="sequenceNumber">The sequence number</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceNumber.#ctor">
+            <summary>
+            Creates a new message with the default sequence number
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaSequenceNumber.SequenceNumber">
+            <summary>
+            Indicates the sequence number, or -1 if there was none specified
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceNumber.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceNumber.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaSequenceOrTrackName">
+            <summary>
+            Represents a MIDI sequence/track name meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceOrTrackName.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceOrTrackName.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaSequenceOrTrackName.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaTempo">
+            <summary>
+            Represents a MIDI tempo meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaTempo.#ctor(System.Double)">
+            <summary>
+            Creates a new instance with the specified tempo
+            </summary>
+            <param name="tempo">The tempo</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaTempo.#ctor(System.Int32)">
+            <summary>
+            Creates a new instance with the specified microtempo
+            </summary>
+            <param name="microTempo">The microtempo</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaTempo.MicroTempo">
+            <summary>
+            Indicates the microtempo of the MIDI message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageMetaTempo.Tempo">
+            <summary>
+            Indicates the tempo of the MIDI message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaTempo.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaTempo.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageMetaText">
+            <summary>
+            Represents a MIDI text meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaText.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaText.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageMetaText.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageNoteOff">
+            <summary>
+            Represents a MIDI note off message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOff.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI note off message
+            </summary>
+            <param name="noteId">The MIDI note id (0-127)</param>
+            <param name="velocity">The MIDI velocity (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+            <remarks><paramref name="velocity"/> is not used</remarks>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOff.#ctor(System.String,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI note off message
+            </summary>
+            <param name="note">The MIDI note</param>
+            <param name="velocity">The MIDI velocity (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+            <remarks><paramref name="velocity"/> is not used</remarks>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOff.NoteId">
+            <summary>
+            Indicates the MIDI note id to turn off
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOff.Note">
+            <summary>
+            Indicates the note for the message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOff.Velocity">
+            <summary>
+            Indicates the velocity of the note to turn off
+            </summary>
+            <remarks>This value is not used</remarks>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOff.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOff.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageNoteOn">
+            <summary>
+            Represents a MIDI note on message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOn.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI note on message
+            </summary>
+            <param name="noteId">The MIDI note id (0-127)</param>
+            <param name="velocity">The MIDI velocity (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOn.#ctor(System.String,System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI note on message
+            </summary>
+            <param name="note">The MIDI note</param>
+            <param name="velocity">The MIDI velocity (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOn.NoteId">
+            <summary>
+            Indicates the MIDI note id to play
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOn.Note">
+            <summary>
+            Indicates the note for the message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageNoteOn.Velocity">
+            <summary>
+            Indicates the velocity of the note to play
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOn.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageNoteOn.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessagePatchChange">
+            <summary>
+            Represents a MIDI key pressure/aftertouch message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessagePatchChange.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI key pressure/aftertouch message
+            </summary>
+            <param name="patchId">The MIDI patch Id (0-127)</param>
+            <param name="channel">The MIDI channel (0-15)</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessagePatchChange.PatchId">
+            <summary>
+            Indicates the assocated MIDI patch id
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessagePatchChange.ToString">
+            <summary>
+            Gets a string representation of this message
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessagePatchChange.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTime">
+            <summary>
+            Represents a MIDI real-time message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTime.#ctor(System.Byte)">
+            <summary>
+            Creates a MIDI real-time message
+            </summary>
+            <param name="status"></param>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeActiveSensing">
+            <summary>
+            Represents a MIDI active sensing message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeActiveSensing.#ctor">
+            <summary>
+            Creates a new MIDI active sensing message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeActiveSensing.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeActiveSensing.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeContinue">
+            <summary>
+            Represents a MIDI continue message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeContinue.#ctor">
+            <summary>
+            Creates a new MIDI continue message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeContinue.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeContinue.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeReset">
+            <summary>
+            Represents a MIDI reset message
+            </summary>
+            <remarks>This message shares the same status code with MIDI a meta-message. The meta-messages come from files but this comes over the wire whereas meta-messages do not.</remarks>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeReset.#ctor">
+            <summary>
+            Creates a new MIDI reset message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeReset.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeReset.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeStart">
+            <summary>
+            Represents a MIDI start message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeStart.#ctor">
+            <summary>
+            Creates a new MIDI start message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeStart.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeStart.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeStop">
+            <summary>
+            Represents a MIDI stop message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeStop.#ctor">
+            <summary>
+            Creates a new MIDI stop message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeStop.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeStop.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageRealTimeTimingClock">
+            <summary>
+            Represents a MIDI start message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeTimingClock.#ctor">
+            <summary>
+            Creates a new MIDI timing clock message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageRealTimeTimingClock.PayloadLength">
+            <summary>
+            Indicates the payload of the message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageRealTimeTimingClock.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageSongPosition">
+            <summary>
+            Represents a MIDI song position message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSongPosition.#ctor(System.Int16)">
+            <summary>
+            Creates a new MIDI song position message
+            </summary>
+            <param name="position">Indicates the new song position in beats since the start</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSongPosition.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Creates a new MIDI song position message
+            </summary>
+            <param name="position1">The high part of the position</param>
+            <param name="position2">The low part of the position</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageSongPosition.Position">
+            <summary>
+            Indicates the new song position in beats since the start
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSongPosition.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageSongSelect">
+            <summary>
+            Represents a MIDI song select message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSongSelect.#ctor(System.Byte)">
+            <summary>
+            Creates a new MIDI song select message
+            </summary>
+            <param name="songId">Indicates the new song id</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageSongSelect.SongId">
+            <summary>
+            Indicates the song id
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSongSelect.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageSysex">
+            <summary>
+            Represents a MIDI system exclusive message with an arbitrary length payload
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSysex.#ctor(System.Byte[])">
+            <summary>
+            Creates a MIDI message with the specified status, type and payload
+            </summary>
+            <param name="data">The payload of the MIDI message, as bytes</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageSysex.PayloadLength">
+            <summary>
+            Indicates the payload length for this MIDI message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageSysex.Data">
+            <summary>
+            Indicates the payload data, as bytes
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSysex.ToString">
+            <summary>
+            Returns a string representation of the message
+            </summary>
+            <returns>The string representation of the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSysex.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageSysexPart.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageTuneRequest">
+            <summary>
+            Represents a MIDI tune request message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageTuneRequest.#ctor">
+            <summary>
+            Creates a new MIDI tune request message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageTuneRequest.CloneImpl">
+            <summary>
+            Clones the message
+            </summary>
+            <returns>The new message</returns>
+        </member>
+        <member name="T:Midi.MidiMessages.MidiMessageWord">
+            <summary>
+            Represents a MIDI message a payload word (2 bytes)
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageWord.#ctor(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a MIDI message with the specified status and payload
+            </summary>
+            <param name="status">The MIDI status byte</param>
+            <param name="data1">The first data byte</param>
+            <param name="data2">The second data byte</param>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageWord.#ctor(System.Byte,System.Int16)">
+            <summary>
+            Creates a MIDI message with the specified status and payload
+            </summary>
+            <param name="status">The MIDI status byte</param>
+            <param name="data">The data word</param>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageWord.PayloadLength">
+            <summary>
+            Indicates the payload length for this MIDI message
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageWord.Data2">
+            <summary>
+            Indicates the second data byte
+            </summary>
+        </member>
+        <member name="P:Midi.MidiMessages.MidiMessageWord.Data">
+            <summary>
+            Indicates the data word
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessages.MidiMessageWord.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessageMetaProgramName">
+            <summary>
+            Represents a MIDI program name meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessageMetaProgramName.#ctor(System.String)">
+            <summary>
+            Creates a new instance with the specified text
+            </summary>
+            <param name="text">The text</param>
+        </member>
+        <member name="M:Midi.MidiMessageMetaProgramName.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessageMetaProgramName.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiMessageMetaTimeSignature">
+            <summary>
+            Represents a MIDI time signature meta message
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessageMetaTimeSignature.#ctor(Midi.MidiTimeSignature)">
+            <summary>
+            Creates a new instance with the specified tempo
+            </summary>
+            <param name="timeSignature">The time signature</param>
+        </member>
+        <member name="P:Midi.MidiMessageMetaTimeSignature.TimeSignature">
+            <summary>
+            Indicates the time signature
+            </summary>
+        </member>
+        <member name="M:Midi.MidiMessageMetaTimeSignature.ToString">
+            <summary>
+            Retrieves a string representation of the message
+            </summary>
+            <returns>A string representing the message</returns>
+        </member>
+        <member name="M:Midi.MidiMessageMetaTimeSignature.CloneImpl">
+            <summary>
+            When overridden in a derived class, implements Clone()
+            </summary>
+            <returns>The cloned MIDI message</returns>
+        </member>
+        <member name="T:Midi.MidiNote">
+            <summary>
+            Represents a single note in a MIDI note map
+            </summary>
+        </member>
+        <member name="M:Midi.MidiNote.#ctor(System.Int32,System.Byte,System.Byte,System.Byte,System.Int32)">
+            <summary>
+            Creates a new MIDI note instance
+            </summary>
+            <param name="position">The position</param>
+            <param name="channel">The channel (0-15)</param>
+            <param name="noteId">The note id (0-127)</param>
+            <param name="velocity">The velocity (0-127)</param>
+            <param name="length">The length</param>
+        </member>
+        <member name="M:Midi.MidiNote.#ctor(System.Int32,System.Byte,System.String,System.Byte,System.Int32)">
+            <summary>
+            Creates a new MIDI note instance
+            </summary>
+            <param name="position">The position</param>
+            <param name="channel">The channel (0-15)</param>
+            <param name="note">The note</param>
+            <param name="velocity">The velocity (0-127)</param>
+            <param name="length">The length</param>
+        </member>
+        <member name="P:Midi.MidiNote.Position">
+            <summary>
+            Indicates the absolute note position, in ticks
+            </summary>
+        </member>
+        <member name="P:Midi.MidiNote.Channel">
+            <summary>
+            Indicates the MIDI channel (0-15)
+            </summary>
+        </member>
+        <member name="P:Midi.MidiNote.NoteId">
+            <summary>
+            Indicates the MIDI note id (0-127)
+            </summary>
+        </member>
+        <member name="P:Midi.MidiNote.Note">
+            <summary>
+            Indicates the MIDI note
+            </summary>
+        </member>
+        <member name="P:Midi.MidiNote.Velocity">
+            <summary>
+            Indicates the velocity (0-127)
+            </summary>
+        </member>
+        <member name="P:Midi.MidiNote.Length">
+            <summary>
+            Gets the length of the note, in ticks
+            </summary>
+        </member>
+        <member name="M:Midi.MidiNote.ToString">
+            <summary>
+            Gets a string representation of the note
+            </summary>
+            <returns>A string representing the note</returns>
+        </member>
+        <member name="T:Midi.MidiOutputDevice">
+            <summary>
+            Represents a MIDI output device
+            </summary>
+        </member>
+        <member name="E:Midi.MidiOutputDevice.Opened">
+            <summary>
+            Raised when the device is opened
+            </summary>
+        </member>
+        <member name="E:Midi.MidiOutputDevice.Closed">
+            <summary>
+            Raised when the device is closed
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Name">
+            <summary>
+            Indicates the name of the MIDI output device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Kind">
+            <summary>
+            Indicates the kind of MIDI output device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.SupportsHardwareStreaming">
+            <summary>
+            Indicates whether or not the device supports hardware accelerated streaming
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.SupportsPatchCaching">
+            <summary>
+            Indicates whether or not the device supports patch caching
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Channels">
+            <summary>
+            Indicates the channels which the MIDI device responds to
+            </summary>
+            <remarks>These are flags</remarks>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.VoiceCount">
+            <summary>
+            Indicates the number of voices the device supports or 0 if it can't be determined
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.NoteCount">
+            <summary>
+            Indicates the number of simultaneous notes the device supports or 0 if it can't be determined
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Version">
+            <summary>
+            Indicates the version of the driver associated with the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.ProductId">
+            <summary>
+            Indicates the product code for the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.ManufacturerId">
+            <summary>
+            Indicates the manufacturer code for the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.VolumeSupport">
+            <summary>
+            Indicates what kind of volume control is supported, if any
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Volume">
+            <summary>
+            Indicates the volume of the device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Index">
+            <summary>
+            Indicates the device index of the MIDI output device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.IsOpen">
+            <summary>
+            Indicates whether or not this device is open
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Stream">
+            <summary>
+            Retrieves the MIDI stream associated with this output device
+            </summary>
+        </member>
+        <member name="P:Midi.MidiOutputDevice.Handle">
+            <summary>
+            Indicates the handle of the device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.Open">
+            <summary>
+            Opens the MIDI output device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.Close">
+            <summary>
+            Closes the MIDI output device
+            </summary>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.Send(Midi.MidiMessage)">
+            <summary>
+            Sends a message out immediately
+            </summary>
+            <param name="message">The message to send</param>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.Reset">
+            <summary>
+            Resets the MIDI output.
+            </summary>
+            <remarks>Terminates any sysex messages and sends note offs to all channels, as well as turning off the sustain controller for each channel</remarks>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.OnOpened(System.EventArgs)">
+            <summary>
+            Invokes the opened event
+            </summary>
+        </member>
+        <member name="M:Midi.MidiOutputDevice.OnClosed(System.EventArgs)">
+            <summary>
+            Invokes the closed event
+            </summary>
+        </member>
+        <member name="T:Midi.MidiOutputDeviceKind">
+            <summary>
+            Represents the kind of MIDI output device
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.Unknown">
+            <summary>
+            Unknown MIDI device.
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.MidiPort">
+            <summary>
+            MIDI Port
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.Synthesizer">
+            <summary>
+            Synthesizer
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.SquareWaveSynthesizer">
+            <summary>
+            Square wave synthesizer
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.FMSynthesizer">
+            <summary>
+            FM synthesizer
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.MidiMapper">
+            <summary>
+            MIDI mapper
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.WavetableSynthesizer">
+            <summary>
+            Wavetable synthesizer
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceKind.SoftwareSynthesizer">
+            <summary>
+            Software synthesizer
+            </summary>
+        </member>
+        <member name="T:Midi.MidiOutputDeviceVolumeSupport">
+            <summary>
+            Represents the kind of volume settings are available for the device
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceVolumeSupport.None">
+            <summary>
+            Volume controls are not available
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceVolumeSupport.Mono">
+            <summary>
+            Only mono or single volume controls are supported
+            </summary>
+        </member>
+        <member name="F:Midi.MidiOutputDeviceVolumeSupport.Stereo">
+            <summary>
+            Stereo volume controls are supported
+            </summary>
+        </member>
+        <member name="T:Midi.MidiSequence">
+            <summary>
+            Represents a MIDI sequence
+            </summary>
+            <remarks>Each of these corresponds to one MIDI track</remarks>
+        </member>
+        <member name="M:Midi.MidiSequence.#ctor">
+            <summary>
+            Creates a new MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Events">
+            <summary>
+            Indicates the events of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.FirstDownBeat">
+            <summary>
+            Indicates the first downbeat of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.FirstNoteOn">
+            <summary>
+            Indicates the first note on message in the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.RootNoteId">
+            <summary>
+            Gets the root note id of the sequence or > 127 if not found
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.RootNote">
+            <summary>
+            Retrieves the root note of the sequence or null if not found
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Name">
+            <summary>
+            Indicates the name of the sequence, or null if no name is present
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Instrument">
+            <summary>
+            Indicates the name of the instrument in the MIDI sequence or null if not known
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Copyright">
+            <summary>
+            Indicates the copyright of the MIDI sequence or null if unspecified
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.MicroTempo">
+            <summary>
+            Indicates the MicroTempo of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.MicroTempos">
+            <summary>
+            Indicates all of the MicroTempos in the sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Tempo">
+            <summary>
+            Indicates the tempo of the sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Tempos">
+            <summary>
+            Indicates all the tempos in the sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.TimeSignature">
+            <summary>
+            Indicates the time signature of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.TimeSignatures">
+            <summary>
+            Indicates all of the TimeSignatures in the sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.KeySignature">
+            <summary>
+            Indicates the key signature of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.KeySignatures">
+            <summary>
+            Indicates all of the MIDI key signatures in the sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Length">
+            <summary>
+            Indicates the length of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Lyrics">
+            <summary>
+            Indicates the lyrics of the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Markers">
+            <summary>
+            Indicates the markers in the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.Comments">
+            <summary>
+            Indicates the comments in the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.CuePoints">
+            <summary>
+            Indicates the cue points in the MIDI sequence
+            </summary>
+        </member>
+        <member name="P:Midi.MidiSequence.AbsoluteEvents">
+            <summary>
+            Indicates the events as absolutely positioned events
+            </summary>
+        </member>
+        <member name="M:Midi.MidiSequence.FromNoteMap(System.Collections.Generic.IEnumerable{Midi.MidiNote})">
+            <summary>
+            Retrieves a new MIDI sequence given the specified note map
+            </summary>
+            <param name="noteMap">The MIDI note map</param>
+            <returns>A new MIDI sequence from the specified note map</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Concat(Midi.MidiSequence[])">
+            <summary>
+            Concatenates this sequence with other MIDI sequences
+            </summary>
+            <param name="sequences">The sequences to concatenate this sequence with</param>
+            <returns>A new MIDI sequence that is the concatenation <paramref name="sequences"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Concat(System.Collections.Generic.IEnumerable{Midi.MidiSequence})">
+            <summary>
+            Concatenates this sequence with other MIDI sequences
+            </summary>
+            <param name="sequences">The sequences to concatenate this sequence with</param>
+            <returns>A new MIDI sequence that is the concatenation of <paramref name="sequences"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Merge(Midi.MidiSequence[])">
+            <summary>
+            Merges this sequence with other MIDI sequences
+            </summary>
+            <param name="sequences">The sequences to merge this sequence with</param>
+            <returns>A new MIDI sequence that is a merge <paramref name="sequences"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Merge(System.Collections.Generic.IEnumerable{Midi.MidiSequence})">
+            <summary>
+            Merges this sequence with other MIDI sequences
+            </summary>
+            <param name="sequences">The sequences to merge this sequence with</param>
+            <returns>A new MIDI sequence that is a merge <paramref name="sequences"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetContext(System.Int32,System.Int16)">
+            <summary>
+            Gets the <see cref="T:Midi.MidiContext"/> at the specified position
+            </summary>
+            <param name="position">The position to retrieve the context from, in ticks</param>
+            <param name="timeBase">The time base to use</param>
+            <returns>A MIDI context for this position</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetPositionAtTime(System.Int64,System.Int16)">
+            <summary>
+            Gets the MIDI tick position for the current sequence at the current time
+            </summary>
+            <param name="systemTicks">The number of system ticks elapsed</param>
+            <param name="timeBase">The time base to use</param>
+            <returns>The number of ticks <paramref name="systemTicks"/> corresponds to for this sequence</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetNextEventAtPosition(System.Int32,System.Boolean)">
+            <summary>
+            Retrieves the next event in the sequence from the position specified by <paramref name="position"/>. The event's delta is modified such that it reflects the difference between the requested position and the time the note should be played.
+            </summary>
+            <param name="position">The position within the sequence</param>
+            <param name="loop">True if the sequence should be treated as a loop, and the position logically wrapped if it's past the end of the track, otherwise false</param>
+            <returns>A <see cref="T:Midi.MidiEvent"/> with an adjusted delta, or null if the sequence is empty or if <paramref name="loop"/> is false and there are no more events after <paramref name="position"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetEventsByChannel(Midi.MidiChannels)">
+            <summary>
+            Returns an enumeration of events targeting the specified <paramref name="channels"/>.
+            </summary>
+            <param name="channels">The channels to return as <see cref="T:Midi.MidiChannels"/> flags</param>
+            <returns>All of the events targeting the specified channel, with deltas adjusted</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetNextEventsAtPosition(System.Int32,System.Boolean)">
+            <summary>
+            Retrieves the next events in the sequence from the position specified by <paramref name="position"/>. The event's delta is modified such that it reflects the difference between the requested position and the time the note should be played.
+            </summary>
+            <param name="position">The position within the sequence</param>
+            <param name="loop">True if the sequence should be treated as a loop, and the position logically wrapped if it's past the end of the track, otherwise false</param>
+            <returns>A series of <see cref="T:Midi.MidiEvent"/> objects, the first with an adjusted delta, or empty if the sequence is empty or if <paramref name="loop"/> is false and there are no more events after <paramref name="position"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetPositionAtTime(System.TimeSpan,System.Int16)">
+            <summary>
+            Gets the MIDI tick position for the current sequence at the current time
+            </summary>
+            <param name="time">The span of time that has elapsed</param>
+            <param name="timeBase">The time base to use</param>
+            <returns>The number of ticks <paramref name="time"/> corresponds to for this sequence</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.GetRange(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Gets a range of MIDI events as a new sequence
+            </summary>
+            <param name="start">The start of the range to retrieve in pulses/ticks</param>
+            <param name="length">The length of the range to retrieve in pulses/ticks</param>
+            <param name="copyTimingAndPatchInfo">True to copy the current patch and timing info to the range, otherwise false</param>
+            <returns>A new MIDI sequence with the specified range of events</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.ToNoteMap">
+            <summary>
+            Retrieves a note map for the sequence
+            </summary>
+            <returns>A list of <see cref="T:Midi.MidiNote"/> instances representing the note map</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Concat(Midi.MidiSequence)">
+            <summary>
+            Concatenates this sequence with another MIDI sequence
+            </summary>
+            <param name="right">The sequence to concatenate this sequence with</param>
+            <returns>A new MIDI sequence that is the concatenation of this sequence and <paramref name="right"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Merge(Midi.MidiSequence)">
+            <summary>
+            Merges this sequence with other MIDI sequences
+            </summary>
+            <param name="right">The sequence to merge this sequence with</param>
+            <returns>A new MIDI sequence that is a merge of this sequence and <paramref name="right"/></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Transpose(System.SByte,System.Boolean,System.Boolean)">
+            <summary>
+            Transposes the notes in a sequence, optionally wrapping the note values
+            </summary>
+            <param name="noteAdjust">The number of MIDI notes to add or subtract</param>
+            <param name="wrap">True if out of range notes are wrapped, false if they are to be clipped</param>
+            <param name="noDrums">True if drums are to be skipped, otherwise false</param>
+            <returns>A new MIDI sequence with the notes transposed</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.Stretch(System.Double,System.Boolean)">
+            <summary>
+            Stretches or compresses the MIDI sequence events
+            </summary>
+            <remarks>If <paramref name="adjustTempo"/> is false this will change the playback speed of the MIDI</remarks>
+            <param name="diff">The differential for the size. 1 is the same length, .5 would be half the length and 2 would be twice the length</param>
+            <param name="adjustTempo">Indicates whether or not the tempo should be adjusted to compensate</param>
+            <returns>A new MIDI sequence that is stretched the specified amount</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.AdjustTempo(System.Double)">
+            <summary>
+            Adjusts the tempo of a sequence
+            </summary>
+            <param name="tempo">The new tempo</param>
+            <returns>A new sequence with an adjusted tempo. All other tempo messages are adjusted relatively to the first one</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.AdjustTempo(System.Int32)">
+            <summary>
+            Adjusts the tempo of a sequence
+            </summary>
+            <param name="microTempo">The new microtempo</param>
+            <returns>A new sequence with an adjusted tempo. All other tempo messages are adjusted relatively to the first one</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.ScaleTempo(System.Double)">
+            <summary>
+            Adjusts the tempo by the specified difference
+            </summary>
+            <param name="diff">A value indicating the multiplier. Larger makes the tempo higher.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Midi.MidiSequence.NormalizeVelocities">
+            <summary>
+            Scales all note velocities such that the highest velocity is now 127
+            </summary>
+            <returns>A new MIDI sequence with the velocities scaled</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.ScaleVelocities(System.Double)">
+            <summary>
+            Scales note velocities by the specified value
+            </summary>
+            <param name="multiplier">The multiplier. 1 = no change</param>
+            <returns>A new sequence with the velocities adjusted</returns>
+        </member>
+        <member name="M:Midi.MidiSequence.AddAbsoluteEvent(System.Int32,Midi.MidiMessage)">
+            <summary>
+            Adds an event at the specified absolute position
+            </summary>
+            <param name="position">The absolute position in ticks</param>
+            <param name="message">The message to insert</param>
+        </member>
+        <member name="M:Midi.MidiSequence.Preview(System.Int16,Midi.MidiOutputDevice,System.Boolean)">
+            <summary>
+            Plays the sequence to the specified MIDI device using the specified timebase
+            </summary>
+            <param name="timeBase">The timebase to use, in pulses/ticks per quarter note</param>
+            <param name="device">The MIDI output device to use</param>
+            <param name="loop">Indicates whether to loop playback or not</param>
+        </member>
+        <member name="M:Midi.MidiSequence.Clone">
+            <summary>
+            Creates a deep copy of the sequence
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Midi.MidiSmpteTime">
+            <summary>
+            Represents an SMPTE timestamp
+            </summary>
+            <param name="Time"> The time </param>
+            <param name="Frames"> The frames </param>
+            <param name="FramesPerSecond"> The frames per second </param>
+        </member>
+        <member name="M:Midi.MidiSmpteTime.#ctor(System.TimeSpan,System.Byte,System.Byte)">
+            <summary>
+            Represents an SMPTE timestamp
+            </summary>
+            <param name="Time"> The time </param>
+            <param name="Frames"> The frames </param>
+            <param name="FramesPerSecond"> The frames per second </param>
+        </member>
+        <member name="P:Midi.MidiSmpteTime.Time">
+            <summary> The time </summary>
+        </member>
+        <member name="P:Midi.MidiSmpteTime.Frames">
+            <summary> The frames </summary>
+        </member>
+        <member name="P:Midi.MidiSmpteTime.FramesPerSecond">
+            <summary> The frames per second </summary>
+        </member>
+        <member name="T:Midi.MidiStream">
+            <summary>
+            Represents a MIDI stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Finalize">
+            <summary>
+            Destroys this instance
+            </summary>
+        </member>
+        <member name="E:Midi.MidiStream.SendComplete">
+            <summary>
+            Raised when a Send() operation has completed. This only applies to sending MidiEvent items
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.State">
+            <summary>
+            Indicates the state of the MIDI stream
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.TempoSynchronizationEnabled">
+            <summary>
+            Indicates whether or not the stream attempts to synchronize the remote device's tempo
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.TempoSynchronizationMessageCount">
+            <summary>
+            Indicates the number of time clock sync messages to send when the tempo is changed. 0 indicates continuous synchronization
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.PositionTicks">
+            <summary>
+            Indicates the position in ticks
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.PositionMilliseconds">
+            <summary>
+            Indicates the position in milliseconds
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.PositionSongPointer">
+            <summary>
+            Indicates the song pointer position
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.PositionBytes">
+            <summary>
+            Indicates the position in bytes
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.PositionSmpte">
+            <summary>
+            Indicates the position in SMPTE format
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.MicroTempo">
+            <summary>
+            Indicates the MicroTempo of the stream
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.Tempo">
+            <summary>
+            Indicates the Tempo of the stream
+            </summary>
+        </member>
+        <member name="P:Midi.MidiStream.TimeBase">
+            <summary>
+            Indicates the TimeBase of the stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Open">
+            <summary>
+            Opens the stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Close">
+            <summary>
+            Closes the stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Send(Midi.MidiEvent[])">
+            <summary>
+            Sends MIDI events to the stream
+            </summary>
+            <param name="events">The events to send</param>
+        </member>
+        <member name="M:Midi.MidiStream.Send(System.Collections.Generic.IEnumerable{Midi.MidiEvent})">
+            <summary>
+            Sends a MIDI event to the stream
+            </summary>
+            <param name="events">The events to send</param>
+        </member>
+        <member name="M:Midi.MidiStream.SendDirect(Midi.MidiEvent[])">
+            <summary>
+            Sends events directly to the stream
+            </summary>
+            <param name="events">The events to send</param>
+        </member>
+        <member name="M:Midi.MidiStream.SendDirect(System.Collections.Generic.IEnumerable{Midi.MidiEvent})">
+            <summary>
+            Sends events directly to the event queue without buffering
+            </summary>
+            <param name="events">The events to send</param>
+            <remarks>The total size of the events must be less than 64kb</remarks>
+        </member>
+        <member name="M:Midi.MidiStream.Start">
+            <summary>
+            Starts the stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Stop">
+            <summary>
+            Stops the stream
+            </summary>
+        </member>
+        <member name="M:Midi.MidiStream.Pause">
+            <summary>
+            Pauses the stream
+            </summary>
+        </member>
+        <member name="T:Midi.MidiStreamState">
+            <summary>
+            Indicates the state of the MIDI stream
+            </summary>
+        </member>
+        <member name="F:Midi.MidiStreamState.Closed">
+            <summary>
+            The stream is closed
+            </summary>
+        </member>
+        <member name="F:Midi.MidiStreamState.Paused">
+            <summary>
+            The stream is paused
+            </summary>
+        </member>
+        <member name="F:Midi.MidiStreamState.Stopped">
+            <summary>
+            The stream is stopped
+            </summary>
+        </member>
+        <member name="F:Midi.MidiStreamState.Started">
+            <summary>
+            The stream is playing
+            </summary>
+        </member>
+        <member name="T:Midi.MidiTimeSignature">
+            <summary>
+            Represents a MIDI time signature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiTimeSignature.Numerator">
+            <summary>
+            Indicates the numerator of the time signature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiTimeSignature.Denominator">
+            <summary>
+            Indicates the denominator of the time signature
+            </summary>
+        </member>
+        <member name="P:Midi.MidiTimeSignature.MidiTicksPerMetronomeTick">
+            <summary>
+            Indicates the MIDI ticks/pulses per metronome tick
+            </summary>
+        </member>
+        <member name="P:Midi.MidiTimeSignature.ThirtySecondNotesPerQuarterNote">
+            <summary>
+            Indicates the 32nd notes per quarter note
+            </summary>
+        </member>
+        <member name="M:Midi.MidiTimeSignature.#ctor(System.Byte,System.Int16,System.Byte,System.Byte)">
+            <summary>
+            Creates a new instance of a MIDI time signature with the specified parameters
+            </summary>
+            <param name="numerator">The numerator</param>
+            <param name="denominator">The denominator</param>
+            <param name="midiTicksPerMetronomeTick">The MIDI ticks per metronome tick</param>
+            <param name="thirtySecondNotesPerQuarterNote">The 32nd notes per quarter note</param>
+        </member>
+        <member name="P:Midi.MidiTimeSignature.Default">
+            <summary>
+            Indicates the default time signature
+            </summary>
+        </member>
+        <member name="M:Midi.MidiTimeSignature.ToString">
+            <summary>
+            Retrieves a string representation of the time signature
+            </summary>
+            <returns>A string representing the time signature</returns>
+        </member>
+        <member name="T:Midi.MidiUtility">
+            <summary>
+            Represents a utility class for performing low level MIDI operations
+            </summary>
+        </member>
+        <member name="M:Midi.MidiUtility.NoteIdToNote(System.Byte,System.Boolean)">
+            <summary>
+            Converts a MIDI note id into a string note representation
+            </summary>
+            <param name="noteId">The note id (0-127)</param>
+            <param name="withOctave">Indicates whether or not the octave should be returned</param>
+            <returns>The string note</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.NoteToNoteId(System.String)">
+            <summary>
+            Converts a string representation of a note to a MIDI note id
+            </summary>
+            <param name="note">The note</param>
+            <returns>A MIDI note id</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.MicroTempoToTempo(System.Int32)">
+            <summary>
+            Converts a microtempo to a tempo
+            </summary>
+            <param name="microTempo">The microtempo</param>
+            <returns>The tempo</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.TempoToMicroTempo(System.Double)">
+            <summary>
+            Converts a tempo to a microtempo
+            </summary>
+            <param name="tempo">The tempo</param>
+            <returns>The microtempo</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.TicksToTimeSpan(System.Int16,System.Int32,System.Int32)">
+            <summary>
+            Converts MIDI ticks/pulses to a <see cref="T:System.TimeSpan"/>
+            </summary>
+            <param name="timeBase">The timebase in pulses/ticks per quarter note</param>
+            <param name="microTempo">The microtempo</param>
+            <param name="ticks">The ticks to convert</param>
+            <returns>A <see cref="T:System.TimeSpan"/> representing the length</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.NoteOn(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a MIDI note on message packed as an integer
+            </summary>
+            <param name="note">The note</param>
+            <param name="velocity">The velocity</param>
+            <param name="channel">The channel</param>
+            <returns>A MIDI note on message as a packed integer</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.NoteOff(System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Creates a MIDI note off message packed as an integer
+            </summary>
+            <param name="note">The note</param>
+            <param name="velocity">The velocity</param>
+            <param name="channel">The channel</param>
+            <returns>A MIDI note off message as a packed integer</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.PackMessage(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Packs a MIDI message as an int
+            </summary>
+            <param name="status">The status byte</param>
+            <param name="data1">The first data byte</param>
+            <param name="data2">The second data byte</param>
+            <param name="channel">The channel</param>
+            <returns>An integer representing the packed MIDI message</returns>
+            <remarks>Must not be a sysex message</remarks>
+        </member>
+        <member name="M:Midi.MidiUtility.PackMessage(Midi.MidiMessage)">
+            <summary>
+            Packs a MIDI message as an int
+            </summary>
+            <param name="message">The MIDI message</param>
+            <returns>An integer representing the packed MIDI message</returns>
+            <remarks>This is geared for the wire protocol, not files. The message must not be a sysex message</remarks>
+        </member>
+        <member name="M:Midi.MidiUtility.UnpackMessage(System.Int32)">
+            <summary>
+            Unpacks a MIDI message from an int
+            </summary>
+            <returns>An integer representing the packed MIDI message</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.ToMessageBytes(Midi.MidiMessage)">
+            <summary>
+            Gets the bytes that make up a MIDI message
+            </summary>
+            <param name="message">The message to retrieve the bytes for</param>
+            <returns>An array of bytes containing the message data</returns>
+            <remarks>This is geared for the wire protocol, not files</remarks>
+        </member>
+        <member name="M:Midi.MidiUtility.Swap(System.UInt16)">
+            <summary>
+            Swaps byte order
+            </summary>
+            <param name="x">The word</param>
+            <returns>A word with swapped byte order</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.Swap(System.UInt32)">
+            <summary>
+            Swaps byte order
+            </summary>
+            <param name="x">The dword</param>
+            <returns>A dword with swapped byte order</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.Swap(System.Int16)">
+            <summary>
+            Swaps byte order
+            </summary>
+            <param name="x">The word</param>
+            <returns>A word with swapped byte order</returns>
+        </member>
+        <member name="M:Midi.MidiUtility.Swap(System.Int32)">
+            <summary>
+            Swaps byte order
+            </summary>
+            <param name="x">The dword</param>
+            <returns>A dword with swapped byte order</returns>
+        </member>
+        <member name="T:Midi.MidiVolume">
+            <summary>
+            Represents the mono or stereo volume for a MIDI output device or string
+            </summary>
+            <param name="Left"> Indicates the left or mono volume </param>
+            <param name="Right"> Indicates the right volume </param>
+        </member>
+        <member name="M:Midi.MidiVolume.#ctor(System.Byte,System.Byte)">
+            <summary>
+            Represents the mono or stereo volume for a MIDI output device or string
+            </summary>
+            <param name="Left"> Indicates the left or mono volume </param>
+            <param name="Right"> Indicates the right volume </param>
+        </member>
+        <member name="P:Midi.MidiVolume.Left">
+            <summary> Indicates the left or mono volume </summary>
+        </member>
+        <member name="P:Midi.MidiVolume.Right">
+            <summary> Indicates the right volume </summary>
+        </member>
+        <member name="M:Midi.MidiVolume.#ctor(System.Byte)">
+            <summary>
+            Creates a new instance of the structure
+            </summary>
+            <param name="mono">The mono volume</param>
+        </member>
+    </members>
+</doc>
