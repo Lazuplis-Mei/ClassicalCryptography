@@ -24,6 +24,7 @@
 * [三角形排列密码](#TriangleCipher)
 * [约瑟夫环密码](#JosephusCipher)
 * [栅栏密码](#RailFenceCipher)
+* [原始栅栏密码](#OriginalRailFenceCipher)
 
 ----------------------------------------
 
@@ -71,14 +72,14 @@ D-->G(结束)
 
 * 演示过程
 
-|   结果   | 1 | 2 |  3  |  4  |  5  |  6  |  7  | 8 |
-| -------- | - | - | :-: | :-: | :-: | :-: | :-: | - |
-| 12       |   |   | [3] | [4] | [5] |  6  |  7  | 8 |
-| 12       |   |   |  6  |  7  |  8  |  3  |  4  | 5 |
-| 1267     |   |   |     |     | [8] | [3] | [4] | 5 |
-| 1267     |   |   |     |     |  5  |  8  |  3  | 4 |
-| 126758   |   |   |     |     |     |     |  3  | 4 |
-| 12675834 |   |   |     |     |     |     |     |   |
+|   结果   | 1 | 2 |  3  |  4  |  5  |  6  |  7  |  8  |
+| -------- | - | - | :-: | :-: | :-: | :-: | :-: | :-: |
+| 12       |   |   | [3] | [4] | [5] |  6  |  7  |  8  |
+| 12       |   |   |  6  |  7  |  8  |  3  |  4  |  5  |
+| 1267     |   |   |     |     | [8] | [3] | [4] |  5  |
+| 1267     |   |   |     |     |  5  |  8  |  3  |  4  |
+| 126758   |   |   |     |     |     |     |  3  |  4  |
+| 12675834 |   |   |     |     |     |     |     |     |
 
 * 演示代码
 
@@ -164,12 +165,14 @@ JosephusCipher.Cipher.Encrypt("123456", key);
 
 ----------------------------------------
 
-### RailFenceCipher[^5]
+### RailFenceCipher
 
 栅栏密码
 
+> 严格来说，这不是真正的栅栏密码，它的名字应该是镰刀密码(ScytaleCipher[^25])，[原始栅栏密码](#OriginalRailFenceCipher)才是真正的栅栏密码，但这个错误的流传程度十分广泛，对此不必强求。
+
 * 密钥(每组字数$n$)
-* 加密过程(尽管与原始的解释不同，但更直观)
+* 加密过程
 
 1. 将文字按行排列成$n$列
 2. 按列依次读出文字
@@ -182,14 +185,14 @@ JosephusCipher.Cipher.Encrypt("123456", key);
 
 * 演示图示
 
-| R | a | i |
-| - | - | - |
-| l | F | e |
-| n | c | e |
-| C | i | p |
-| h | e | r |
-| T | e | s |
-| t |   |   |
+|  R  |  a  |  i  |
+| :-: | :-: | :-: |
+|  l  |  F  |  e  |
+|  n  |  c  |  e  |
+|  C  |  i  |  p  |
+|  h  |  e  |  r  |
+|  T  |  e  |  s  |
+|  t  |     |     |
 
 * 演示代码
 
@@ -199,13 +202,57 @@ RailFenceCipher.Cipher.Encrypt("RailFenceCipherTest", key);
 //> RlnChTtaFcieeieeprs
 ```
 
-[^5]:[wikipedia/Rail_fence_cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)
+[^25]:[wikipedia/Transposition_cipher#Scytale](https://en.wikipedia.org/wiki/Transposition_cipher#Scytale)
+
+----------------------------------------
+
+### OriginalRailFenceCipher[^2]
+
+原始栅栏密码
+
+* 密钥(栅栏/轨道数$m$)
+* 加密过程
+
+1. 明文沿对角线向下写在假想围栏的连续“轨道”上
+2. 到达底部时向上移动
+3. 到达顶部时再次向下移动
+4. 重复步骤3和4直到写完所有字符
+5. 按行读出文本
+
+* 演示输入
+
+|       文本      | 密钥 |      结果       |
+| :-------------: | :--: | :-------------: |
+| WEAREDISCOVERED |   6  | WVEOEACRRSEEIDD |
+
+* 演示图示
+
+| W |   |   |   |   |   |   |   |   |   | V |   |   |   |   |
+| - | - | - | - | - | - | - | - | - | - | - | - | - | - | - |
+|   | E |   |   |   |   |   |   |   | O |   | E |   |   |   |
+|   |   | A |   |   |   |   |   | C |   |   |   | R |   |   |
+|   |   |   | R |   |   |   | S |   |   |   |   |   | E |   |
+|   |   |   |   | E |   | I |   |   |   |   |   |   |   | D |
+|   |   |   |   |   | D |   |   |   |   |   |   |   |   |   |
+
+* 演示代码
+
+```csharp
+//使用和普遍版本相同的密钥类型
+var key = RailFenceCipher.Key.FromString("6");
+OriginalRailFenceCipher.Cipher.Encrypt("WEAREDISCOVERED", key);
+//> WVEOEACRRSEEIDD
+```
+
+[^2]:[wikipedia/Rail_fence_cipher](https://en.wikipedia.org/wiki/Rail_fence_cipher)
 
 ----------------------------------------
 
 ## Transposition2D
 
 这一类型的密码为二维置换密码，仅改变内容字符的排列顺序，不改变内容，排列顺序的决定方式是一个基于二维坐标的公式$f(L,x,y)$，其中$L$为文本长度，$x$为从0开始的横坐标索引，$y$为从0开始的纵坐标索引。
+
+你也可以指定`TranspositionCipher2D<T>.ByColumn`属性来控制文本的组合方向
 
 这一类型的密码包括以下几个
 
@@ -226,7 +273,7 @@ RailFenceCipher.Cipher.Encrypt("RailFenceCipherTest", key);
 
 ### CycleTranspose
 
-周期/列置换密码
+周期置换密码
 
 * 密钥(多组排列对)
 * 补足长度到宽度为排列对中最大值的矩形
@@ -279,8 +326,10 @@ CycleTranspose.Cipher.Encrypt("Sitdownplease!", key);
 
 扩展栅栏密码
 
-* 密钥\(可能的排列\)
-* 补充字符\(默认\`\)
+> 有种说法的确把它称作扩展栅栏密码，但它应该叫做列置换(ColumnarTransposition[^26])
+
+* 密钥(一组合法的排列)
+* 补足长度到宽度为排列长度的矩形
 
 1. 将文字按行排列成一个矩形
 2. 矩形宽度为排列长度
@@ -296,25 +345,39 @@ CycleTranspose.Cipher.Encrypt("Sitdownplease!", key);
 
 1. 文字排列成7列
 
-| e | g | 1 |  M  |  L  |  9  |  m  |
-| - | - | - | :-: | :-: | :-: | :-: |
-| y | m | E |  q  |  t  |  K  |  z  |
-| e | N | 0 |  \` |  \` |  \` |  \` |
+| [7] | [4] | [3] | [5] | [6] | [2] | [1] |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+|  e  |  g  |  1  |  M  |  L  |  9  |  m  |
+|  y  |  m  |  E  |  q  |  t  |  K  |  z  |
+|  e  |  N  |  0  |  \` |  \` |  \` |  \` |
 
 2. 将列表按照7,4,3,5,6,2,1列的顺序填入
 
-|  m  |  9  | 1 | g |  M  |  L  | e |
-| :-: | :-: | - | - | :-: | :-: | - |
-|  z  |  K  | E | m |  q  |  t  | y |
-|  \` |  \` | 0 | N |  \` |  \` | e |
+| [1] | [2] | [3] | [4] | [5] | [6] | [7] |
+| :-: | :-: | :-: | :-: | :-: | :-: | :-: |
+|  m  |  9  |  1  |  g  |  M  |  L  |  e  |
+|  z  |  K  |  E  |  m  |  q  |  t  |  y  |
+|  \` |  \` |  0  |  N  |  \` |  \` |  e  |
 
 * 演示代码
 
 ```csharp
-var cipher = new AdvancedRailFenceCipher();
 var key = AdvancedRailFenceCipher.Key.FromString("7,4,3,5,6,2,1");
-cipher.Encrypt("eg1ML9mymEqtKzeN0", key);//mz`9K`1E0gmNMq`Lt`eye
+AdvancedRailFenceCipher.Cipher.Encrypt("eg1ML9mymEqtKzeN0", key);
+//> mz`9K`1E0gmNMq`Lt`eye
 ```
+
+* 也可以通过单词创建排列(按字符编码顺序)
+
+```csharp
+var permut = PermutHelper.WordToPermutation("KEYWORD");
+//> 3,2,7,6,4,5,1
+var key = AdvancedRailFenceCipher.Key.FromString(permut);
+AdvancedRailFenceCipher.Cipher.Encrypt("eg1ML9mymEqtKzeN0", key);
+//> mz`gmNeyeLt`9K`Mq`1E0
+```
+
+[^26]:[wikipedia/Transposition_cipher#Columnar_transposition](https://en.wikipedia.org/wiki/Transposition_cipher#Columnar_transposition)
 
 ----------------------------------------
 
@@ -407,9 +470,9 @@ cipher.Encrypt("meetmeattwelvepm", key);//tmmveeewepeatlmt
 * 补充字符\(默认\`\)
 
 1. 用特定的方法构造n阶幻方\(幻方可以有很多种顺序，但这里只采用以下方法产生的顺序\)
-   - 奇数阶幻方使用Louberel(Siamese)法[^2]
-   - 双偶阶幻方使用对称交换法[^3]
-   - 单偶阶幻方使用Strachey法[^4]
+   - 奇数阶幻方使用Louberel(Siamese)法[^3]
+   - 双偶阶幻方使用对称交换法[^4]
+   - 单偶阶幻方使用Strachey法[^5]
 
 2. 根据幻方的顺序，按行读出文字
 
@@ -427,11 +490,11 @@ var cipher = new MagicSquareCipher();
 cipher.Encrypt("123456789");//816357492
 ```
 
-[^2]:[wikipedia/Siamese_method](https://en.wikipedia.org/wiki/Siamese_method)
+[^3]:[wikipedia/Siamese_method](https://en.wikipedia.org/wiki/Siamese_method)
 
-[^3]:[wikipedia/Magic_square#doubly_even_order](https://en.wikipedia.org/wiki/Magic_square#A_method_of_constructing_a_magic_square_of_doubly_even_order)
+[^4]:[wikipedia/Magic_square#doubly_even_order](https://en.wikipedia.org/wiki/Magic_square#A_method_of_constructing_a_magic_square_of_doubly_even_order)
 
-[^4]:[wikipedia/Strachey_method](https://en.wikipedia.org/wiki/Strachey_method_for_magic_squares)
+[^5]:[wikipedia/Strachey_method](https://en.wikipedia.org/wiki/Strachey_method_for_magic_squares)
 
 ----------------------------------------
 

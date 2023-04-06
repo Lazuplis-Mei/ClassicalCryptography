@@ -5,13 +5,17 @@ public partial class RailFenceCipher
     /// <summary>
     /// 栅栏密码的密钥
     /// </summary>
-    [Introduction("栅栏密码的密钥", "代表每组字数。")]
+    [Introduction("栅栏密码的密钥", "代表每组字数或者栅栏数。")]
     public class Key : IKey<ushort>
     {
         /// <summary>
         /// 栅栏密码的密钥
         /// </summary>
-        public Key(ushort m) => KeyValue = m;
+        public Key(ushort m)
+        {
+            Guard.IsGreaterThan(m, (ushort)0);
+            KeyValue = m;
+        }
 
         /// <summary>
         /// 每组字数

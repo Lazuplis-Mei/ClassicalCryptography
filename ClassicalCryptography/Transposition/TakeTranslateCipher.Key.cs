@@ -7,7 +7,7 @@ public partial class TakeTranslateCipher
     /// <summary>
     /// 取后平移密码的密钥
     /// </summary>
-    [Introduction("取后平移密码的密钥", "n为每次取出个数，k为每次平移个数")]
+    [Introduction("取后平移密码的密钥", "n为每次取出个数，k为每次平移个数。")]
     public class Key : IKey<(int N, int K)>
     {
         /// <summary>
@@ -17,7 +17,7 @@ public partial class TakeTranslateCipher
 
         private readonly (int N, int K) keyValue;
 
-        private Key(int N, int K) => keyValue = (N, K);
+        private Key(int n, int k) => keyValue = (n, k);
 
         /// <summary>
         /// (N,K)
@@ -40,12 +40,11 @@ public partial class TakeTranslateCipher
         /// <param name="strKey">密钥文本</param>
         public static IKey<(int N, int K)> FromString(string strKey)
         {
-            if (strKey.Length != 2)
-                throw new ArgumentException("应为2个字符", nameof(strKey));
-            int n = VChar64.IndexOf(strKey[0]);
-            int k = VChar64.IndexOf(strKey[1]);
-            if (n <= 0 || k == -1)
-                throw new FormatException("不正确的格式");
+            Guard.IsEqualTo(strKey.Length, 2);
+            int n = strKey[0].VChar64Number();
+            int k = strKey[1].VChar64Number();
+            Guard.IsGreaterThan(n, 0);
+            Guard.IsGreaterThanOrEqualTo(k, 0);
             return new Key(n, k);
         }
 

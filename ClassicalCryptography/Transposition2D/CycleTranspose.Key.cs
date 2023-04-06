@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ClassicalCryptography.Transposition2D;
 
@@ -7,7 +8,7 @@ public partial class CycleTranspose
     /// <summary>
     /// 周期/列置换密码的密钥
     /// </summary>
-    [Introduction("周期/列置换密码的密钥", """正确的格式为形如"(1,2,4)(3,5)"的字符串""")]
+    [Introduction("周期置换密码的密钥", """正确的排列对格式为形如"(1,2,4)(3,5)"的字符串。""")]
     public partial class Key : IKey<ushort[][]>
     {
         private readonly ushort[][] keyValue;
@@ -27,6 +28,7 @@ public partial class CycleTranspose
         /// <summary>
         /// 逆向密钥
         /// </summary>
+        [NotNull]
         public IKey<ushort[][]>? InversedKey
         {
             get

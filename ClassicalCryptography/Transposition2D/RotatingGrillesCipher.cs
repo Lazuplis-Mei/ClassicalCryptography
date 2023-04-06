@@ -5,6 +5,9 @@ namespace ClassicalCryptography.Transposition2D;
 /// <summary>
 /// 旋转栅格密码
 /// </summary>
+/// <remarks>
+/// <see href="https://en.wikipedia.org/wiki/Grille_(cryptography)#Turning_grilles"/>
+/// </remarks>
 [Introduction("旋转栅格密码", "在一个4N^2的方格阵列里恰当的选择一些空位，通过旋转的方式依次填入所有的信息。")]
 public partial class RotatingGrillesCipher : TranspositionCipher2D<QuaterArray>
 {

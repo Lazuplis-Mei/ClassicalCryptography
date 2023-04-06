@@ -36,6 +36,19 @@ namespace ClassicalCryptographyTest
         }
 
         [TestMethod]
+        [DataRow("WEAREDISCOVEREDRUNATONCE", "WECRUOERDSOEERNTNEAIVDAC", "3")]
+        [DataRow("WEAREDISCOVEREDRUNATONCE", "WVOEOETNACRACRSENEEIDUDR", "6")]
+        [DataRow("WEAREDISCOVERED", "WVEOEACRRSEEIDD", "6")]
+        public void TestOriginalRailFence(string plainText, string cipherText, string keyStr)
+        {
+            var cipher = new OriginalRailFenceCipher();
+            var key = RailFenceCipher.Key.FromString(keyStr);
+
+            Assert.AreEqual(cipherText, cipher.Encrypt(plainText, key));
+            Assert.AreEqual(plainText, cipher.Decrypt(cipherText, key)[..plainText.Length]);
+        }
+
+        [TestMethod]
         [DataRow(5), DataRow(17), DataRow(23), DataRow(32), DataRow(45)]
         public void TestAdvancedRailFence_G(int textLength)
         {

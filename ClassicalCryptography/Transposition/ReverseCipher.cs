@@ -22,7 +22,16 @@ public class ReverseCipher : TranspositionCipher
     }
 
     /// <inheritdoc/>
+    public override string MultiEncrypt(string plainText, int n)
+    {
+        return (n & 1) == 0 ? plainText : Encrypt(plainText);
+    }
+
+    /// <inheritdoc/>
     public override string Decrypt(string cipherText) => Encrypt(cipherText);
+
+    /// <inheritdoc/>
+    public override string MultiDecrypt(string cipherText, int n) => MultiEncrypt(cipherText, n);
 
     /// <inheritdoc/>
     protected override ushort[] Transpose(ushort[] indexes)

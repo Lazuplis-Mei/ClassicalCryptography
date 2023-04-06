@@ -83,13 +83,30 @@ internal static class StringExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Base36Number(this char character)
     {
-        if (character is >= '0' and <= '9')
-            return character - '0';
-        else if (character is >= 'a' and <= 'z')
-            return character - 'a' + 10;
-        else if (character is >= 'A' and <= 'Z')
-            return character - 'A' + 10;
-        throw new ArgumentOutOfRangeException(nameof(character));
+        return character switch
+        {
+            >= '0' and <= '9' => character - '0',
+            >= 'a' and <= 'z' => character - 'a' + 10,
+            >= 'A' and <= 'Z' => character - 'A' + 10,
+            _ => throw new ArgumentOutOfRangeException(nameof(character)),
+        };
+    }
+
+    /// <summary>
+    /// <see cref="GlobalTables.VChar64"/>字符
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int VChar64Number(this char character)
+    {
+        return character switch
+        {
+            >= '0' and <= '9' => character - '0',
+            >= 'A' and <= 'Z' => character - 'A' + 10,
+            >= 'a' and <= 'z' => character - 'a' + 10 + 26,
+            '+' => 62,
+            '/' => 63,
+            _ => throw new ArgumentOutOfRangeException(nameof(character)),
+        };
     }
 
     /// <summary>

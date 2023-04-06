@@ -17,24 +17,23 @@ public partial class TakeTranslateCipher : TranspositionCipher<(int N, int K)>
     protected override ushort[] Transpose(ushort[] indexes, IKey<(int N, int K)> key)
     {
         (int n, int k) = key.KeyValue;
-        if (k != 0 && n + k < indexes.Length)
+        if (k == 0 || n + k >= indexes.Length)
+            return indexes;
+        
+        var list = new LinkedList(indexes);
+        while (list.MoveStep(n - 1) && !list.IsEnd)
         {
-            var list = new LinkedList(indexes);
-            while (list.MoveStep(n - 1) && !list.IsEnd)
-            {
-                var list2 = list.SubList();
-                if (!list2!.MoveStep(k - 1))
-                    break;
-                var list3 = list2.SubList();
-                if (list3 is null)
-                    break;
-                list.LinkCurrent(list3);
-                list3.LinkLast(list2);
-                list.EndCurrent(list2);
-                list.MoveStep(1);
-            }
-            return list.ToArray();
+            var list2 = list.SubList();
+            if (!list2!.MoveStep(k - 1))
+                break;
+            var list3 = list2.SubList();
+            if (list3 is null)
+                break;
+            list.LinkCurrent(list3);
+            list3.LinkLast(list2);
+            list.EndCurrent(list2);
+            list.MoveStep(1);
         }
-        return indexes;
+        return list.ToArray();
     }
 }

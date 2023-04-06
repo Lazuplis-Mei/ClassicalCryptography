@@ -144,7 +144,7 @@ public abstract class TranspositionCipher : ICipher<string, string>
     /// </summary>
     /// <param name="plainText">明文文本</param>
     /// <param name="n">加密次数</param>
-    public string MultiEncrypt(string plainText, int n)
+    public virtual string MultiEncrypt(string plainText, int n)
     {
         ushort[] order = new ushort[PadLength(plainText.Length)];
         if (FillOrder)
@@ -158,7 +158,7 @@ public abstract class TranspositionCipher : ICipher<string, string>
     /// </summary>
     /// <param name="cipherText">密文文本</param>
     /// <param name="n">解密次数</param>
-    public string MultiDecrypt(string cipherText, int n)
+    public virtual string MultiDecrypt(string cipherText, int n)
     {
         ushort[] order = new ushort[PadLength(cipherText.Length)];
         if (FillOrder)

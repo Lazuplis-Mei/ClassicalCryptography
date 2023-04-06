@@ -5,7 +5,7 @@ public partial class JosephusCipher
     /// <summary>
     /// 约瑟夫置换密码的密钥
     /// </summary>
-    [Introduction("约瑟夫置换密码的密钥", "第几个人出列。")]
+    [Introduction("约瑟夫置换密码的密钥", "代表第几个人出列。")]
     public class Key : IKey<ushort>
     {
         /// <summary>
@@ -54,7 +54,6 @@ public partial class JosephusCipher
         public static BigInteger GetKeySpace(int textLength) => textLength;
 
         /// <inheritdoc/>
-
         public string GetString() => KeyValue.ToString();
 
         /// <inheritdoc/>

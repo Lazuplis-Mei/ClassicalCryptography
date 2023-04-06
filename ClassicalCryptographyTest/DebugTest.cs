@@ -12,10 +12,13 @@ using ClassicalCryptography.Transposition;
 using ClassicalCryptography.Transposition2D;
 using ClassicalCryptography.Undefined;
 using ClassicalCryptography.Utils;
+using CommunityToolkit.HighPerformance;
 using Microsoft.International.Converters.PinYinConverter;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Metrics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -35,7 +38,6 @@ namespace ClassicalCryptographyTest
         public void Test()
         {
             
-
 
         }
     }

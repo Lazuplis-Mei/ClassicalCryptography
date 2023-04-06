@@ -38,37 +38,49 @@ public static class TranspositionHelper
     /// 填充顺序
     /// </summary>
     /// <param name="order">顺序数组</param>
-    public static void FillOrder(this ushort[] order)
+    public static ushort[] FillOrder(this ushort[] order)
     {
         for (ushort i = 0; i < order.Length; i++)
             order[i] = i;
+        return order;
+    }
+
+    /// <summary>
+    /// 填充顺序
+    /// </summary>
+    public static List<ushort> FillOrder(this List<ushort> order, int count)
+    {
+        for (ushort i = 0; i < count; i++)
+            order.Add(i);
+        return order;
     }
 
     /// <summary>
     /// 填充二维数组的顺序(按行填充)
     /// </summary>
     /// <param name="order">顺序数组</param>
-    public static void FillOrderByRow(this ushort[,] order)
+    public static ushort[,] FillOrderByRow(this ushort[,] order)
     {
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 order[x, y] = (ushort)(x + y * width);
+        return order;
     }
 
     /// <summary>
     /// 填充二维数组的顺序(按列填充)
     /// </summary>
     /// <param name="order">顺序数组</param>
-    [Obsolete("如非必要，不要使用此方法，使用FillOrderByRow代替")]
-    public static void FillOrderByColumn(this ushort[,] order)
+    public static ushort[,] FillOrderByColumn(this ushort[,] order)
     {
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 order[x, y] = (ushort)(x * height + y);
+        return order;
     }
 
     /// <summary>
