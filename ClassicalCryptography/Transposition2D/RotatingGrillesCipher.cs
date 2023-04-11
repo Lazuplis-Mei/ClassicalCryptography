@@ -6,71 +6,66 @@ namespace ClassicalCryptography.Transposition2D;
 /// 旋转栅格密码
 /// </summary>
 /// <remarks>
-/// <see href="https://en.wikipedia.org/wiki/Grille_(cryptography)#Turning_grilles"/>
+/// <see href="https://en.wikipedia.org/wiki/Grille_(cryptography)#Turning_grilles">wikipedia/Grille_(cryptography)#Turning_grilles</see>
 /// </remarks>
-[Introduction("旋转栅格密码", "在一个4N^2的方格阵列里恰当的选择一些空位，通过旋转的方式依次填入所有的信息。")]
+[Introduction("旋转栅格密码", "在一个4n^2的方格阵列里恰当的选择一些空位，通过旋转的方式依次填入所有的信息。")]
 public partial class RotatingGrillesCipher : TranspositionCipher2D<QuaterArray>
 {
+    private static TranspositionCipher2D<QuaterArray>? cipher;
+
+    /// <summary>
+    /// <see cref="RotatingGrillesCipher"/>的实例
+    /// </summary>
+    public static TranspositionCipher2D<QuaterArray> Cipher => cipher ??= new RotatingGrillesCipher();
+
+    /// <summary>
+    /// 旋转栅格密码
+    /// </summary>
+    public RotatingGrillesCipher() => FillOrder = false;
+
     /// <summary>
     /// 是否逆时针旋转
     /// </summary>
     public bool AntiClockwise { get; set; }
 
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
-    /// <param name="key">密钥</param>
+    /// <inheritdoc/>
     protected override (int Width, int Height) Partition(int textLength, IKey<QuaterArray> key)
     {
-        int N = (int)Math.Sqrt(key.KeyValue.Count);
-        return (N << 1, N << 1);
+        int n = key.KeyValue.Count.SqrtCeil() << 1;
+        return (n, n);
     }
-    /// <summary>
-    /// 旋转栅格密码
-    /// </summary>
-    public RotatingGrillesCipher()
-    {
-        FillOrder = false;
-    }
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    /// <param name="key">密钥</param>
+
+    /// <inheritdoc/>
     [SkipLocalsInit]
     protected override ushort[,] Transpose(ushort[,] indexes, IKey<QuaterArray> key)
     {
-        ushort count = (ushort)key.KeyValue.Count;
-        int N = (int)Math.Sqrt(count);
+        int count = key.KeyValue.Count;
+        int n = count.SqrtCeil();
         int length = indexes.GetLength(0);
         Span<int> rot = stackalloc int[4];
-        Span<int> pos = stackalloc int[count];
-        int k = 0;
-        for (int i = 0; i < 4; i++, k += count)
+        Span<int> pos = count.CanAllocInt32() ? stackalloc int[count] : new int[count];
+        for (int k = 0, i = 0; i < 4; i++, k += count)
         {
-            for (int x = 0; x < N; x++)
+            for (int x = 0; x < n; x++)
             {
-                for (int y = 0; y < N; y++)
+                rot[0] = x;
+                rot[2] = length - x - 1;
+                for (int y = 0; y < n; y++)
                 {
-                    rot[0] = x;
-                    rot[1] = length - y - 1;
-                    rot[2] = length - x - 1;
                     rot[3] = y;
-                    int j = x + (N * y);
+                    rot[1] = length - y - 1;
+                    int j = x + n * y;
                     int t = key.KeyValue[j] + (AntiClockwise ? 4 - i : i);
-                    pos[j] = rot[t % 4] + rot[(t + 3) % 4] * length;
+                    pos[j] = rot[t & 0B11] + rot[(t + 3) & 0B11] * length;
                 }
             }
             pos.Sort();
             for (int j = 0; j < count; j++)
             {
-                int x = pos[j] % length;
-                int y = pos[j] / length;
+                (int y, int x) = int.DivRem(pos[j], length);
                 indexes[x, y] = (ushort)(k + j);
             }
         }
         return indexes;
     }
-
 }

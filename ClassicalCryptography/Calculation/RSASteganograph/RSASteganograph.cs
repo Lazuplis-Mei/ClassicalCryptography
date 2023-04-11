@@ -240,8 +240,8 @@ public partial class RSASteganograph
         Guard.IsNotNull(base64P);
         Guard.IsNotNull(base64Q);
 
-        byte[] pBytes = Convert.FromBase64String(base64P);
-        byte[] qBytes = Convert.FromBase64String(base64Q);
+        byte[] pBytes = K4os.Text.BaseX.Base64.FromBase64(base64P);
+        byte[] qBytes = K4os.Text.BaseX.Base64.FromBase64(base64Q);
 
         int prifixLengthP = Array.IndexOf(pBytes, PREFIX_END_FLAG);
         if (prifixLengthP == -1)

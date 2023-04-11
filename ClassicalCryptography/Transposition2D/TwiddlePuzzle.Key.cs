@@ -5,29 +5,36 @@ public partial class TwiddlePuzzle
     /// <summary>
     /// 旋转阵列密码的密钥
     /// </summary>
+    [Introduction("旋转阵列密码的密钥", "密钥的数字代表第几个旋转的位置")]
     public class Key : IKey<ushort[]>
     {
-        /// <inheritdoc/>
-        public ushort[] KeyValue { get; }
-
-        /// <inheritdoc/>
-        public bool CanInverse => false;
-
-        /// <inheritdoc/>
-        public IKey<ushort[]>? InversedKey => null;
-
         /// <summary>
         /// 旋转阵列密码的密钥
         /// </summary>
         private Key(ushort[] keyValue) => KeyValue = keyValue;
 
         /// <inheritdoc/>
+        public ushort[] KeyValue { get; }
+
+        /// <summary>
+        /// 密钥不可逆
+        /// </summary>
+        public bool CanInverse => false;
+
+        /// <summary>
+        /// 密钥不可逆，将始终为null
+        /// </summary>
+        public IKey<ushort[]>? InversedKey => null;
+
+        /// <inheritdoc/>
         public static IKey<ushort[]> FromString(string strKey)
         {
-            var nums = strKey.Split(',');
+            var nums = strKey.Split(',', (StringSplitOptions)3);
             ushort[] array = new ushort[nums.Length];
             for (int i = 0; i < array.Length; i++)
-                array[i] = ushort.Parse(nums[i]);
+                if (ushort.TryParse(nums[i], out ushort value))
+                    array[i] = value;
+
             return new Key(array);
         }
 

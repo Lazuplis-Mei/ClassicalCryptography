@@ -36,12 +36,12 @@ namespace ClassicalCryptographyTest
 
             var qArr = new QuaterArray(9);
             qArr[0] = 1;
-            qArr[1] = 0;        //.H.H.H
-            qArr[2] = 2;        //....H.
-            qArr[3] = 2;        //..H...
-            qArr[4] = 1;        //.H..H.
-            qArr[5] = 3;        //.....H
-            qArr[6] = 1;        //...H..
+            qArr[1] = 0;        //.█.█.█
+            qArr[2] = 2;        //....█.
+            qArr[3] = 2;        //..█...
+            qArr[4] = 1;        //.█..█.
+            qArr[5] = 3;        //.....█
+            qArr[6] = 1;        //...█..
             qArr[7] = 2;        //
             qArr[8] = 0;
 
@@ -53,12 +53,12 @@ namespace ClassicalCryptographyTest
 
             var key = RotatingGrillesCipher.Key.FromString(keyStr);
             Assert.AreEqual(key.ToString(),
-                ".H.H.H" + Environment.NewLine +
-                "....H." + Environment.NewLine +
-                "..H..." + Environment.NewLine +
-                ".H..H." + Environment.NewLine +
-                ".....H" + Environment.NewLine +
-                "...H.." + Environment.NewLine);
+                ".█.█.█\n" +
+                "....█.\n" +
+                "..█...\n" +
+                ".█..█.\n" +
+                ".....█\n" +
+                "...█..\n");
             Assert.AreEqual(keyStr, key.GetString());
 
             Assert.AreEqual(cipherText, cipher.Encrypt(plainText, key));

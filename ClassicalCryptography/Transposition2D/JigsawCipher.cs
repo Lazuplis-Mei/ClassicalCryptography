@@ -6,56 +6,53 @@
 [Introduction("锯齿分割密码", "文本方阵边长的整数分拆为界限排列成锯齿,以特点顺序加密文本。")]
 public partial class JigsawCipher : TranspositionCipher2D<ushort[]>
 {
+    private static TranspositionCipher2D<ushort[]>? cipher;
+
+    /// <summary>
+    /// <see cref="JigsawCipher"/>的实例
+    /// </summary>
+    public static TranspositionCipher2D<ushort[]> Cipher => cipher ??= new JigsawCipher();
+
     /// <summary>
     /// 锯齿分割密码
     /// </summary>
-    public JigsawCipher()
-    {
-        FillOrder = false;
-    }
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
-    /// <param name="key">密钥</param>
+    public JigsawCipher() => FillOrder = false;
+
+    /// <inheritdoc/>
     protected override (int Width, int Height) Partition(int textLength, IKey<ushort[]> key)
     {
-        int N = textLength.SqrtCeil();
-        return (N, N);
+        int n = textLength.SqrtCeil();
+        return (n, n);
     }
 
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    /// <param name="key">密钥</param>
+    /// <inheritdoc/>
     protected override ushort[,] Transpose(ushort[,] indexes, IKey<ushort[]> key)
     {
-        int N = indexes.GetLength(0);
-        ushort val = (ushort)(N - 1), col = (ushort)N;
-        for (int j = key.KeyValue.Length - 1; j >= 0; j--)//N的某个(有序的)整数分拆
+        int n = indexes.GetLength(0);
+        ushort value = (ushort)(n - 1), column = (ushort)n;
+        for (int j = key.KeyValue.Length - 1; j >= 0; j--)
         {
-            ushort p = key.KeyValue[j];
-            col -= p;
+            var p = key.KeyValue[j];
+            column -= p;
             int y = 0, k = 0, row = 0;
             for (int i = 0; i < p; i++)
             {
                 if (k != 0)
                 {
                     for (int x = 0; x < p - k; x++)
-                        indexes[col + x, y] = val--;
-                    row += ((N - (p - k)) / p) + 1;
+                        indexes[column + x, y] = value--;
+                    row += ((n - (p - k)) / p) + 1;
                     y++;
                 }
                 else
-                    row += N / p;
+                    row += n / p;
                 for (; y < row; y++)
                     for (int x = 0; x < p; x++)
-                        indexes[col + x, y] = val--;
-                k = k != 0 ? (N - (p - k)) % p : N % p;
+                        indexes[column + x, y] = value--;
+                k = k != 0 ? (n - (p - k)) % p : n % p;
                 for (int x = p - k; x < p; x++)
-                    indexes[col + x, y] = val--;
-                val += (ushort)(N << 1);
+                    indexes[column + x, y] = value--;
+                value += (ushort)(n << 1);
             }
         }
         return indexes;

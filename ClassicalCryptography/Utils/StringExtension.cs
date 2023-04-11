@@ -8,6 +8,7 @@ namespace ClassicalCryptography.Utils;
 internal static class StringExtension
 {
 
+    /*
     /// <summary>
     /// 字符串转换成可修改的内存
     /// </summary>
@@ -16,6 +17,7 @@ internal static class StringExtension
     {
         return MemoryMarshal.CreateSpan(ref text.DangerousGetReference(), text.Length);
     }
+    */
 
     /// <summary>
     /// 添加一个xml元素，拥有指定的名字和内容
@@ -180,7 +182,7 @@ internal static class StringExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string ToBase64(this BigInteger number)
     {
-        return Convert.ToBase64String(number.ToByteArray(true, true));
+        return K4os.Text.BaseX.Base64.ToBase64(number.ToByteArray(true, true));
     }
 
 }

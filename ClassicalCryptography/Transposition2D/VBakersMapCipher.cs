@@ -10,6 +10,13 @@
 [Introduction("面包师映射变换密码", "文本按照面包师映射变换的顺序加密文本。")]
 public class VBakersMapCipher : TranspositionCipher2D
 {
+    private static TranspositionCipher2D? cipher;
+
+    /// <summary>
+    /// <see cref="VBakersMapCipher"/>的实例
+    /// </summary>
+    public static TranspositionCipher2D Cipher => cipher ??= new VBakersMapCipher();
+
     /// <summary>
     /// Baker's映射变换密码
     /// </summary>
@@ -17,40 +24,36 @@ public class VBakersMapCipher : TranspositionCipher2D
     {
         FillOrder = false;
     }
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
+
+    /// <inheritdoc/>
     protected override (int Width, int Height) Partition(int textLength)
     {
-        int N = textLength.SqrtCeil();
-        return (N, N);
+        int n = textLength.SqrtCeil();
+        return (n, n);
     }
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
+
+    /// <inheritdoc/>
     protected override ushort[,] Transpose(ushort[,] indexes)
     {
-        int N = indexes.GetLength(0);
-        for (int x = 0; x < N; x++)
+        int n = indexes.GetLength(0);
+        for (int x = 0; x < n; x++)
         {
-            for (int y = 0; y < N; y++)
+            for (int y = 0; y < n; y++)
             {
                 int xi = x << 1, yi = y >> 1;
-                if ((N & 1) == 1 && y == N - 1)
+                if ((n & 1) == 1 && y == n - 1)
                     xi = x;
                 else
                 {
                     xi += y & 1;
-                    if (xi >= N)
+                    if (xi >= n)
                     {
-                        xi -= N;
-                        yi += N >> 1;
-                        yi += N & 1;
+                        xi -= n;
+                        yi += n >> 1;
+                        yi += n & 1;
                     }
                 }
-                indexes[xi, yi] = (ushort)(x + y * N);
+                indexes[xi, yi] = (ushort)(x + y * n);
             }
         }
         return indexes;

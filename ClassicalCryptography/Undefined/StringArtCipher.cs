@@ -3,10 +3,10 @@
 namespace ClassicalCryptography.Undefined;
 
 /// <summary>
-/// <para>弦艺术密码，使用22个针脚的欧拉字体(<see cref="nonEulerianFont"/>不被采用)</para>
+/// <para>钉线画，使用22个针脚的欧拉字体(<see cref="nonEulerianFont"/>不被采用)</para>
 /// <see href="https://en.wikipedia.org/wiki/String_art"/>
 /// </summary>
-[Introduction("弦艺术密码", "https://en.wikipedia.org/wiki/String_art")]
+[Introduction("钉线画", "https://en.wikipedia.org/wiki/String_art")]
 public class StringArtCipher
 {
     //2和Z在事实上是相同的

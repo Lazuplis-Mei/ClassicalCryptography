@@ -1,0 +1,14 @@
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\bin\Release\net7.0\MidiLibrary.deps.json
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\bin\Release\net7.0\MidiLibrary.dll
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\bin\Release\net7.0\MidiLibrary.pdb
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\bin\Release\net7.0\MidiLibrary.xml
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.csproj.AssemblyReference.cache
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.GeneratedMSBuildEditorConfig.editorconfig
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.AssemblyInfoInputs.cache
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.AssemblyInfo.cs
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.csproj.CoreCompileInputs.cache
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.dll
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\refint\MidiLibrary.dll
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.xml
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\MidiLibrary.pdb
+E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Release\net7.0\ref\MidiLibrary.dll

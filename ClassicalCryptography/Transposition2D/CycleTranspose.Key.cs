@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommunityToolkit.HighPerformance;
+using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ClassicalCryptography.Transposition2D;
@@ -6,7 +7,7 @@ namespace ClassicalCryptography.Transposition2D;
 public partial class CycleTranspose
 {
     /// <summary>
-    /// 周期/列置换密码的密钥
+    /// 周期置换密码的密钥
     /// </summary>
     [Introduction("周期置换密码的密钥", """正确的排列对格式为形如"(1,2,4)(3,5)"的字符串。""")]
     public partial class Key : IKey<ushort[][]>
@@ -114,7 +115,13 @@ public partial class CycleTranspose
         public string GetString() => ToString();
 
         /// <inheritdoc/>
-        public override int GetHashCode() => keyValue.GetHashCode();
+        public override int GetHashCode()
+        {
+            int hashCode = keyValue.Length;
+            foreach (var item in keyValue)
+                hashCode = HashCode.Combine(hashCode, item.GetDjb2HashCode());
+            return hashCode;
+        }
 
         [GeneratedRegex(@"(?<=\()\s*\d+\s*(\,\s*\d+\s*)*(?=\))")]
         private static partial Regex CycleKeyRegex();

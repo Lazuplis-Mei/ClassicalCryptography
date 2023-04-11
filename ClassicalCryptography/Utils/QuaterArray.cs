@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using CommunityToolkit.HighPerformance;
+using System.Collections;
 
 namespace ClassicalCryptography.Utils;
 
@@ -35,9 +36,6 @@ public class QuaterArray : IEnumerable<int>
     /// <summary>
     /// 设置和获取元素
     /// </summary>
-    /// <param name="index"></param>
-    /// <returns></returns>
-    /// <exception cref="IndexOutOfRangeException"></exception>
     public int this[int index]
     {
         get
@@ -46,10 +44,10 @@ public class QuaterArray : IEnumerable<int>
             byte value = array[index >> 2];
             return (index & 0B11) switch
             {
-                0B00 => (value >> 6),
-                0B01 => ((value >> 4) & 0B11),
-                0B10 => ((value >> 2) & 0B11),
-                _ => (value & 0B11),
+                0B00 => value >> 6,
+                0B01 => (value >> 4) & 0B11,
+                0B10 => (value >> 2) & 0B11,
+                _ => value & 0B11,
             };
         }
         set
@@ -82,17 +80,15 @@ public class QuaterArray : IEnumerable<int>
     /// <summary>
     /// 从字符串创建
     /// </summary>
-    /// <param name="str"></param>
-    public static QuaterArray FromString(string str)
+    public static QuaterArray FromString(string text)
     {
-        int si = str.IndexOf(':');
-        int count = int.Parse(str[..si++]);
-        byte[] arr = Convert.FromBase64String(str[si..]);
-        return new QuaterArray(count, arr);
+        int i = text.IndexOf(':');
+        int count = int.Parse(text[..i++]);
+        return new QuaterArray(count, K4os.Text.BaseX.Base64.FromBase64(text[i..]));
     }
 
     /// <summary>
-    /// 迭代器
+    /// GetEnumerator
     /// </summary>
     public IEnumerator<int> GetEnumerator()
     {
@@ -101,12 +97,18 @@ public class QuaterArray : IEnumerable<int>
     }
 
     /// <summary>
-    /// 字符串形式(Count:Base64)
+    /// 字符串形式"Count:Base64"
     /// </summary>
     public override string ToString()
     {
-        return $"{Count}:{Convert.ToBase64String(array)}";
+        return $"{Count}:{K4os.Text.BaseX.Base64.ToBase64(array)}";
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+    /// <inheritdoc/>
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Count, array.GetDjb2HashCode());
+    }
 }

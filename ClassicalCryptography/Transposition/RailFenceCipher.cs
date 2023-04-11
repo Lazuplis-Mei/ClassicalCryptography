@@ -24,10 +24,7 @@ public partial class RailFenceCipher : TranspositionCipher<ushort>
     /// <summary>
     /// 栅栏密码
     /// </summary>
-    public RailFenceCipher()
-    {
-        FillOrder = false;
-    }
+    public RailFenceCipher() => FillOrder = false;
 
     /// <inheritdoc/>
     protected override ushort[] Transpose(ushort[] indexes, IKey<ushort> key)

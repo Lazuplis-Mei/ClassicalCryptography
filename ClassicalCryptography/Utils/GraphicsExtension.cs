@@ -35,9 +35,9 @@ internal static class GraphicsExtension
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Span<T> AsSpan<T>(this BitmapData bitmapData)
+    public static unsafe Span<int> AsSpan(this BitmapData bitmapData)
     {
-        return new Span<T>(bitmapData.Scan0.ToPointer(), bitmapData.Height * bitmapData.Width);
+        return new Span<int>(bitmapData.Scan0.ToPointer(), bitmapData.Height * bitmapData.Width);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -7,6 +7,7 @@ public partial class AdvancedRailFenceCipher
     /// <summary>
     /// 扩展栅栏密码的密钥
     /// </summary>
+    [Introduction("扩展栅栏密码的密钥", """形式为一组合法的排列""")]
     public class Key : IKey<ushort[]>
     {
         private readonly ushort[] keyValue;

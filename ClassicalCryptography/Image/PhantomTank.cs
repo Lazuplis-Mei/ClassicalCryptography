@@ -33,11 +33,11 @@ public static class PhantomTank
         backGround = new Bitmap(backGround, bitmap.Size);
 
         var data = bitmap.LockBits();
-        var dataSpan = data.AsSpan<int>();
+        var dataSpan = data.AsSpan();
         var fdata = foreGround.LockBits();
-        var fdataSpan = fdata.AsSpan<int>();
+        var fdataSpan = fdata.AsSpan();
         var bdata = backGround.LockBits();
-        var bdataSpan = bdata.AsSpan<int>();
+        var bdataSpan = bdata.AsSpan();
 
         for (int i = 0; i < dataSpan.Length; i++)
         {
@@ -70,11 +70,11 @@ public static class PhantomTank
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
         var data = bitmap.LockBits();
-        var dataSpan = data.AsSpan<int>();
+        var dataSpan = data.AsSpan();
         var fdata = foreGround.LockBits();
-        var fdataSpan = fdata.AsSpan<int>();
+        var fdataSpan = fdata.AsSpan();
         var bdata = backGround.LockBits();
-        var bdataSpan = bdata.AsSpan<int>();
+        var bdataSpan = bdata.AsSpan();
 
         for (int i = 0; i < dataSpan.Length; i++)
         {

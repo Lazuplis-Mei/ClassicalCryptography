@@ -16,10 +16,7 @@ public class TriangleCipher : TranspositionCipher
     /// <summary>
     /// 三角排列密码
     /// </summary>
-    public TriangleCipher()
-    {
-        FillOrder = false;
-    }
+    public TriangleCipher() => FillOrder = false;
 
     /// <inheritdoc/>
     protected override int PadLength(int length)

@@ -19,10 +19,7 @@ public class OriginalRailFenceCipher : TranspositionCipher<ushort>
     /// <summary>
     /// 原始栅栏密码
     /// </summary>
-    public OriginalRailFenceCipher()
-    {
-        FillOrder = false;
-    }
+    public OriginalRailFenceCipher() => FillOrder = false;
 
     /// <inheritdoc/>
     protected override ushort[] Transpose(ushort[] indexes, IKey<ushort> key)

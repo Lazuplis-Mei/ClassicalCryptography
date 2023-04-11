@@ -17,7 +17,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string ToBase64(string input)
     {
-        return Convert.ToBase64String(Encoding.GetBytes(input));
+        return K4os.Text.BaseX.Base64.ToBase64(Encoding.GetBytes(input));
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public static partial class BaseEncoding
     /// </summary>
     public static string FromBase64(string input)
     {
-        return Encoding.GetString(Convert.FromBase64String(input));
+        return Encoding.GetString(K4os.Text.BaseX.Base64.FromBase64(input));
     }
 
     /// <summary>

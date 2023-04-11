@@ -136,7 +136,7 @@ internal static class BaseConverter
     /// <summary>
     /// 转换成3进制(虽然存储在4进制数组中)
     /// </summary>
-    public static QuaterArray ToBase3(byte[] bytes)
+    public static QuaterArray ToBase3(Span<byte> bytes)
     {
         if (bytes.Length == 0)
             return new QuaterArray(0);

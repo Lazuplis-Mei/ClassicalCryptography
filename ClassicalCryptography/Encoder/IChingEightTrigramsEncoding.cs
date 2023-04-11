@@ -17,7 +17,7 @@ public class IChingEightTrigramsEncoding : IEncoding
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Encode(byte[] bytes)
     {
-        return IChingEightTrigramsBase64.Encrypt(Convert.ToBase64String(bytes));
+        return IChingEightTrigramsBase64.Encrypt(K4os.Text.BaseX.Base64.ToBase64(bytes));
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public class IChingEightTrigramsEncoding : IEncoding
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte[] Decode(string text)
     {
-        return Convert.FromBase64String(IChingEightTrigramsBase64.Decrypt(text));
+        return K4os.Text.BaseX.Base64.FromBase64(IChingEightTrigramsBase64.Decrypt(text));
     }
 
     /// <summary>

@@ -6,30 +6,26 @@
 [Introduction("螺旋曲线密码", "文本按照左上=>右上=>右下=>左下=>左上的顺序加密文本。")]
 public partial class SpiralCurveCipher : TranspositionCipher2D<int>
 {
+    private static TranspositionCipher2D<int>? cipher;
+
+    /// <summary>
+    /// <see cref="SpiralCurveCipher"/>的实例
+    /// </summary>
+    public static TranspositionCipher2D<int> Cipher => cipher ??= new SpiralCurveCipher();
+
     /// <summary>
     /// 螺旋曲线密码
     /// </summary>
-    public SpiralCurveCipher()
-    {
-        FillOrder = false;
-    }
-    /// <summary>
-    /// 划分二维顺序矩阵
-    /// </summary>
-    /// <param name="textLength">原文长度</param>
-    /// <param name="key">密钥</param>
+    public SpiralCurveCipher() => FillOrder = false;
+
+    /// <inheritdoc/>
     protected override (int Width, int Height) Partition(int textLength, IKey<int> key)
     {
         int width = key.KeyValue;
         return (width, textLength.DivCeil(width));
     }
 
-
-    /// <summary>
-    /// 转换顺序
-    /// </summary>
-    /// <param name="indexes">正常顺序</param>
-    /// <param name="key">密钥</param>
+    /// <inheritdoc/>
     protected override ushort[,] Transpose(ushort[,] indexes, IKey<int> key)
     {
         int sy = 0, sx = 0;

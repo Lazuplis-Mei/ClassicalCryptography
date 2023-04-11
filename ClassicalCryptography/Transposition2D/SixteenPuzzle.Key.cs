@@ -5,15 +5,20 @@ public partial class SixteenPuzzle
     /// <summary>
     /// 移动数字华容道密码
     /// </summary>
+    [Introduction("移动数字华容道密码的密钥", "正确的格式为移动的行数(正数)和列数(负数)")]
     public partial class Key : IKey<short[]>
     {
         /// <inheritdoc/>
         public short[] KeyValue { get; }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 密钥不可逆
+        /// </summary>
         public bool CanInverse => false;
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// 密钥不可逆，将始终为null
+        /// </summary>
         public IKey<short[]>? InversedKey => null;
 
         private Key(short[] sbytes) => KeyValue = sbytes;
@@ -23,7 +28,7 @@ public partial class SixteenPuzzle
         /// </summary>
         public Key(string key)
         {
-            var nums = key.Split(',');
+            var nums = key.Split(',', (StringSplitOptions)3);
             var array = new short[nums.Length];
             for (int i = 0; i < nums.Length; i++)
             {
@@ -39,12 +44,12 @@ public partial class SixteenPuzzle
         /// <inheritdoc/>
         public static IKey<short[]> GenerateKey(int textLength)
         {
-            int N = textLength.SqrtCeil();
+            int n = textLength.SqrtCeil();
             int count = Random.Shared.Next(textLength);
             var result = new short[count];
             for (int i = 0; i < count; i++)
             {
-                result[i] = (short)(Random.Shared.Next(N) + 1);
+                result[i] = (short)(Random.Shared.Next(n) + 1);
                 if (RandomHelper.TrueOrFalse)
                     result[i] = (short)-result[i];
             }
@@ -54,8 +59,8 @@ public partial class SixteenPuzzle
         /// <inheritdoc/>
         public static BigInteger GetKeySpace(int textLength)
         {
-            int N = textLength.SqrtCeil();
-            return BigInteger.Pow(N << 1, textLength);
+            int n = textLength.SqrtCeil();
+            return BigInteger.Pow(n << 1, textLength);
         }
 
         /// <inheritdoc/>
