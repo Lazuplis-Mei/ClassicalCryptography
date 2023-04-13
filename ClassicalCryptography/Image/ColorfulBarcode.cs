@@ -133,6 +133,9 @@ public class ColorfulBarcode
     /// </summary>
     public static unsafe string Recognize(Bitmap bitmap)
     {
+        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            bitmap.MakeTransparent(Color.Transparent);
+        
         using var redBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var greenBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var blueBitmap = new Bitmap(bitmap.Width, bitmap.Height);

@@ -1,5 +1,6 @@
 ﻿using ClassicalCryptography.Utils;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Runtime.Versioning;
 
 namespace ClassicalCryptography.Image;
@@ -31,6 +32,10 @@ public static class PhantomTank
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
+        if (foreGround.PixelFormat != PixelFormat.Format32bppArgb)
+            foreGround.MakeTransparent(Color.Transparent);
+        if (backGround.PixelFormat != PixelFormat.Format32bppArgb)
+            backGround.MakeTransparent(Color.Transparent);
 
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan();
@@ -69,6 +74,10 @@ public static class PhantomTank
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
+        if (foreGround.PixelFormat != PixelFormat.Format32bppArgb)
+            foreGround.MakeTransparent(Color.Transparent);
+        if (backGround.PixelFormat != PixelFormat.Format32bppArgb)
+            backGround.MakeTransparent(Color.Transparent);
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan();
         var fdata = foreGround.LockBits();

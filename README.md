@@ -1206,6 +1206,7 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 * [图片隐写术](#Steganography)
 * [图片加密工具](#NotMosaic)
 * [幻影坦克](#PhantomTank)
+* [裸眼3D图](#Stereogram)
 * ~~[钉线画](#StringArtCipher)~~
 
 ### PigpenCipher
@@ -1424,6 +1425,34 @@ PhantomTank.CombineColorful(new Bitmap("E:/Foreground.png"), new Bitmap("E:/Back
 ```
 
 ![ColorfulPhantomTank](Images/ColorfulPhantomTank.png)
+
+----------------------------------------
+
+### Stereogram
+
+裸眼3D图
+
+* 使用深度图和纹理创建裸眼3D图
+* 设定模糊参数
+* 支持深度指定
+* 平行眼与交叉/斗鸡眼
+* 演示深度图
+
+![shark](Images/shark.png)
+
+* 演示纹理图
+
+![jellybeans2](Images/jellybeans2.jpg)
+
+* 演示代码
+
+```csharp
+Stereogram.MakeWithPattern(new Bitmap("E:/shark.png"), new Bitmap("E:/jellybeans2.jpg")).Save("E:/stereogram.png");
+```
+
+![stereogram](Images/stereogram.png)
+
+* 你可以在这里找到[更多纹理图](https://github.com/mexomagno/stereogramaxo/tree/master/patterns)
 
 ----------------------------------------
 

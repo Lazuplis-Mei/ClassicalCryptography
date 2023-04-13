@@ -33,7 +33,7 @@ public static class NotMosaic
     public static unsafe Bitmap Encrypt(Bitmap bitmap, Rectangle[] rects, out EncryptRegions encryptRegions, string? password = null)
     {
         if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-            bitmap.MakeTransparent();
+            bitmap.MakeTransparent(Color.Transparent);
         var regions = rects.Where(item => item.X >= 0 && item.Y >= 0 &&
             item.Right <= bitmap.Width && item.Bottom <= bitmap.Height).ToArray();
         encryptRegions = new EncryptRegions(regions, !string.IsNullOrEmpty(password));
@@ -64,6 +64,9 @@ public static class NotMosaic
         var random = UseLorenzRandom ? new LorenzRandom(seed) : new Random(seed);
 
         const int MAX = 0xFFFFFF;
+
+        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            bitmap.MakeTransparent(Color.Transparent);
 
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan2D<int>();

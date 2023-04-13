@@ -113,6 +113,9 @@ public static class MoirePattern
         int imageWidth = bitmap.Width;
         int imageHeight = bitmap.Height;
 
+        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            bitmap.MakeTransparent(Color.Transparent);
+        
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan2D<int>();
 

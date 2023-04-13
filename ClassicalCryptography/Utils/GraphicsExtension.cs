@@ -29,6 +29,12 @@ internal static class GraphicsExtension
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Color GetPixel(this Bitmap bitmap, Point point)
+    {
+        return bitmap.GetPixel(point.X, point.Y);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe Span2D<T> AsSpan2D<T>(this BitmapData bitmapData)
     {
         return new Span2D<T>(bitmapData.Scan0.ToPointer(), bitmapData.Height, bitmapData.Width, 0);
@@ -64,11 +70,32 @@ internal static class GraphicsExtension
         return Color.FromArgb(alpha, color.R, color.G, color.B);
     }
 
-
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static byte GetGrayscale(this Color color)
     {
-        return (byte)(color.GetBrightness() * 255);
+        return GetGrayscale(color.ToArgb());
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte GetGrayscale(int argb)
+    {
+        BitsHelper.DecomposeInt32(argb, out _, out byte r, out byte g, out byte b);
+        int max, min;
+        if (r > g)
+        {
+            max = r;
+            min = g;
+        }
+        else
+        {
+            max = g;
+            min = r;
+        }
+        if (b > max)
+            max = b;
+        else if (b < min)
+            min = b;
+        return (byte)((max + min) >> 1);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -82,5 +109,54 @@ internal static class GraphicsExtension
         double b = 4 * dr + 8 * dg + 6 * db + r * (dr - db) + (dr * dr - db * db) / 512.0;
         int alpha = Math.Min(255, (int)(255 + b / (2 * a)));
         return (byte)Math.Max(0, alpha);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Bitmap WithScale(this Bitmap image, double scale)
+    {
+        if (scale == 1)
+            return image;
+        return new Bitmap(image, (int)(image.Width * scale), (int)(image.Height * scale));
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void RedistributeGrays(this Bitmap image, double grayHeight)
+    {
+        Guard.IsGreaterThan(grayHeight, 0);
+        Guard.IsLessThanOrEqualTo(grayHeight, 1);
+
+        if (image.PixelFormat != PixelFormat.Format32bppArgb)
+            image.MakeTransparent(Color.Transparent);
+
+        var data = image.LockBits();
+        var dataSpan = data.AsSpan2D<int>();
+
+        var minGray = (X: 0, Y: 0, Value: (byte)0);
+        var maxGray = (X: 0, Y: 0, Value: (byte)0);
+
+        minGray.Value = GetGrayscale(dataSpan[minGray.Y, minGray.X]);
+        maxGray.Value = GetGrayscale(dataSpan[maxGray.Y, maxGray.X]);
+
+        for (int x = 0; x < dataSpan.Width; x++)
+        {
+            for (int y = 0; y < dataSpan.Height; y++)
+            {
+                var gray = GetGrayscale(dataSpan[y, x]);
+                if (gray > GetGrayscale(dataSpan[maxGray.Y, maxGray.X]))
+                    maxGray = (x, y, gray);
+                if (gray < GetGrayscale(dataSpan[minGray.Y, minGray.X]))
+                    minGray = (x, y, gray);
+            }
+        }
+        var factor = Math.Min(255, 255 * grayHeight / (maxGray.Value - minGray.Value));
+        for (int x = 0; x < dataSpan.Width; x++)
+        {
+            for (int y = 0; y < dataSpan.Height; y++)
+            {
+                var value = (byte)Math.Min(255, GetGrayscale(dataSpan[y, x]) * factor);
+                dataSpan[y, x] = BitsHelper.CombineInt32(255, value, value, value);
+            }
+        }
+        image.UnlockBits(data);
     }
 }
