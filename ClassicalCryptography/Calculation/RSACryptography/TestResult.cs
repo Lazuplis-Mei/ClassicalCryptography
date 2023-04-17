@@ -1,4 +1,4 @@
-﻿namespace ClassicalCryptography.Calculation.RSASteganograph;
+﻿namespace ClassicalCryptography.Calculation.RSACryptography;
 
 public static partial class MillerRabinPrimalityTester
 {

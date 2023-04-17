@@ -119,27 +119,27 @@ public readonly partial struct SH5 : IEnumerable<int>
         Level = (SH5Level)matches.Count;
         Guard.IsTrue(Enum.IsDefined(Level));
 
-        ReadOnlySpan<char> matchValue;
+        ReadOnlySpan<char> value;
         switch (Level)
         {
             case SH5Level.Single:
-                matchValue = matches[0].ValueSpan;
-                Pair1 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                value = matches[0].ValueSpan;
+                Pair1 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 break;
             case SH5Level.Double:
-                matchValue = matches[0].ValueSpan;
-                Pair1 = (DoubleAlphaBet(matchValue[0]), FromBase36(matchValue[1..]));
-                matchValue = matches[1].ValueSpan;
-                Pair2 = (DoubleAlphaBet(matchValue[0]), FromBase36(matchValue[1..]));
+                value = matches[0].ValueSpan;
+                Pair1 = (DoubleAlphaBet(value[0]), FromBase36(value[1..]));
+                value = matches[1].ValueSpan;
+                Pair2 = (DoubleAlphaBet(value[0]), FromBase36(value[1..]));
                 PrefixCount = GetPrefixCount(SH5Patten);
                 break;
             case SH5Level.Trible:
-                matchValue = matches[0].ValueSpan;
-                Pair1 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
-                matchValue = matches[1].ValueSpan;
-                Pair2 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
-                matchValue = matches[2].ValueSpan;
-                Pair3 = (matchValue[0].LetterNumber(), FromBase36(matchValue[1..]));
+                value = matches[0].ValueSpan;
+                Pair1 = (value[0].LetterNumber(), FromBase36(value[1..]));
+                value = matches[1].ValueSpan;
+                Pair2 = (value[0].LetterNumber(), FromBase36(value[1..]));
+                value = matches[2].ValueSpan;
+                Pair3 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 break;
         }
 

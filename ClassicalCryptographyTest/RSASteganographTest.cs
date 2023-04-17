@@ -1,4 +1,4 @@
-﻿using ClassicalCryptography.Calculation.RSASteganograph;
+﻿using ClassicalCryptography.Calculation.RSACryptography;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace ClassicalCryptographyTest

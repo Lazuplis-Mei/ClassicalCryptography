@@ -13,7 +13,7 @@ public class Brainfuck
     /// <summary>
     /// 内存空间大小
     /// </summary>
-    public const int MEMORY_SIZE = 100;
+    public const int MEMORY_SIZE = 255;
 
     /// <summary>
     /// 字符编码
@@ -80,7 +80,44 @@ public class Brainfuck
                 case ',':
                     memoryBuffer[memoryPointer] = inputBytes[inputPointer++];
                     break;
-                default:
+                case '!':
+                    memoryBuffer[memoryPointer] = (byte)~memoryBuffer[memoryPointer++];
+                    break;
+                case '&':
+                    memoryBuffer[memoryPointer] &= inputBytes[inputPointer++];
+                    break;
+                case '|':
+                    memoryBuffer[memoryPointer] |= inputBytes[inputPointer++];
+                    break;
+                case '^':
+                    memoryBuffer[memoryPointer] ^= inputBytes[inputPointer++];
+                    break;
+                case '*':
+                    memoryBuffer[memoryPointer] *= inputBytes[inputPointer++];
+                    break;
+                case '/':
+                    memoryBuffer[memoryPointer] /= inputBytes[inputPointer++];
+                    break;
+                case '%':
+                    memoryBuffer[memoryPointer] %= inputBytes[inputPointer++];
+                    break;
+                case '@':
+                    memoryBuffer[memoryPointer] = memoryBuffer[inputBytes[inputPointer++]];
+                    break;
+                case '#':
+                    memoryBuffer[inputBytes[inputPointer++]] = memoryBuffer[memoryPointer];
+                    break;
+                case '$':
+                    inputBytes.CopyTo(memoryBuffer[inputPointer..]);
+                    break;
+                case '(':
+                    inputPointer -= 2;
+                    break;
+                case ')':
+                    inputPointer++;
+                    break;
+                case '~':
+                    memoryPointer = 0;
                     break;
             }
         }

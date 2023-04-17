@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace ClassicalCryptography.Calculation.RSASteganograph;
+namespace ClassicalCryptography.Calculation.RSACryptography;
 
 /// <summary>
 /// 使用MillerRabin算法的质数检测工具
@@ -204,17 +204,14 @@ public static partial class MillerRabinPrimalityTester
             return TestResult.NOT_PRIME;
 
         BigInteger q = m;
-        int k = 0;
-        while (q.IsEven)
-        {
-            k++;
+        int k;
+        for (k = 0; q.IsEven; k++)
             q >>= 1;
-        }
 
         var testResult = TestResult.TRUSTED_PRIME;
         Parallel.For(0, testRepeatCount, (i, loop) =>
         {
-            if (testResult == TestResult.NOT_PRIME)
+            if (testResult is TestResult.NOT_PRIME)
                 loop.Stop();
             var x = RandomHelper.RandomBigInt(m);
             testResult = MillerRabinInternal(number, x, q, k);

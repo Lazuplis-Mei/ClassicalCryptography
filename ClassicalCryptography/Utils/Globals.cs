@@ -13,6 +13,11 @@ public static class GlobalTables
     public static readonly string Digits = "0123456789";
 
     /// <summary>
+    /// 数字:<c>1234567890</c>
+    /// </summary>
+    public static readonly string VDigits = "1234567890";
+
+    /// <summary>
     /// 小写16进制字符:<c>0123456789abcdef</c>
     /// </summary>
     public static readonly string HexString = "0123456789abcdef";

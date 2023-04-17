@@ -18,6 +18,22 @@ internal static class ArrayExtension
     }
 
     /// <summary>
+    /// 找到元素出现的所有位置
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int IndexOf<T>(this T[] array, T item) where T : notnull
+    {
+        return Array.IndexOf(array, item);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+    {
+        foreach (var item in source)
+            action(item);
+    }
+
+    /// <summary>
     /// 获得子数组
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -32,9 +48,18 @@ internal static class ArrayExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void CopyTo<T>(this ArraySegment<T> source, Span<T> dest)
     {
+        source.CopyTo(dest, 0);
+    }
+
+    /// <summary>
+    /// 数组段复制
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void CopyTo<T>(this ArraySegment<T> source, Span<T> dest, int start)
+    {
         Guard.IsNotNull(source.Array);
         Span<T> span = source.Array.AsSpan();
-        span.Slice(source.Offset, source.Count).CopyTo(dest);
+        span.Slice(source.Offset, source.Count).CopyTo(dest[start..]);
     }
 
     /// <summary>

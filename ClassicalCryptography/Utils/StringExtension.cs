@@ -68,15 +68,26 @@ internal static class StringExtension
     }
 
     /// <summary>
-    /// 英文字母转换成对应的数字
+    /// 英文字母转换成对应的数字A对应1
     /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int LetterNumber(this char character)
     {
-        if (character is >= 'A' and <= 'Z')
-            return character - 'A' + 1;
-        else if (character is >= 'a' and <= 'z')
-            return character - 'a' + 1;
-        throw new ArgumentOutOfRangeException(nameof(character));
+        return character.LetterIndex() + 1;
+    }
+
+    /// <summary>
+    /// 英文字母转换成对应的数字A对应0
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int LetterIndex(this char character)
+    {
+        return character switch
+        {
+            >= 'A' and <= 'Z' => character - 'A',
+            >= 'a' and <= 'z' => character - 'a',
+            _ => throw new ArgumentOutOfRangeException(nameof(character)),
+        };
     }
 
     /// <summary>
@@ -107,6 +118,20 @@ internal static class StringExtension
             >= 'a' and <= 'z' => character - 'a' + 10 + 26,
             '+' => 62,
             '/' => 63,
+            _ => throw new ArgumentOutOfRangeException(nameof(character)),
+        };
+    }
+
+    /// <summary>
+    /// <see cref="GlobalTables.VDigits"/>字符
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int VDigitsNumber(this char character)
+    {
+        return character switch
+        {
+            '0' => 9,
+            >= '1' and <= '9' => character - '1',
             _ => throw new ArgumentOutOfRangeException(nameof(character)),
         };
     }

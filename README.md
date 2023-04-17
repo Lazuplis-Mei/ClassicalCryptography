@@ -1094,17 +1094,32 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
   `。，、；？！：“”‘’（）【】—…《》〈〉`
   * `EncodeNumber`:指示应当编码数字
   * `EncodeLetters`:指示应当编码英文字母
+  * `DistinguishThird`:指示应当区分“他她它”
+  * `UseAbbreviations`:指示部分声调的简写规则
   * 多音字的选择不一定正确，但你可以自己指定拼音
   * 演示代码
 
   ```csharp
   ChineseCommonBraille.OutputPinyins = true;
-  ChineseCommonBraille.Encode("盲文编码说", out stringpy);
+  ChineseCommonBraille.Encode("盲文编码说", out string? py);
   //> ⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠱⠺⠆
   //py> 盲(MANG2)文(WEN2)编(BIAN1)码(MA3)说(SHUI4)
-  ChineseCommonBraille.Encode("盲文编码说(shuo1)",outpy);
+  ChineseCommonBraille.Encode("盲文编码说(shuo1)",out py);
   //> ⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠱⠕⠁
   //py> 盲(MANG2)文(WEN2)编(BIAN1)码(MA3)说(SHUO1)
+  ```
+
+  * 解码拼音
+
+  ```csharp
+  ChineseCommonBraille.DistinguishThird = false;
+  ChineseCommonBraille.UseAbbreviations = false;
+  var bt = ChineseCommonBraille.Encode("谁水双举盲文编码就说(shuo1)指纹很准噶");
+  var py = ChineseCommonBraille.DecodePinyin(bt);
+  ChineseCommonBraille.ResolveAlternatePinyin(py);
+  //bt> ⠱⠮⠂⠱⠺⠄⠱⠶⠁⠛⠥⠄⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠛⠳⠆⠱⠕⠁⠌⠄⠒⠂⠓⠴⠄⠌⠒⠄⠛⠔⠂
+  //py> SH(I)EI2SH(I)[UI/WEI]3SH(I)UANG1[G/J]U3MANG2[UN/WEN]2BIAN1MA3[G/J][IU/YOU]4SH(I)UO1ZH(I)3[UN/WEN]2[H/X]EN3ZH(I)[UN/WEN]3[G/J]A2
+  //> SHEI2SHUI3SHUANG1[G/J]U3MANG2WEN2BIAN1MA3JIU4SHUO1ZHI3WEN2HEN3ZHUN3GA2
   ```
 
 * 四角号码(`FourCornerCode`)[^19]

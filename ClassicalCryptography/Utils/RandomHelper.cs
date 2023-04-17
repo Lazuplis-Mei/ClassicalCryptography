@@ -27,6 +27,15 @@ internal static class RandomHelper
     }
 
     /// <summary>
+    /// 随机的字节值
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte RandomByte(byte minValue, byte maxValue)
+    {
+        return (byte)Random.Shared.Next(minValue, maxValue);
+    }
+
+    /// <summary>
     /// 获得随机的排列
     /// </summary>
     /// <param name="count">排列长度</param>
@@ -36,24 +45,20 @@ internal static class RandomHelper
         permutation.FillOrder();
         var list = permutation.ToList();
         for (int i = 0; i < count; i++)
-        {
-            int t = Random.Shared.Next(list.Count);
-            permutation[i] = list[t];
-            list.RemoveAt(t);
-        }
+            permutation[i] = list.PopRandomItem();
         return permutation;
     }
 
     /// <summary>
     /// 打乱数组
     /// </summary>
-    public static void Shuffle(this int[] array)
+    public static void Shuffle<T>(this T[] array)
     {
-        for (int i = array.Length - 1; i > 0; i--)
+        for (int i = array.Length - 1; i > 1; i--)
         {
-            int j = Random.Shared.Next(i + 1);
-            if (i != j)
-                (array[j], array[i]) = (array[i], array[j]);
+            int j = Random.Shared.Next(i);
+            if (i == j) continue;
+            (array[j], array[i]) = (array[i], array[j]);
         }
     }
 
@@ -96,11 +101,58 @@ internal static class RandomHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static BigInteger RandomBigInt(BigInteger maxValue)
     {
+        GuardEx.IsPositive(maxValue);
         if (maxValue <= long.MaxValue)
             return Random.Shared.NextInt64((long)maxValue);
         Span<byte> bytes = maxValue.ToByteArray(true, true);
         bytes[0] = RandomByte(bytes[0]);
         Random.Shared.NextBytes(bytes[1..]);
+        return new BigInteger(bytes, true, true);
+    }
+
+    /// <summary>
+    /// 产生范围内的随机数
+    /// </summary>
+    /// <param name="minValue">最小值</param>
+    /// <param name="maxValue">最大值</param>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static BigInteger RandomBigInt(BigInteger minValue, BigInteger maxValue)
+    {
+        GuardEx.IsPositive(minValue);
+        GuardEx.IsPositive(maxValue);
+        Guard.IsGreaterThan(maxValue, minValue);
+
+        if (maxValue <= long.MaxValue)
+            return Random.Shared.NextInt64((long)minValue, (long)maxValue);
+
+        Span<byte> minBytes = minValue.ToByteArray(true, true);
+        Span<byte> maxBytes = maxValue.ToByteArray(true, true);
+        var bytes = minBytes;
+        
+        int j = 0;
+        while (minBytes[j] == maxBytes[j])
+            j++;
+        minBytes = minBytes[j..];
+        maxBytes = maxBytes[j..];
+
+        var minByte = minBytes[0];
+        minBytes[0] = RandomByte(minByte, maxBytes[0]);
+        if (minBytes[0] != minByte)
+            Random.Shared.NextBytes(minBytes[1..]);
+        else
+        {
+            minBytes = minBytes[1..];
+            for (int i = 0; i < minBytes.Length; i++)
+            {
+                var value = RandomByte(minBytes[i], byte.MaxValue);
+                if (value != minBytes[i])
+                {
+                    minBytes[i++] = value;
+                    Random.Shared.NextBytes(minBytes[i..]);
+                    break;
+                }
+            }
+        }
         return new BigInteger(bytes, true, true);
     }
 
@@ -122,6 +174,9 @@ internal static class RandomHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T RandomItem<T>(this T[] array)
     {
+        Guard.HasSizeGreaterThan(array, 0);
+        if (array.Length == 1)
+            return array[0];
         return array[Random.Shared.Next(array.Length)];
     }
 
@@ -131,8 +186,16 @@ internal static class RandomHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static T PopRandomItem<T>(this List<T> list)
     {
-        var item = list.RandomItem();
-        list.Remove(item);
+        Guard.HasSizeGreaterThan(list, 0);
+        if (list.Count == 1)
+        {
+            var value = list[0];
+            list.Clear();
+            return value;
+        }
+        int t = Random.Shared.Next(list.Count);
+        var item = list[t];
+        list.RemoveAt(t);
         return item;
     }
 }

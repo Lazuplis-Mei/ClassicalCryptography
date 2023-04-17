@@ -1,5 +1,5 @@
-﻿using Microsoft.International.Converters.PinYinConverter;
-using Microsoft.International.Converters.TraditionalChineseToSimplifiedConverter;
+﻿using static ClassicalCryptography.Encoder.ChineseCharacter;
+using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -8,6 +8,13 @@ namespace ClassicalCryptography.Encoder;
 /// </summary>
 public static partial class ChineseCommonBraille
 {
+    private const string TONE_NOTES = "⠁⠂⠄⠆";
+
+    private const char ULETTER_SIGN = '⠠';
+
+    private const char LLETTER_SIGN = '⠰';
+
+    private const char NUMBER_SIGN = '⠼';
 
     private static readonly Dictionary<string, char> brailles = new()
     {
@@ -42,7 +49,7 @@ public static partial class ChineseCommonBraille
         { "IA", '⠫' },
         { "IAO", '⠜' },
         { "IE", '⠑' },
-        { "IOU", '⠳' },
+        { "IOU", '⠳' },{ "IU", '⠳' },
         { "UA", '⠿' },
         { "UAI", '⠽' },
         { "UEI", '⠺' },{ "UI", '⠺' },
@@ -58,14 +65,74 @@ public static partial class ChineseCommonBraille
         { "ING", '⠡' },
         { "UAN", '⠻' },
         { "UANG", '⠶' },
-        { "UEN", '⠒' },
+        { "UEN", '⠒' },{ "UN", '⠒' },
         { "ONG", '⠲' },{ "UENG", '⠲' },
         { "VAN", '⠯' },
         { "VN", '⠸' },
         { "IONG", '⠹' },
     };
 
-    private static readonly Dictionary<string, string> special = new()
+    private static readonly Dictionary<char, string> braillesInverse = new()
+    {
+        { '⠃', "B" },
+        { '⠏', "P" },
+        { '⠍', "M" },
+        { '⠋', "F" },
+        { '⠙', "D" },
+        { '⠞', "T" },
+        { '⠝', "N" },
+        { '⠇', "L" },
+        { '⠛', "[G/J]" },
+        { '⠅', "[K/Q]" },
+        { '⠓', "[H/X]" },
+        { '⠌', "ZH(I)" },
+        { '⠟', "CH(I)" },
+        { '⠱', "SH(I)" },
+        { '⠚', "R(I)" },
+        { '⠵', "Z(I)" },
+        { '⠉', "C(I)" },
+        { '⠎', "S(I)" },
+        { '⠔', "A" },
+        { '⠢', "[O/E]" },
+        { '⠊', "I" },
+        { '⠥', "U" },
+        { '⠬', "V" },
+        { '⠗', "ER" },
+        { '⠪', "AI" },
+        { '⠖', "AO" },
+        { '⠮', "EI" },
+        { '⠷', "OU" },
+        { '⠫', "IA" },
+        { '⠜', "IAO" },
+        { '⠑', "IE"},
+        { '⠳', "[IU/YOU]" },
+        { '⠿', "UA" },
+        { '⠽', "UAI" },
+        { '⠺', "[UI/WEI]" },
+        { '⠕', "UO" },
+        { '⠾', "VE" },
+        { '⠧', "AN" },
+        { '⠦', "ANG" },
+        { '⠴', "EN" },
+        { '⠼', "ENG" },
+        { '⠩', "IAN" },
+        { '⠭', "IANG" },
+        { '⠣', "IN" },
+        { '⠡', "ING" },
+        { '⠻', "UAN" },
+        { '⠶', "UANG" },
+        { '⠒', "[UN/WEN]" },
+        { '⠲', "[ONG/WENG]" },
+        { '⠯', "VAN" },
+        { '⠸', "VN" },
+        { '⠹', "IONG" },
+        { '⠁', "1" },
+        { '⠂', "2" },
+        { '⠄', "3" },
+        { '⠆', "4" },
+    };
+
+    private static readonly BidirectionalDictionary<string, string> singleVowels = new()
     {
         { "ZHI", "ZH" },
         { "CHI", "CH" },
@@ -74,6 +141,22 @@ public static partial class ChineseCommonBraille
         { "ZI", "Z" },
         { "CI", "C" },
         { "SI", "S" },
+    };
+
+    private static readonly BidirectionalDictionary<string, string> singleRhymes = new()
+    {
+        { "A", "A" },
+        { "O", "O" },
+        { "E", "E" },
+        { "ER", "ER" },
+        { "AI", "AI" },
+        { "AO", "AO" },
+        { "EI", "EI" },
+        { "OU", "OU" },
+        { "AN", "AN" },
+        { "ANG", "ANG" },
+        { "EN", "EN" },
+
         { "YI", "I" },
         { "WU", "U" },
         { "YU", "V" },
@@ -105,7 +188,7 @@ public static partial class ChineseCommonBraille
         { '，', "⠐" },
         { '、', "⠈" },
         { '；', "⠰" },
-        { '？', "⠐⠄" },
+        { '？', "⠐⠄" },{ '〈', "⠐⠄" },
         { '！', "⠰⠂" },
         { '：', "⠤" },
         { '“', "⠘" },{ '”', "⠘" },
@@ -117,16 +200,10 @@ public static partial class ChineseCommonBraille
         { '…', "⠐⠐⠐" },
         { '《', "⠐⠤" },
         { '》', "⠤⠂" },
-        { '〈', "⠐⠄" },
         { '〉', "⠠⠂" },
     };
 
     private static readonly string letters = "⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵";
-    private const string Tonenotes = "⠁⠂⠄⠆";
-
-    private const char ULETTER_SIGN = '⠠';
-    private const char LLETTER_SIGN = '⠰';
-    private const char NUMBER_SIGN = '⠼';
 
     /// <summary>
     /// 指示编码时将繁体字对应为简体字
@@ -155,9 +232,22 @@ public static partial class ChineseCommonBraille
     public static bool EncodeLetters { get; set; } = true;
 
     /// <summary>
-    /// 指示应当区分他它她(<see cref="EncodePunctuation"/>必须为<see langword="true"/>)
+    /// 指示应当区分他它她
     /// </summary>
+    /// <remarks>
+    /// <see cref="EncodeTonenote"/>须为<see langword="true"/><br/>
+    /// 来源于规则9.4
+    /// </remarks>
     public static bool DistinguishThird { get; set; } = true;
+
+    /// <summary>
+    /// 使用针对声调的简写
+    /// </summary>
+    /// <remarks>
+    /// <see cref="EncodeTonenote"/>须为<see langword="true"/><br/>
+    /// 来源于规则(10.2.1~10.2.6)
+    /// </remarks>
+    public static bool UseAbbreviations { get; set; } = true;
 
     /// <summary>
     /// 指示是否在编码过程中记录拼音作为输出参数<br/>
@@ -166,9 +256,213 @@ public static partial class ChineseCommonBraille
     public static bool OutputPinyins { get; set; } = false;
 
     /// <inheritdoc cref="Encode(string, out string?)"/>
-    public static string Encode(string text)
+    public static string Encode(string text) => Encode(text, out _);
+
+    /// <summary>
+    /// 解码国家通用的盲文为可能的拼音
+    /// </summary>
+    /// <param name="brailleText">盲文文本</param>
+    /// <remarks>
+    /// <see cref="DistinguishThird"/><br/>
+    /// <see cref="UseAbbreviations"/><br/>
+    /// 必须都为<see langword="false"/>
+    /// </remarks>
+    public static string DecodePinyins(string brailleText)
     {
-        return Encode(text, out _);
+        Guard.IsFalse(DistinguishThird);
+        Guard.IsFalse(UseAbbreviations);
+
+        bool bracketsFlag = false;
+        bool dQuotesFlag = false;
+        bool sQuotesFlag = false;
+        var result = new StringBuilder();
+        IEnumerable<Match> matches = ChineseCommonBrailleRegex().Matches(brailleText);
+        foreach (var match in matches)
+        {
+            Group group;
+            if ((group = match.Groups["ULetters"]).Success)
+            {
+                foreach (var letter in group.ValueSpan)
+                    result.Append(U_Letters[letters.IndexOf(letter)]);
+                continue;
+            }
+            if ((group = match.Groups["LLetters"]).Success)
+            {
+                foreach (var letter in group.ValueSpan)
+                    result.Append(L_Letters[letters.IndexOf(letter)]);
+                continue;
+            }
+            if ((group = match.Groups["Numbers"]).Success)
+            {
+                foreach (var number in group.ValueSpan)
+                    result.Append(VDigits[letters.IndexOf(number)]);
+                continue;
+            }
+
+            if ((group = match.Groups["Others"]).Success)
+            {
+                var brailles = group.ValueSpan;
+                for (int i = 0; i < brailles.Length; i++)
+                {
+                    if (brailles[i] == '⠐')
+                    {
+                        if (++i >= brailles.Length)
+                        {
+                            result.Append('，');
+                            break;
+                        }
+                        switch (brailles[i])
+                        {
+                            case '⠆':
+                                result.Append('。');
+                                break;
+                            case '⠄':
+                                result.Append('？');
+                                break;
+                            case '⠤':
+                                result.Append('《');
+                                break;
+                            case '⠐':
+                                if (++i < brailles.Length && brailles[i] == '⠐')
+                                    result.Append('…');
+                                break;
+                            default:
+                                i--;
+                                result.Append('，');
+                                break;
+                        }
+                    }
+                    else if (brailles[i] == '⠈')
+                        result.Append('、');
+                    else if (brailles[i] == '⠰')
+                    {
+                        if (++i >= brailles.Length)
+                        {
+                            result.Append('；');
+                            break;
+                        }
+                        switch (brailles[i])
+                        {
+                            case '⠂':
+                                result.Append('！');
+                                break;
+                            case '⠄':
+                                result.Append('（');
+                                break;
+                            case '⠆':
+                                result.Append((bracketsFlag ^= true) ? '【' : '】');
+                                break;
+                        }
+                    }
+                    else if (brailles[i] == '⠤')
+                    {
+                        if (++i >= brailles.Length)
+                        {
+                            result.Append('：');
+                            break;
+                        }
+                        if (brailles[i] == '⠂')
+                            result.Append('》');
+                        else
+                        {
+                            i--;
+                            result.Append('：');
+                        }
+                    }
+                    else if (brailles[i] == '⠘')
+                    {
+                        if (++i >= brailles.Length)
+                        {
+                            result.Append((dQuotesFlag ^= true) ? '“' : '”');
+                            break;
+                        }
+                        if (brailles[i] == '⠘')
+                            result.Append((sQuotesFlag ^= true) ? '‘' : '’');
+                        else
+                        {
+                            i--;
+                            result.Append((dQuotesFlag ^= true) ? '“' : '”');
+                        }
+                    }
+                    else if (brailles[i] == '⠠')
+                    {
+                        if (++i >= brailles.Length)
+                            break;
+                        switch (brailles[i])
+                        {
+                            case '⠆':
+                                result.Append('）');
+                                break;
+                            case '⠤':
+                                result.Append('—');
+                                break;
+                            case '⠂':
+                                result.Append('〉');
+                                break;
+                        }
+                    }
+                    else if (braillesInverse.TryGetValue(brailles[i], out string? value))
+                        result.Append(value);
+                }
+            }
+        }
+        return result.ToString();
+    }
+
+    /// <summary>
+    /// 还原部分可选的拼音
+    /// </summary>
+    /// <remarks>
+    /// <see cref="DistinguishThird"/><br/>
+    /// <see cref="UseAbbreviations"/><br/>
+    /// <see cref="EncodeTonenote"/><br/>
+    /// 必须都为<see langword="false"/>
+    /// </remarks>
+    public static string ResolvePinyins(string text)
+    {
+        Guard.IsFalse(DistinguishThird);
+        Guard.IsFalse(UseAbbreviations);
+        Guard.IsTrue(EncodeTonenote);
+
+        var alternate = AlternateRegex();
+        return PinyinResolveRegex().Replace(text, match =>
+        {
+            if (match.Groups["sRhyme"].Success)
+                return alternate.Replace(match.Value, "${S}");
+            if (match.Groups["Vowel2"].Success)
+                return match.Value.Replace("(I)", string.Empty);
+            if (match.Groups["sVowel"].Success)
+                return match.Value.Replace("(I)", "I");
+            if (match.Groups["Vowel"].Success)
+            {
+                var m = alternate.Match(match.Value);
+                var rhyme = match.Value[(m.Index + m.Length)..];
+                if (rhyme[0] == 'I' || rhyme[0] == 'V')
+                    return m.Groups["S"].Value + rhyme;
+                if (rhyme[0] == 'A' || rhyme[0] == 'E')
+                    return m.Groups["F"].Value + rhyme;
+                return match.Value;
+            }
+            if (match.Groups["Pinyin"].Success)
+            {
+                var m = alternate.Matches(match.Value);
+                var rhyme = m[1].Groups["F"].Value;
+                string vowel = m[0].Value;
+                if (rhyme[0] == 'I' || rhyme[0] == 'V')
+                    vowel = m[0].Groups["S"].Value;
+                else if (rhyme[0] == 'A' || rhyme[0] == 'E')
+                    vowel = m[0].Groups["F"].Value;
+                return vowel + rhyme + match.Value[^1];
+            }
+            if (match.Groups["Pinyin2"].Success)
+            {
+                var m = alternate.Match(match.Value);
+                var vowel = match.Value[..m.Index].Replace("(I)", "");
+                var rhyme = m.Groups["F"].Value;
+                return vowel + rhyme + match.Value[^1];
+            }
+            return string.Empty;
+        });
     }
 
     /// <summary>
@@ -183,12 +477,9 @@ public static partial class ChineseCommonBraille
     /// <param name="outPinyins">每个字使用的拼音序列</param>
     public static string Encode(string text, out string? outPinyins)
     {
-        outPinyins = null;
-        StringBuilder? pinyins = null;
-        if (OutputPinyins)
-            pinyins = new StringBuilder();
+        var pinyinString = OutputPinyins ? new StringBuilder() : null;
         if (AutoSimplify)
-            text = ChineseConverter.Convert(text, ChineseConversionDirection.TraditionalToSimplified);
+            text = ToSimplified(text);
         var result = new StringBuilder();
         IEnumerable<Match> chineseChars = ChineseCharWithPinyin().Matches(text);
         foreach (var match in chineseChars)
@@ -196,11 +487,8 @@ public static partial class ChineseCommonBraille
             var group = match.Groups["Punctuations"];
             if (group.Success)
             {
-                if (EncodePunctuation)
-                {
-                    if (punctuations.TryGetValue(group.Value[0], out string? value))
-                        result.Append(value);
-                }
+                if (EncodePunctuation && punctuations.TryGetValue(group.Value[0], out string? value))
+                    result.Append(value);
                 continue;
             }
             group = match.Groups["Numbers"];
@@ -210,9 +498,8 @@ public static partial class ChineseCommonBraille
                 {
                     result.Append(NUMBER_SIGN);
                     foreach (var number in group.Value)
-                    {
-                        result.Append(letters[number.Base36Number()]);
-                    }
+                        result.Append(letters[number.VDigitsNumber()]);
+                    result.Append(' ');
                 }
                 continue;
             }
@@ -223,9 +510,8 @@ public static partial class ChineseCommonBraille
                 {
                     result.Append(LLETTER_SIGN);
                     foreach (var letter in group.Value)
-                    {
-                        result.Append(letters[letter - 'a']);
-                    }
+                        result.Append(letters[letter.LetterIndex()]);
+                    result.Append(' ');
                 }
                 continue;
             }
@@ -236,84 +522,100 @@ public static partial class ChineseCommonBraille
                 {
                     result.Append(ULETTER_SIGN);
                     foreach (var letter in group.Value)
-                    {
-                        result.Append(letters[letter - 'A']);
-                    }
+                        result.Append(letters[letter.LetterIndex()]);
+                    result.Append(' ');
                 }
                 continue;
             }
 
-            var chineseChar = new ChineseChar(match.Value[0]);
-            var defaultPinYin = chineseChar.Pinyins[0];
-            string pinYin;
+            var character = match.Value[0];
+            if (DistinguishThird && EncodeTonenote)
+            {
+                if (character == '他')
+                {
+                    result.Append("⠞⠔");
+                    continue;
+                }
+                else if (character == '它')
+                {
+                    result.Append("⠈⠞⠔");
+                    continue;
+                }
+            }
+            var defaultPinYin = GetDefaultPinyin(character);
             int tonenote = 0;
-
             group = match.Groups["Pinyin"];
-            if (group.Success)
-                pinYin = group.Value.ToUpper();
-            else
-                pinYin = defaultPinYin[..^1];
-
+            string pinYin = group.Success ? ParsePinyin(group.Value) : defaultPinYin[..^1];
             if (EncodeTonenote)
             {
-                if (DistinguishThird)
-                {
-                    if (chineseChar.ChineseCharacter == '他')
-                    {
-                        result.Append("⠞⠔");
-                        continue;
-                    }
-                    else if (chineseChar.ChineseCharacter == '它')
-                    {
-                        result.Append("⠈⠞⠔");
-                        continue;
-                    }
-                }
                 group = match.Groups["Tonenote"];
-                if (group.Success)
-                    tonenote = group.Value[0].Base36Number();
-                else
-                    tonenote = defaultPinYin[^1].Base36Number();
+                tonenote = (group.Success ? group.Value[0] : defaultPinYin[^1]).Base36Number();
             }
-            if (OutputPinyins)
+            if (pinyinString is not null)
             {
-                pinyins!.Append(chineseChar.ChineseCharacter);
-                pinyins!.Append('(').Append(pinYin);
+                pinyinString.Append(character).Append('(').Append(pinYin);
                 if (EncodeTonenote)
-                    pinyins!.Append(tonenote);
-                pinyins!.Append(')');
+                    pinyinString.Append(tonenote);
+                pinyinString.Append(')');
             }
-            GetBrailleCode(pinYin, tonenote, result);
+            result.AppendBraille(pinYin, tonenote);
         }
-        if (OutputPinyins)
-            outPinyins = pinyins!.ToString();
+        outPinyins = pinyinString?.ToString();
         return result.ToString();
     }
 
-    private static void GetBrailleCode(string pinYin, int tonenote, StringBuilder stringBuilder)
+    private static void AppendBraille(this StringBuilder builder, string pinYin, int tonenote)
     {
-        if (special.ContainsKey(pinYin))
-            pinYin = special[pinYin];
-
+        if (singleVowels.ContainsKey(pinYin))
+            pinYin = singleVowels[pinYin];
+        if (singleRhymes.ContainsKey(pinYin))
+            pinYin = singleRhymes[pinYin];
+        if (EncodePunctuation && UseAbbreviations)
+            ResolveTonenote(pinYin, ref tonenote);
         if (brailles.TryGetValue(pinYin, out char value))
-            stringBuilder.Append(value);
+            builder.Append(value);
+        else if (pinYin[1] == 'H')
+        {
+            builder.Append(brailles[pinYin[..2]]);
+            builder.Append(brailles[pinYin[2..]]);
+        }
         else
         {
-            if (pinYin[1] == 'H')
-            {
-                stringBuilder.Append(brailles[pinYin[..2]]);
-                stringBuilder.Append(brailles[pinYin[2..]]);
-            }
-            else
-            {
-                stringBuilder.Append(brailles[pinYin[0].ToString()]);
-                stringBuilder.Append(brailles[pinYin[1..]]);
-            }
+            builder.Append(brailles[pinYin[..1]]);
+            builder.Append(brailles[pinYin[1..]]);
         }
         if (tonenote > 0 && tonenote <= 4)
-            stringBuilder.Append(Tonenotes[tonenote - 1]);
+            builder.Append(TONE_NOTES[tonenote - 1]);
     }
 
-    [GeneratedRegex(@"(?<Punctuations>[。，、；？！：“”‘’（）【】—…《》〈〉])|(?<LLetters>[a-z]+)|(?<ULetters>[A-Z]+)|(?<Numbers>[0-9]+)|(\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-z]{1,6})(?<Tonenote>[1-4])?\))?)")]
+    private static void ResolveTonenote(string pinYin, ref int tonenote)
+    {
+        char firstCharacter = pinYin[0];
+        if (firstCharacter == 'F' && tonenote == 1)
+            tonenote = 0;
+        else if ("PMTNHQCR".Contains(firstCharacter) && tonenote == 2 && pinYin != "TOU")
+            tonenote = 0;
+        else if ("BDLGKJXZS".Contains(firstCharacter) && tonenote == 4 && pinYin != "LE" && pinYin != "ZI")
+            tonenote = 0;
+        else if (singleRhymes.ContainsKey(pinYin) && tonenote == 4 && pinYin != "YI" && pinYin != "ER"
+            && pinYin != "WO" && pinYin != "YE" && pinYin != "YOU" && pinYin != "E")
+            tonenote = 0;
+        else if ((pinYin == "YI" && tonenote == 1) || (pinYin == "ER" && tonenote == 2) ||
+            (tonenote == 3 && (pinYin == "WO" || pinYin == "YE" || pinYin == "YOU")))
+            tonenote = 0;
+        else if (pinYin == "O")
+            tonenote = 0;
+    }
+
+    [GeneratedRegex(@"(?<Punctuations>[。，、；？！：“”‘’（）【】—…《》〈〉])|(?<LLetters>[a-z]+)|(?<ULetters>[A-Z]+)|(?<Numbers>[0-9]+)|(\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6})(?<Tonenote>[1-4])?\))?)")]
     private static partial Regex ChineseCharWithPinyin();
+
+    [GeneratedRegex("(⠠(?<ULetters>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵]+) )|(⠰(?<LLetters>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵]+) )|(⠼(?<Numbers>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚]+) )|(?<Others>(⠠[⠆⠤⠂])|(⠰[⠂⠄⠆])|[^⠠⠰⠼]+)")]
+    private static partial Regex ChineseCommonBrailleRegex();
+
+    [GeneratedRegex(@"((?<![A-Z\]\)])(?<sRhyme>\[[A-Z]+/[A-Z]+\])[1-4])|(?<Pinyin>(\[[A-Z]+/[A-Z]+\]){2})[1-4]|(?<Vowel>\[[A-Z]+/[A-Z]+\][A-Z]+)[1-4]|(?<sVowel>[A-Z]+\(I\))[1-4]|(?<Vowel2>[A-Z]+\(I\)[A-Z]+)[1-4]|(?<Pinyin2>[A-Z]+\(I\)\[[A-Z]+/[A-Z]+\])[1-4]")]
+    private static partial Regex PinyinResolveRegex();
+
+    [GeneratedRegex(@"\[(?<F>[A-Z]+)/(?<S>[A-Z]+)\]")]
+    private static partial Regex AlternateRegex();
 }

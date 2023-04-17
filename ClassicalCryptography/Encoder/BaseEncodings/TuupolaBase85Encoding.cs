@@ -130,8 +130,7 @@ public class TuupolaBase85Encoding
             uint quotient = value;
             foreach (var pow in powers)
             {
-                uint reminder = quotient % pow;
-                quotient /= pow;
+                (quotient, uint reminder) = uint.DivRem(quotient, pow);
                 result.Append(Characters[(int)quotient]);
                 quotient = reminder;
             }

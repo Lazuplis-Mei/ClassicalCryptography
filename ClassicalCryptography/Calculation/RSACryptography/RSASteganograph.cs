@@ -1,9 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 using System.Xml;
-using static ClassicalCryptography.Utils.MathExtension;
 
-namespace ClassicalCryptography.Calculation.RSASteganograph;
+namespace ClassicalCryptography.Calculation.RSACryptography;
 
 /// <summary>
 /// RSA隐写术
@@ -46,49 +44,12 @@ public partial class RSASteganograph
     /// </summary>
     public const byte PREFIX_END_FLAG = 0;
 
-    /// <summary>
-    /// 默认的RSA指数
-    /// </summary>
-    public const int RSA_EXPONENT = 65537;
-
-    /// <summary>
-    /// 默认的RSA指数字符串形式
-    /// </summary>
-    public const string RSA_EXPONENT_STRING = "AQAB";
-
     #endregion 常数
-
-    private static readonly RSACryptoServiceProvider RSA_CSP = new();
 
     /// <summary>
     /// 字符编码
     /// </summary>
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
-
-    /// <summary>
-    /// xml格式的转换为pem格式
-    /// </summary>
-    /// <param name="xmlKey">xml格式的密钥</param>
-    /// <param name="PKCS8Format">是否使用PKCS8格式</param>
-    /// <returns>pem格式的密钥</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string XmlToPem(string xmlKey, bool PKCS8Format = false)
-    {
-        RSA_CSP.FromXmlString(xmlKey);
-        return PKCS8Format ? RSA_CSP.ExportPkcs8PrivateKeyPem() : RSA_CSP.ExportRSAPrivateKeyPem();
-    }
-
-    /// <summary>
-    /// pem格式的转换为xml格式
-    /// </summary>
-    /// <param name="pemKey">pem格式的密钥</param>
-    /// <returns>xml格式的密钥</returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string PemToXml(string pemKey)
-    {
-        RSA_CSP.ImportFromPem(pemKey);
-        return RSA_CSP.ToXmlString(true);
-    }
 
     /// <summary>
     /// 以指定前缀生成指定RSA密钥长度的质数
@@ -101,12 +62,12 @@ public partial class RSASteganograph
     [SkipLocalsInit]
     public static BigInteger GeneratePrime(Span<byte> prefix, RSAKeySize keySize)
     {
-        Guard.IsTrue(Enum.IsDefined(keySize));
+        GuardEx.IsDefined(keySize);
         int size = (int)keySize;
         Guard.HasSizeLessThanOrEqualTo(prefix, size - REMAIN_BYTESCOUNT);
-        Guard.IsFalse(prefix.Contains(PREFIX_END_FLAG));
+        GuardEx.ValueNotInSpan(PREFIX_END_FLAG, prefix);
 
-        Span<byte> buffer = size.CanAlloc() ? stackalloc byte[size] : new byte[size];
+        Span<byte> buffer = stackalloc byte[size];
         prefix.CopyTo(buffer);
 
         int prefixRegionLength = prefix.Length + 1;
@@ -116,40 +77,6 @@ public partial class RSASteganograph
         buffer[prefixRegionLength] >>= 1;
 
         return new BigInteger(buffer, true, true).FindPrime();
-    }
-
-    /// <summary>
-    /// 使用指定的质数生成RSA私钥
-    /// </summary>
-    /// <param name="P">质数P</param>
-    /// <param name="Q">质数Q</param>
-    /// <returns>xml格式的RSA私钥</returns>
-    public static string CreateRSAPrivateKey(BigInteger P, BigInteger Q)
-    {
-        var Modulus = P * Q;
-        var Exponent = RSA_EXPONENT;
-        var D = ModularInverse(Exponent, Modulus - (P + Q - 1));
-        var DP = D % (P - 1);
-        var DQ = D % (Q - 1);
-        var InverseQ = ModularInverse(Q, P);
-
-        var xml = new StringBuilder();
-        using (var writer = XmlWriter.Create(xml, new() { Indent = true, OmitXmlDeclaration = true }))
-        {
-            writer.WriteStartElement("RSAKeyValue");
-
-            writer.WriteElement(nameof(Modulus), Modulus);
-            writer.WriteElement(nameof(Exponent), RSA_EXPONENT_STRING);
-            writer.WriteElement(nameof(D), D);
-            writer.WriteElement(nameof(P), P);
-            writer.WriteElement(nameof(Q), Q);
-            writer.WriteElement(nameof(DP), DP);
-            writer.WriteElement(nameof(DQ), DQ);
-            writer.WriteElement(nameof(InverseQ), InverseQ);
-
-            writer.WriteEndElement();
-        }
-        return xml.ToString();
     }
 
     /// <summary>
@@ -165,7 +92,7 @@ public partial class RSASteganograph
 
         var P = GeneratePrime(prefixP, keySize);
         var Q = GeneratePrime(prefixQ, keySize);
-        return CreateRSAPrivateKey(P, Q);
+        return RSAHelper.GenerateRSAPrivateKey(P, Q);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static RSAKeySize GetKeySize(int prefixRegionCount)
@@ -199,7 +126,7 @@ public partial class RSASteganograph
         Encoding.GetBytes(text, prefix);
         int halfLength = prefix.Length >> 1;
         var xmlKey = GenerateRSAPrivateKey(prefix[..halfLength], prefix[halfLength..]);
-        return pemFormat ? XmlToPem(xmlKey) : xmlKey;
+        return pemFormat ? xmlKey.XmlToPem() : xmlKey;
     }
 
     /// <summary>
@@ -218,7 +145,7 @@ public partial class RSASteganograph
         if (privateKey[0] == '<')
             xmlDocument.LoadXml(privateKey);
         else if (privateKey[0] == '-')
-            xmlDocument.LoadXml(PemToXml(privateKey));
+            xmlDocument.LoadXml(privateKey.PemToXml());
         else
         {
             try
@@ -227,7 +154,7 @@ public partial class RSASteganograph
             }
             catch (XmlException)
             {
-                xmlDocument.LoadXml(PemToXml(privateKey));
+                xmlDocument.LoadXml(privateKey.PemToXml());
             }
         }
 
@@ -243,10 +170,10 @@ public partial class RSASteganograph
         byte[] pBytes = K4os.Text.BaseX.Base64.FromBase64(base64P);
         byte[] qBytes = K4os.Text.BaseX.Base64.FromBase64(base64Q);
 
-        int prifixLengthP = Array.IndexOf(pBytes, PREFIX_END_FLAG);
+        int prifixLengthP = pBytes.IndexOf(PREFIX_END_FLAG);
         if (prifixLengthP == -1)
             prifixLengthP = pBytes.Length - REMAIN_BYTESCOUNT;
-        int prifixLengthQ = Array.IndexOf(qBytes, PREFIX_END_FLAG);
+        int prifixLengthQ = qBytes.IndexOf(PREFIX_END_FLAG);
         if (prifixLengthQ == -1)
             prifixLengthQ = qBytes.Length - REMAIN_BYTESCOUNT;
 
@@ -269,7 +196,7 @@ public partial class RSASteganograph
         int length = prifixP.Count + prifixQ.Count;
         Span<byte> prifix = length.CanAlloc() ? stackalloc byte[length] : new byte[length];
         prifixP.CopyTo(prifix);
-        prifixQ.CopyTo(prifix[prifixP.Count..]);
+        prifixQ.CopyTo(prifix, prifixP.Count);
         return Encoding.GetString(prifix);
     }
 }
