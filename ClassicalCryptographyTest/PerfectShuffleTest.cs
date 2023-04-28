@@ -1,13 +1,5 @@
 ﻿using ClassicalCryptography.Calculation;
-using ClassicalCryptography.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace ClassicalCryptographyTest
 {
@@ -22,6 +14,7 @@ namespace ClassicalCryptographyTest
         [DataRow("ABBBCDEEEFGGHIJJ")]
         [DataRow("HELLOWORLD")]
         [DataRow("LEARNMICROSOFTCOM")]
+        [DataRow("HELLO WORLD")]
         public void TestPerfectShuffle(string text)
         {
             var encryptText = PerfectShuffle.Encrypt(text);

@@ -170,5 +170,15 @@ namespace ClassicalCryptography.Properties {
                 return ResourceManager.GetString("MarsLanguageText", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] PGPWordList {
+            get {
+                object obj = ResourceManager.GetObject("PGPWordList", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

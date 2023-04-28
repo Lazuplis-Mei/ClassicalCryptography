@@ -1,6 +1,4 @@
-﻿using static ClassicalCryptography.Utils.GlobalTables;
-
-namespace ClassicalCryptography.Undefined;
+﻿namespace ClassicalCryptography.Undefined;
 
 /// <summary>
 /// <para>钉线画，使用22个针脚的欧拉字体(<see cref="nonEulerianFont"/>不被采用)</para>

@@ -1,7 +1,7 @@
 ﻿namespace ClassicalCryptography.Transposition2D;
 
 /// <summary>
-/// 面包师映射变换密码<a href="https://en.wikipedia.org/wiki/Baker%27s_map">Baker's_map</a>
+/// 面包师映射变换密码<see href="https://en.wikipedia.org/wiki/Baker%27s_map">Baker's_map</see>
 /// </summary>
 /// <remarks>
 /// 原始版本的变换公式存在一定程度上的不便<br/>

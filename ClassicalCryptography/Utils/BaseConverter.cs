@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using static ClassicalCryptography.Utils.GlobalTables;
-
-namespace ClassicalCryptography.Utils;
+﻿namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 进制转换
@@ -13,12 +10,12 @@ internal static class BaseConverter
     /// 转换成10000进制
     /// </summary>
     [SkipLocalsInit]
-    public static ushort[] ToBase10000(ulong number)
+    public static ushort[] ToBase10000(ulong_long number)
     {
         if (number == 0)
             return Array.Empty<ushort>();
-
-        int index = 5;//Math.Ceiling(Math.Log(ulong.MaxValue, 10000))
+        //[Log10000(ulong.MaxValue)] = 5
+        int index = 5;
         Span<ushort> span = stackalloc ushort[index--];
         while (number != 0)
         {
@@ -32,12 +29,13 @@ internal static class BaseConverter
     /// 转换成36进制
     /// </summary>
     [SkipLocalsInit]
-    public static string ToBase36(ulong number)
+    public static string ToBase36(ulong_long number)
     {
         if (number == 0)
             return "0";
 
-        int index = 13;//Math.Ceiling(Math.Log(ulong.MaxValue, 36))
+        //[Log36(ulong_long.MaxValue)] = 25
+        int index = 25;
         Span<char> span = stackalloc char[index--];
         while (number != 0)
         {
@@ -50,15 +48,15 @@ internal static class BaseConverter
     /// <summary>
     /// 从36进制转换
     /// </summary>
-    public static ulong FromBase36(ReadOnlySpan<char> span)
+    public static ulong_long FromBase36(ReadOnlySpan<char> span)
     {
-        ulong result = 0;
+        ulong_long result = 0;
         for (int i = 0; i < span.Length; i++)
         {
             int n = span[i].Base36Number();
             checked
             {
-                result = (result << 5) + (result << 2);
+                result *= 36;
                 result += (ulong)n;
             }
         }
@@ -73,7 +71,8 @@ internal static class BaseConverter
         if (number == 0)
             return Array.Empty<byte>();
 
-        int index = 28;//Math.Ceiling(Math.Log(ulong.MaxValue, 5))
+        //[Log5(ulong.MaxValue)] = 28
+        int index = 28;
         Span<byte> span = stackalloc byte[index--];
         while (number != 0)
         {
@@ -93,7 +92,7 @@ internal static class BaseConverter
         {
             checked
             {
-                result += result << 2;
+                result *= 5;
                 result += array[i];
             }
         }
@@ -164,7 +163,7 @@ internal static class BaseConverter
         var number = BigInteger.Zero;
         for (int i = 0; i < array.Count; i++)
         {
-            number += number << 1;
+            number *= 3;
             int value = array[i];
             if (value == 1 || value == 2)
                 number += array[i];

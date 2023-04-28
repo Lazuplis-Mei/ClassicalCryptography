@@ -5,7 +5,7 @@ using System.Runtime.Versioning;
 namespace ClassicalCryptography.Image;
 
 /// <summary>
-/// <a href="https://en.wikipedia.org/wiki/Cistercian_numerals">僧侣密码数字</a>，又叫西多会修道士数字系统
+/// <see href="https://en.wikipedia.org/wiki/Cistercian_numerals">僧侣密码数字</see>，又叫西多会修道士数字系统
 /// </summary>
 [SupportedOSPlatform("windows")]
 public class CisterciansNumerals
@@ -98,7 +98,7 @@ public class CisterciansNumerals
     /// <summary>
     /// 就数字转换成僧侣密码
     /// </summary>
-    public static Bitmap Encode(ulong number)
+    public static Bitmap Encode(ulong_long number)
     {
         var digits = BaseConverter.ToBase10000(number);
         int length = digits.Length;
@@ -111,11 +111,11 @@ public class CisterciansNumerals
 
         for (int i = 0; i < length; i++)
         {
-            var digit = digits[i];
-            var n4 = digit / 1000;
-            var n3 = (digit / 100) % 10;
-            var n2 = (digit / 10) % 10;
-            var n1 = digit % 10;
+            ushort digit = digits[i];
+            int n4 = digit / 1000;
+            int n3 = digit / 100 % 10;
+            int n2 = digit / 10 % 10;
+            int n1 = digit % 10;
 
             graphics.DrawLine(pen, MT, MB);
             if (n1 != 0)

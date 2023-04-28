@@ -10,7 +10,7 @@ namespace ClassicalCryptography.Image;
 /// <remarks>
 /// 注意对于扩展的(带有三角形的)图形的实现，我没有完全根据天青的设想<br/>
 /// 它的正式名称应该是Hitomezashi Stitch Patterns(一目刺し)，请参考<br/>
-/// <a href="https://www.felissimo.co.jp/couturier/blog/categorylist/japanese-handicraft/sashiko/post-14871/">japanese-handicraft</a>
+/// <see href="https://www.felissimo.co.jp/couturier/blog/categorylist/japanese-handicraft/sashiko/post-14871/">japanese-handicraft</see>
 /// </remarks>
 [Introduction("编织图形密码", "https://tieba.baidu.com/p/7814788182")]
 [SupportedOSPlatform("windows")]
@@ -78,7 +78,10 @@ public partial class WeaveCipher
         return Encoding.GetString(bytes);
     }
 
-    internal static BitMatrix EncryptBits(BitArray bits1, BitArray bits2)
+    /// <summary>
+    /// 加密为矩阵
+    /// </summary>
+    public static BitMatrix EncryptBits(BitArray bits1, BitArray bits2)
     {
         var matrix = new BitMatrix(bits1.Size + 1, bits2.Size + 1);
 
@@ -93,7 +96,10 @@ public partial class WeaveCipher
         return matrix;
     }
 
-    internal static Bitmap BitsToImage(BitMatrix matrix)
+    /// <summary>
+    /// 加密矩阵为图像
+    /// </summary>
+    public static Bitmap BitsToImage(BitMatrix matrix)
     {
         var bitmap = new Bitmap(matrix.Width * BLOCK_SIZE, matrix.Height * BLOCK_SIZE);
         using var graphics = Graphics.FromImage(bitmap);

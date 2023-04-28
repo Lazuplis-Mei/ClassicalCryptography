@@ -77,8 +77,7 @@ public static class Stereogram
     /// <param name="pattern">纹理模板</param>
     public static Bitmap MakeWithPattern(Bitmap depthmap, Bitmap pattern)
     {
-        if (depthmap.PixelFormat != PixelFormat.Format32bppRgb)
-            depthmap.MakeTransparent(Color.Transparent);
+        depthmap.Ensure32bppArgb();
 
         ResizeBitmap(ref depthmap);
         ResizeBitmap(ref pattern);

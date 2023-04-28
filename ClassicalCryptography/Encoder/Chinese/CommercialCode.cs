@@ -1,7 +1,6 @@
-﻿using ClassicalCryptography.Properties;
-using System.Runtime.CompilerServices;
+﻿using ClassicalCryptography.Replacement;
 
-namespace ClassicalCryptography.Replacement;
+namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">中文电码</see>
@@ -9,19 +8,17 @@ namespace ClassicalCryptography.Replacement;
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
 public class CommercialCode
 {
-    private static readonly Dictionary<char, short> commercialCodeData = new();
-    private static string commercialCodeString = string.Empty;
-    private static bool dataLoaded = false;
+    private static readonly Dictionary<char, ushort> commercialCodeData = new();
+    private static readonly string commercialCodeString;
 
-    private static void LoadData()
+    static CommercialCode()
     {
         commercialCodeString = Encoding.UTF8.GetString(GZip.Decompress(Resources.CommercialCode));
-        for (short i = 0; i < commercialCodeString.Length; i++)
+        for (ushort i = 0; i < commercialCodeString.Length; i++)
         {
             if (commercialCodeString[i] != commercialCodeString[0])
                 commercialCodeData.Add(commercialCodeString[i], i);
         }
-        dataLoaded = true;
     }
 
     /// <summary>
@@ -29,19 +26,25 @@ public class CommercialCode
     /// </summary>
     public static string FromCodeString(string codeText)
     {
-        return FromCodes(codeText.Partition(4, s => short.Parse(s)));
+        return new(codeText.Partition(4, s =>
+        {
+            int value = s[0].Base36Number() * 1000;
+            value += s[1].Base36Number() * 100;
+            value += s[2].Base36Number() * 10;
+            value += s[3].Base36Number();
+            return commercialCodeString[value];
+        }));
     }
 
     /// <summary>
     /// 解密中文电码
     /// </summary>
     [SkipLocalsInit]
-    public static string FromCodes(params short[] codes)
+    public static string FromCodes(params ushort[] codes)
     {
-        if (!dataLoaded) LoadData();
-        Span<char> span = codes.Length.CanAllocString()
-            ? stackalloc char[codes.Length] : new char[codes.Length];
-        for (int i = 0; i < span.Length; i++)
+        int count = codes.Length;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        for (int i = 0; i < count; i++)
             span[i] = commercialCodeString[codes[i]];
         return new(span);
     }
@@ -49,14 +52,13 @@ public class CommercialCode
     /// <summary>
     /// 转换成中文电码
     /// </summary>
-    public static short[] ToCodes(string text)
+    public static ushort[] ToCodes(string text)
     {
-        if (!dataLoaded) LoadData();
-        var codes = new short[text.Length];
+        var codes = new ushort[text.Length];
         for (int i = 0; i < codes.Length; i++)
         {
-            if (commercialCodeData.ContainsKey(text[i]))
-                codes[i] = commercialCodeData[text[i]];
+            if (commercialCodeData.TryGetValue(text[i], out ushort code))
+                codes[i] = code;
         }
         return codes;
     }
@@ -67,17 +69,17 @@ public class CommercialCode
     [SkipLocalsInit]
     public static string ToCodesString(string text)
     {
-        if (!dataLoaded) LoadData();
-        int len = text.Length << 2;
-        Span<char> span = len.CanAllocString()
-            ? stackalloc char[len] : new char[len];
-
-        for (int i = 0; i < text.Length; i++)
+        int count = text.Length * 4;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        for (int i = 0; i < count; i++)
         {
-            var code = 0;
-            if (commercialCodeData.TryGetValue(text[i], out short value))
+            int code = 0;
+            if (commercialCodeData.TryGetValue(text[i / 4], out ushort value))
                 code = value;
-            code.ToString("D4").CopyTo(span[(i << 2)..]);
+            span[i++] = Digits[code / 1000];
+            span[i++] = Digits[code / 100 % 10];
+            span[i++] = Digits[code / 10 % 10];
+            span[i] = Digits[code % 10];
         }
         return new(span);
     }
@@ -99,5 +101,4 @@ public class CommercialCode
     {
         return FromCodeString(MorseCode.ShortDigit.FromMorse(morse));
     }
-
 }

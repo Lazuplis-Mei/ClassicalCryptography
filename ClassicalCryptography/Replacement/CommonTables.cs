@@ -1,5 +1,4 @@
 ﻿using ClassicalCryptography.Transposition;
-using static ClassicalCryptography.Utils.GlobalTables;
 
 namespace ClassicalCryptography.Replacement;
 
@@ -161,5 +160,5 @@ public static partial class CommonTables
     /// <summary>
     /// 火星文
     /// </summary>
-    public static readonly SingleReplacementCipher MarsLanguage = new(Properties.Resources.MarsLanguagePlain, Properties.Resources.MarsLanguageText);
+    public static readonly SingleReplacementCipher MarsLanguage = new(Resources.MarsLanguagePlain, Resources.MarsLanguageText);
 }

@@ -1,4 +1,4 @@
-﻿[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("ClassicalCryptographyTest")]
+﻿[assembly: InternalsVisibleTo("ClassicalCryptographyTest")]
 
 namespace ClassicalCryptography.Utils;
 
@@ -15,17 +15,17 @@ public static class GlobalTables
     /// <summary>
     /// 数字:<c>1234567890</c>
     /// </summary>
-    public static readonly string VDigits = "1234567890";
+    public static readonly string DigitsOneFirst = "1234567890";
 
     /// <summary>
     /// 小写16进制字符:<c>0123456789abcdef</c>
     /// </summary>
-    public static readonly string HexString = "0123456789abcdef";
+    public static readonly string HexLower = "0123456789abcdef";
 
     /// <summary>
     /// 大写16进制字符:<c>0123456789ABCDEF</c>
     /// </summary>
-    public static readonly string UHexString = "0123456789ABCDEF";
+    public static readonly string HexUpper = "0123456789ABCDEF";
 
     /// <summary>
     /// 日语片假名
@@ -68,25 +68,34 @@ public static class GlobalTables
     public static readonly string UL_Letter_Digits = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     /// <summary>
-    /// 可打印ascii字符(不包括空格)
+    /// 可打印ascii字符(不包括空格和Delete)
     /// </summary>
-    public static readonly string PrintableAsciis = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    public static readonly string PrintableAsciis = """!"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^-`abcdefghijklmnopqrstuvwxyz{|}~""";
 
     #region 这些相对来说更不常用
 
     /// <summary>
-    /// Base32 RFC3548:<c>ABCDEFGHIJKLMNOPQRSTUVWXYZ234567</c>
+    /// Base32 RFC4648:<c>ABCDEFGHIJKLMNOPQRSTUVWXYZ234567</c>
     /// </summary>
-    public static readonly string Base32_RFC3548 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+    /// <remarks>
+    /// 标准的Base32字符表:<see href="https://www.rfc-editor.org/rfc/rfc4648.html#page-9">rfc4648/page-9</see>
+    /// </remarks>
+    public static readonly string Base32_RFC4648 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
 
     /// <summary>
-    /// Base32 RFC4648:<c>0123456789ABCDEFGHIJKLMNOPQRSTUV</c>
+    /// Base32 Extended Hex:<c>0123456789ABCDEFGHIJKLMNOPQRSTUV</c>
     /// </summary>
-    public static readonly string Base32_RFC4648 = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
+    /// <remarks>
+    /// 16进制扩展的Base32字符表:<see href="https://www.rfc-editor.org/rfc/rfc4648.html#page-10">rfc4648/page-10</see>
+    /// </remarks>
+    public static readonly string Base32_ExtendedHex = "0123456789ABCDEFGHIJKLMNOPQRSTUV";
 
     /// <summary>
     /// z-base-32:<c>ybndrfg8ejkmcpqxot1uwisza345h769</c>
     /// </summary>
+    /// <remarks>
+    /// 面向人的base32编码:<see href="http://philzimmermann.com/docs/human-oriented-base-32-encoding.txt">human-oriented-base-32-encoding</see>
+    /// </remarks>
     public static readonly string Base32_Z = "ybndrfg8ejkmcpqxot1uwisza345h769";
 
     /// <summary>
@@ -122,7 +131,7 @@ public static class GlobalTables
     /// <summary>
     /// Adobe ASCII85
     /// </summary>
-    public static readonly string Ascii85 = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstu";
+    public static readonly string Ascii85 = @"!""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstu";
 
     /// <summary>
     /// <see href="https://rfc.zeromq.org/spec/32/">Ascii85_Z85</see>
@@ -134,5 +143,5 @@ public static class GlobalTables
     /// </summary>
     public static readonly string Ascii85_IPv6 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~";
 
-    #endregion 这些相对来说更不常用
+    #endregion
 }

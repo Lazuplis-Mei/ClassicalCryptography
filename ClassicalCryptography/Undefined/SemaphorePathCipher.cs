@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using ZXing.Common;
+﻿using ZXing.Common;
 
 namespace ClassicalCryptography.Undefined;
 
@@ -12,7 +11,7 @@ public static partial class SemaphorePathCipher
     /// <summary>
     /// 旗语字母
     /// </summary>
-    public static readonly string FLetters = $"{GlobalTables.U_Letters}%#";
+    public static readonly string FLetters = $"{U_Letters}%#";
 
     #region 符号路径定义
 

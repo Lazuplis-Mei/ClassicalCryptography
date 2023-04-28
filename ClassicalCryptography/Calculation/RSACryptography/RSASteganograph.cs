@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using System.Xml;
+﻿using System.Xml;
 
 namespace ClassicalCryptography.Calculation.RSACryptography;
 
@@ -44,12 +43,22 @@ public partial class RSASteganograph
     /// </summary>
     public const byte PREFIX_END_FLAG = 0;
 
+    /// <summary>
+    /// 最大前缀字符字节数
+    /// </summary>
+    public const int MAX_PREFIX_SIZE = ((int)RSAKeySize.RSA4096 - REMAIN_BYTESCOUNT) * 2;
+
     #endregion 常数
 
     /// <summary>
     /// 字符编码
     /// </summary>
     public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    /// <summary>
+    /// 自定义算法
+    /// </summary>
+    public static CipherType Type => CipherType.Calculation;
 
     /// <summary>
     /// 以指定前缀生成指定RSA密钥长度的质数
@@ -60,7 +69,7 @@ public partial class RSASteganograph
     /// <param name="prefix">前缀字节</param>
     /// <param name="keySize">密钥长度</param>
     [SkipLocalsInit]
-    public static BigInteger GeneratePrime(Span<byte> prefix, RSAKeySize keySize)
+    public static BigInteger GeneratePrime(ReadOnlySpan<byte> prefix, RSAKeySize keySize)
     {
         GuardEx.IsDefined(keySize);
         int size = (int)keySize;
@@ -74,7 +83,7 @@ public partial class RSASteganograph
         buffer[prefix.Length] = PREFIX_END_FLAG;
         Random.Shared.NextBytes(buffer[prefixRegionLength..]);
         //为了避免生成质数时，数值的增长覆盖了前缀字节结尾的标记，扩大了寻找质数的范围
-        buffer[prefixRegionLength] >>= 1;
+        buffer[prefixRegionLength] /= 4;
 
         return new BigInteger(buffer, true, true).FindPrime();
     }
@@ -85,27 +94,26 @@ public partial class RSASteganograph
     /// <param name="prefixP">用于生成质数P的前缀字节</param>
     /// <param name="prefixQ">用于生成质数Q的前缀字节</param>
     /// <returns>xml格式的RSA私钥</returns>
-    public static string GenerateRSAPrivateKey(Span<byte> prefixP, Span<byte> prefixQ)
+    public static string GenerateRSAPrivateKey(ReadOnlySpan<byte> prefixP, ReadOnlySpan<byte> prefixQ)
     {
         int prefixRegionLength = Math.Max(prefixP.Length, prefixQ.Length) + REMAIN_BYTESCOUNT;
         var keySize = GetKeySize(prefixRegionLength);
 
-        var P = GeneratePrime(prefixP, keySize);
-        var Q = GeneratePrime(prefixQ, keySize);
-        return RSAHelper.GenerateRSAPrivateKey(P, Q);
+        var p = GeneratePrime(prefixP, keySize);
+        var q = GeneratePrime(prefixQ, keySize);
+        return RSAHelper.GenerateRSAPrivateKey(p, q);
+    }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static RSAKeySize GetKeySize(int prefixRegionCount)
+    private static RSAKeySize GetKeySize(int size)
+    {
+        return (size << 4) switch
         {
-            return (prefixRegionCount << 4) switch
-            {
-                <= RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
-                <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
-                <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
-                <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
-                _ => throw new ArgumentException("前缀字节的长度过长", nameof(prefixRegionCount)),
-            };
-        }
+            <= RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
+            <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
+            <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
+            <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
+            _ => throw new ArgumentOutOfRangeException(nameof(size), "前缀字节的长度过长"),
+        };
     }
 
     /// <summary>
@@ -122,9 +130,11 @@ public partial class RSASteganograph
     public static string GenerateRSAPrivateKey(string text, bool pemFormat = false)
     {
         int byteCount = Encoding.GetByteCount(text);
-        var prefix = byteCount.CanAlloc() ? stackalloc byte[byteCount] : new byte[byteCount];
+        Guard.IsLessThanOrEqualTo(byteCount, MAX_PREFIX_SIZE);
+
+        Span<byte> prefix = stackalloc byte[byteCount];
         Encoding.GetBytes(text, prefix);
-        int halfLength = prefix.Length >> 1;
+        int halfLength = prefix.Length / 2;
         var xmlKey = GenerateRSAPrivateKey(prefix[..halfLength], prefix[halfLength..]);
         return pemFormat ? xmlKey.XmlToPem() : xmlKey;
     }
@@ -133,14 +143,16 @@ public partial class RSASteganograph
     /// 从密钥中获得前缀字节
     /// </summary>
     /// <remarks>
-    /// 值得注意的是，如果前缀字节中包含0，则获取的内容会提前截断。<br/>
+    /// 值得注意的是，如果前缀字节中包含<see cref="PREFIX_END_FLAG"/>，则获取的内容会提前截断。<br/>
+    /// 如果整体都不包含<see cref="PREFIX_END_FLAG"/>，获取的内容按最长的可能截断。<br/>
     /// 你可以通过<see cref="ArraySegment{T}.Array"/>获得完整的数据。
     /// </remarks>
     /// <param name="privateKey">RSA私钥</param>
     /// <returns>质数P和Q中的前缀字节</returns>
     public static (ArraySegment<byte>, ArraySegment<byte>) GetPrifix(string privateKey)
     {
-        Guard.IsNotNullOrEmpty(privateKey);
+        Guard.IsNotNullOrWhiteSpace(privateKey);
+
         var xmlDocument = new XmlDocument();
         if (privateKey[0] == '<')
             xmlDocument.LoadXml(privateKey);

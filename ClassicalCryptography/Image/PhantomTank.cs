@@ -1,6 +1,4 @@
-﻿using ClassicalCryptography.Utils;
-using System.Drawing;
-using System.Drawing.Imaging;
+﻿using System.Drawing;
 using System.Runtime.Versioning;
 
 namespace ClassicalCryptography.Image;
@@ -8,6 +6,7 @@ namespace ClassicalCryptography.Image;
 /// <summary>
 /// 幻影坦克
 /// </summary>
+[Introduction("幻影坦克", "利用调色和混合让图片在黑白两色的背景下显示不同的内容")]
 [SupportedOSPlatform("windows")]
 public static class PhantomTank
 {
@@ -32,10 +31,8 @@ public static class PhantomTank
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
-        if (foreGround.PixelFormat != PixelFormat.Format32bppArgb)
-            foreGround.MakeTransparent(Color.Transparent);
-        if (backGround.PixelFormat != PixelFormat.Format32bppArgb)
-            backGround.MakeTransparent(Color.Transparent);
+        foreGround.Ensure32bppArgb();
+        backGround.Ensure32bppArgb();
 
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan();
@@ -74,10 +71,9 @@ public static class PhantomTank
         var bitmap = new Bitmap(maxWidth, maxHeight);
         foreGround = new Bitmap(foreGround, bitmap.Size);
         backGround = new Bitmap(backGround, bitmap.Size);
-        if (foreGround.PixelFormat != PixelFormat.Format32bppArgb)
-            foreGround.MakeTransparent(Color.Transparent);
-        if (backGround.PixelFormat != PixelFormat.Format32bppArgb)
-            backGround.MakeTransparent(Color.Transparent);
+        foreGround.Ensure32bppArgb();
+        backGround.Ensure32bppArgb();
+
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan();
         var fdata = foreGround.LockBits();

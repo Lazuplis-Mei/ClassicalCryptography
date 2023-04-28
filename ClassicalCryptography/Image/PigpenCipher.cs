@@ -144,7 +144,7 @@ public partial class PigpenCipher
                     i++;
                     break;
                 }
-                int fi = GlobalTables.U_Letters.IndexOf(plainText[i]);
+                int fi = U_Letters.IndexOf(plainText[i]);
                 if (fi != -1)
                 {
                     (Point[] points, bool hasDot) = variant && fi >= 9 && fi <= 21 ?
@@ -205,17 +205,17 @@ public partial class PigpenCipher
         Span<char> str = length.CanAllocString() ? stackalloc char[length] : new char[length];
         int count = 0;
         line = 0;
-        foreach (char c in text)
+        foreach (var character in text)
         {
-            if (c is >= 'a' and <= 'z')
-                str[count++] = (char)(c ^ 0x20);//大小写转换
-            else if (c == '\n')
+            if (character is >= 'a' and <= 'z')
+                str[count++] = (char)(character ^ 0x20);//大小写转换
+            else if (character == '\n')
             {
                 line++;
-                str[count++] = c;
+                str[count++] = character;
             }
-            else if (c.IsPrintable())
-                str[count++] = c;
+            else if (character.IsPrintable())
+                str[count++] = character;
         }
         return new string(str[..count]);
     }

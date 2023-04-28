@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// 参考<see href="https://github.com/qntm/base32768"/>中的实现
@@ -6,105 +8,93 @@
 [ReferenceFrom("https://github.com/qntm/base32768", ProgramingLanguage.JavaScript, License.MIT)]
 internal class BaseXXXXEncoding
 {
+    private const int BITS_PER_BYTE = 8;
     private readonly int BITS_PER_CHAR;
-    private readonly int BITS_PER_BYTE;
-    private readonly string[] pairStrings;
-    private readonly Dictionary<int, List<char>> lookupE = new();
-    private readonly Dictionary<int, (int, int)> lookupD = new();
+    private readonly Dictionary<int, char[]> lookupE;
+    private readonly Dictionary<char, (int, int)> lookupD;
 
-    public BaseXXXXEncoding(int charBits, int byteBits, string[] pairStrs)
+    public BaseXXXXEncoding(int bitsPerChar, string[] pairStrings)
     {
-        BITS_PER_CHAR = charBits;
-        BITS_PER_BYTE = byteBits;
-        pairStrings = pairStrs;
-        for (int r = 0; r < pairStrings.Length; r++)
+        BITS_PER_CHAR = bitsPerChar;
+        lookupE = new(pairStrings.Length);
+        int count = 0;
+        for (int i = 0; i < pairStrings.Length; i++)
         {
-            string pairString = pairStrings[r];
-            var encodeRepertoire = new List<char>();
-            for (int i = 0; i < pairString.Length; i += 2)
-            {
-                int first = pairString[i];
-                int last = pairString[i + 1];
-                for (int codePoint = first; codePoint <= last; codePoint++)
-                    encodeRepertoire.Add((char)codePoint);
-            }
-            int numZBits = BITS_PER_CHAR - BITS_PER_BYTE * r;
-            lookupE.Add(numZBits, encodeRepertoire);
-            for (int z = 0; z < encodeRepertoire.Count; z++)
-                lookupD[encodeRepertoire[z]] = (numZBits, z);
+            string pairString = pairStrings[i];
+            int bitsCount = BITS_PER_CHAR - BITS_PER_BYTE * i, index = 0;
+            var repertoire = new char[1 << bitsCount];
+            for (int j = 0; j < pairString.Length; j++)
+                for (char code = pairString[j++]; code <= pairString[j]; code++)
+                    repertoire[index++] = code;
+            lookupE.Add(bitsCount, repertoire);
+            count += repertoire.Length;
         }
+        lookupD = new(count);
+        foreach (var (bitsCount, repertoire) in lookupE)
+            for (int j = 0; j < repertoire.Length; j++)
+                lookupD[repertoire[j]] = (bitsCount, j);
     }
 
+    [SkipLocalsInit]
     public string Encode(byte[] bytes)
     {
-        var result = new StringBuilder();
-        int z = 0, numZBits = 0;
+        int size = (bytes.Length * BITS_PER_BYTE).DivCeil(BITS_PER_CHAR);
+        Span<char> span = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        int value = 0, bitsCount = 0, index = 0;
         for (int i = 0; i < bytes.Length; i++)
         {
             for (int j = BITS_PER_BYTE - 1; j >= 0; j--)
             {
-                int bit = (bytes[i] >> j) & 1;
-                z = (z << 1) + bit;
-                numZBits++;
-
-                if (numZBits == BITS_PER_CHAR)
+                value = (value << 1) + ((bytes[i] >> j) & 1);
+                if (++bitsCount == BITS_PER_CHAR)
                 {
-                    result.Append(lookupE[numZBits][z]);
-                    z = numZBits = 0;
+                    span[index++] = lookupE[bitsCount][value];
+                    bitsCount = value = 0;
                 }
             }
         }
-        if (numZBits != 0)
+        if (bitsCount != 0)
         {
-            while (!lookupE.ContainsKey(numZBits))
+            while (!lookupE.ContainsKey(bitsCount))
             {
-                z = (z << 1) + 1;
-                numZBits++;
+                value = (value << 1) + 1;
+                bitsCount++;
             }
-
-            result.Append(lookupE[numZBits][z]);
+            span[index++] = lookupE[bitsCount][value];
         }
-        return result.ToString();
+        return new(span);
     }
 
-    public byte[] Decode(string str)
+    public byte[] Decode(string encodeText)
     {
-        int length = str.Length;
+        int length = encodeText.Length;
+        using var memory = MemoryOwner<byte>.Allocate(length * BITS_PER_CHAR / BITS_PER_BYTE);
+        var bytes = memory.Span;
 
-        var bytes = new byte[(length * BITS_PER_CHAR / BITS_PER_BYTE)];
-        int byteCount = 0, bitsCount = 0;
+        int index = 0, byteBitsCount = 0;
         byte value = 0;
-
         for (int i = 0; i < length; i++)
         {
-            if (!lookupD.ContainsKey(str[i]))
-                throw new Exception($"无法识别的字符:{str[i]}");
+            if (!lookupD.ContainsKey(encodeText[i]))
+                throw new ArgumentException($"无法识别的字符:`{encodeText[i]}`;位置`{i}`", nameof(encodeText));
 
-            var (numZBits, z) = lookupD[str[i]];
+            var (bitsCount, k) = lookupD[encodeText[i]];
+            if (bitsCount != BITS_PER_CHAR && i != length - 1)
+                throw new ArgumentException($"输入序列已结束;位置`{i}`", nameof(encodeText));
 
-            if (numZBits != BITS_PER_CHAR && i != length - 1)
-                throw new Exception($"输入序列已结束:{i}");
-
-            for (int j = numZBits - 1; j >= 0; j--)
+            for (int j = bitsCount - 1; j >= 0; j--)
             {
-                int bit = z >> j & 1;
-
-                value = (byte)((value << 1) + bit);
-                bitsCount++;
-
-                if (bitsCount == BITS_PER_BYTE)
+                value = (byte)((value << 1) + ((k >> j) & 1));
+                if (++byteBitsCount == BITS_PER_BYTE)
                 {
-                    bytes[byteCount] = value;
-                    byteCount++;
-                    value = 0;
-                    bitsCount = 0;
+                    bytes[index++] = value;
+                    byteBitsCount = value = 0;
                 }
             }
         }
 
-        if (value != (1 << bitsCount) - 1)
-            throw new Exception("填充不匹配");
-
-        return bytes[..byteCount];
+        if (value != (1 << byteBitsCount) - 1)
+            throw new ArgumentException("填充不匹配", nameof(encodeText));
+        return bytes[..index].ToArray();
     }
 }

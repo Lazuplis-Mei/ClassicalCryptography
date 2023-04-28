@@ -1,6 +1,6 @@
 ﻿using CommunityToolkit.HighPerformance;
 using System.Drawing;
-using System.Drawing.Imaging;
+using System.Drawing.Drawing2D;
 using System.Runtime.Versioning;
 
 namespace ClassicalCryptography.Image;
@@ -50,6 +50,7 @@ public static class MoirePattern
     {
         var bitmap = new Bitmap(imageWidth, imageHeight);
         using var graphics = Graphics.FromImage(bitmap);
+        graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
         var textSize = graphics.MeasureString(text, Font);
         var rectF = new RectangleF(Point.Empty, textSize);
@@ -113,9 +114,8 @@ public static class MoirePattern
         int imageWidth = bitmap.Width;
         int imageHeight = bitmap.Height;
 
-        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-            bitmap.MakeTransparent(Color.Transparent);
-        
+        bitmap.Ensure32bppArgb();
+
         var data = bitmap.LockBits();
         var dataSpan = data.AsSpan2D<int>();
 

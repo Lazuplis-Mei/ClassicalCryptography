@@ -1,14 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Encoder;
+﻿namespace ClassicalCryptography.Encoder;
 
 /// <summary>
 /// Unicode字符串
 /// </summary>
-public partial class UnicodeEncoding : ICipher<string, string>
+public partial class UnicodeEncoding
 {
-    CipherType ICipher<string, string>.Type => CipherType.Substitution;
-
     /// <summary>
     /// 转换成\u字符串
     /// </summary>
@@ -16,8 +12,7 @@ public partial class UnicodeEncoding : ICipher<string, string>
     public static string Encode(string str)
     {
         int size = str.Length * 6;
-        Span<char> span = size <= StackLimit.MAX_CHAR_SIZE
-            ? stackalloc char[size] : new char[size];
+        Span<char> span = size.CanAllocString() ? stackalloc char[size] : new char[size];
         var orignalSpan = span;
         for (int i = 0; i < str.Length; i++)
         {
@@ -39,8 +34,8 @@ public partial class UnicodeEncoding : ICipher<string, string>
     public static string Decode(string str)
     {
         var matches = UnicodeRegex().Matches(str);
-        Span<char> span = matches.Count <= StackLimit.MAX_CHAR_SIZE
-            ? stackalloc char[matches.Count] : new char[matches.Count];
+        int count = matches.Count;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
 
         for (int i = 0; i < matches.Count; i++)
         {
@@ -52,10 +47,4 @@ public partial class UnicodeEncoding : ICipher<string, string>
 
     [GeneratedRegex(@"\\u[0-9A-Fa-f]{1,4}")]
     private static partial Regex UnicodeRegex();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    string ICipher<string, string>.Encrypt(string plainText) => Encode(plainText);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    string ICipher<string, string>.Decrypt(string cipherText) => Decode(cipherText);
 }

@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.HighPerformance;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace ClassicalCryptography.Utils;
@@ -158,5 +157,12 @@ internal static class GraphicsExtension
             }
         }
         image.UnlockBits(data);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void Ensure32bppArgb(this Bitmap bitmap)
+    {
+        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
+            bitmap.MakeTransparent(Color.Transparent);
     }
 }

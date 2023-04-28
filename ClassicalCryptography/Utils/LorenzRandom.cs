@@ -21,7 +21,7 @@ public class LorenzRandom : Random
         rayleigh = 10.0;
         prandtl = 28.0;
         beta = 8.0 / 3.0;
-        dt = 0.01;
+        dt = 0.005;
     }
 
     /// <inheritdoc/>

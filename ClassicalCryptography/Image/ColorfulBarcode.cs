@@ -7,6 +7,7 @@ using System.Runtime.Versioning;
 using ZXing;
 using ZXing.QrCode;
 using ZXing.QrCode.Internal;
+using ZXing.Windows.Compatibility;
 
 namespace ClassicalCryptography.Image;
 
@@ -15,8 +16,10 @@ namespace ClassicalCryptography.Image;
 /// </summary>
 [Introduction("彩色二维码", "以颜色通道分别存储多个二维码")]
 [SupportedOSPlatform("windows")]
-public class ColorfulBarcode
+public static class ColorfulBarcode
 {
+    private static readonly BarcodeReader reader = new();
+
     /// <summary>
     /// 二维码图像的边长
     /// </summary>
@@ -37,8 +40,8 @@ public class ColorfulBarcode
         var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 3;
         var text1 = inputString[..index];
-        var text2 = inputString[index..(index + index)];
-        var text3 = inputString[(index + index)..];
+        var text2 = inputString[index..(index * 2)];
+        var text3 = inputString[(index * 2)..];
 
         var bitmap = new Bitmap(IMAGE_SIZE, IMAGE_SIZE);
         var writer = new QRCodeWriter();
@@ -80,8 +83,8 @@ public class ColorfulBarcode
         var inputString = useBase64 ? BaseEncoding.ToBase64(text) : text;
         int index = inputString.Length / 6;
         var text1 = inputString[..index];
-        var text2 = inputString[index..(index + index)];
-        var text3 = inputString[(index + index)..(index * 3)];
+        var text2 = inputString[index..(index * 2)];
+        var text3 = inputString[(index * 2)..(index * 3)];
         var text4 = inputString[(index * 3)..(index * 4)];
         var text5 = inputString[(index * 4)..(index * 5)];
         var text6 = inputString[(index * 5)..];
@@ -101,8 +104,7 @@ public class ColorfulBarcode
         var bits6 = writer.encode(text6, BarcodeFormat.QR_CODE, IMAGE_SIZE, IMAGE_SIZE, option);
         bits2.rotate90();
         bits3.rotate180();
-        bits4.rotate90();
-        bits4.rotate180();
+        bits4.rotate(270);
         bits5.rotate180();
         bits6.rotate90();
 
@@ -133,9 +135,8 @@ public class ColorfulBarcode
     /// </summary>
     public static unsafe string Recognize(Bitmap bitmap)
     {
-        if (bitmap.PixelFormat != PixelFormat.Format32bppArgb)
-            bitmap.MakeTransparent(Color.Transparent);
-        
+        bitmap.Ensure32bppArgb();
+
         using var redBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var greenBitmap = new Bitmap(bitmap.Width, bitmap.Height);
         using var blueBitmap = new Bitmap(bitmap.Width, bitmap.Height);
@@ -169,7 +170,7 @@ public class ColorfulBarcode
         for (int i = 0; i < orgbBitmaps.Length; i++)
             orgbBitmaps[i].UnlockBits(orgbDatas[i]);
 
-        var reader = new ZXing.Windows.Compatibility.BarcodeReader();
+        var reader = new BarcodeReader();
         var result = new StringBuilder();
         result.Append(reader.Decode(redBitmap).Text);
         result.Append(reader.Decode(greenBitmap).Text);
@@ -182,6 +183,8 @@ public class ColorfulBarcode
     /// </summary>
     public static unsafe string RecognizeSixColor(Bitmap bitmap)
     {
+        bitmap.Ensure32bppArgb();
+     
         using var redBitmap1 = new Bitmap(bitmap.Width, bitmap.Height);
         using var redBitmap2 = new Bitmap(bitmap.Width, bitmap.Height);
         using var greenBitmap1 = new Bitmap(bitmap.Width, bitmap.Height);
@@ -240,23 +243,31 @@ public class ColorfulBarcode
         for (int i = 0; i < orgbBitmaps.Length; i++)
             orgbBitmaps[i].UnlockBits(orgbDatas[i]);
 
-        var reader = new ZXing.Windows.Compatibility.BarcodeReader();
         var result = new StringBuilder();
-        result.Append(reader.Decode(redBitmap1).Text);
-        result.Append(reader.Decode(redBitmap2).Text);
-        result.Append(reader.Decode(greenBitmap1).Text);
+        result.Append(reader.RecognizeBarcode(redBitmap1));
+        result.Append(reader.RecognizeBarcode(redBitmap2, RotateFlipType.Rotate90FlipNone));
+        result.Append(reader.RecognizeBarcode(greenBitmap1, RotateFlipType.Rotate180FlipNone));
+        result.Append(reader.RecognizeBarcode(greenBitmap2, RotateFlipType.Rotate270FlipNone));
+        result.Append(reader.RecognizeBarcode(blueBitmap1, RotateFlipType.Rotate180FlipNone));
+        result.Append(reader.RecognizeBarcode(blueBitmap2, RotateFlipType.Rotate90FlipNone));
+        return result.ToString();
+    }
 
-        var mayBeNullResult = reader.Decode(greenBitmap2);
+    private static string RecognizeBarcode(this BarcodeReader reader, Bitmap bitmap, RotateFlipType rotateFlip = RotateFlipType.RotateNoneFlipNone)
+    {
+        var mayBeNullResult = reader.Decode(bitmap);
         if (mayBeNullResult is null)
         {
-            greenBitmap2.RotateFlip(RotateFlipType.Rotate270FlipNone);
-            mayBeNullResult = reader.Decode(greenBitmap2);
-            Debug.WriteLine($"`{mayBeNullResult.Text}`二维码在旋转后无法识别");
+            SaveFailBitmap(bitmap);
+            bitmap.RotateFlip(rotateFlip);
+            mayBeNullResult = reader.Decode(bitmap);
         }
+        return mayBeNullResult.Text;
+    }
 
-        result.Append(mayBeNullResult.Text);
-        result.Append(reader.Decode(blueBitmap1).Text);
-        result.Append(reader.Decode(blueBitmap2).Text);
-        return result.ToString();
+    [Conditional("DEBUG")]
+    private static void SaveFailBitmap(Bitmap bitmap)
+    {
+        bitmap.Save($"E:/{bitmap.GetHashCode()}.png");
     }
 }

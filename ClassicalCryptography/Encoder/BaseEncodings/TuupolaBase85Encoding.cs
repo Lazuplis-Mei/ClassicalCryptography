@@ -1,5 +1,6 @@
-﻿using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+﻿using CommunityToolkit.HighPerformance;
+using System.Buffers.Binary;
+using System.Diagnostics;
 
 namespace ClassicalCryptography.Encoder.BaseEncodings;
 
@@ -21,10 +22,13 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 ///         </description>
 ///     </item>
 /// </list>
+/// 也可以使用<seealso cref="SimpleBase.Base85"/>代替
 /// </remarks>
 [ReferenceFrom("https://github.com/tuupola/base85", ProgramingLanguage.PHP, License.MIT)]
 public class TuupolaBase85Encoding
 {
+    #region Base85
+
     /// <summary>
     /// 默认的Base85编码
     /// </summary>
@@ -38,41 +42,43 @@ public class TuupolaBase85Encoding
     /// <summary>
     /// <see href="https://rfc.zeromq.org/spec/32/">ZeroMQ (Z85)</see>
     /// </summary>
-    public static readonly TuupolaBase85Encoding ZeroMQ = new(GlobalTables.Ascii85_Z85, false, false);
+    public static readonly TuupolaBase85Encoding ZeroMQ = new(Ascii85_Z85, false, false);
 
     /// <summary>
     /// <see href="https://tools.ietf.org/html/rfc1924">RFC1924</see>
     /// </summary>
-    public static readonly TuupolaBase85Encoding RFC1924 = new(GlobalTables.Ascii85_IPv6, false, false);
+    public static readonly TuupolaBase85Encoding RFC1924 = new(Ascii85_IPv6, false, false);
+
+    #endregion
 
     /// <summary>
-    /// compress.spaces
+    /// 压缩连续的空格(0x20)
     /// </summary>
     public readonly bool CompressSpaces;
 
     /// <summary>
-    /// compress.zeroes
+    /// 压缩连续的0
     /// </summary>
     public readonly bool CompressZeroes;
 
     /// <summary>
-    /// prefix
+    /// 前缀
     /// </summary>
     public readonly string? Prefix;
 
     /// <summary>
-    /// suffix
+    /// 后缀
     /// </summary>
     public readonly string? Suffix;
 
     /// <summary>
-    /// characters
+    /// 字符列表
     /// </summary>
     public string Characters;
 
     private const int SPACES = 0x20202020;
-    private static readonly uint[] powers = { 52200625, 614125, 7225, 85, 1 };
-    private readonly Dictionary<char, int> inverseMap = new();
+    private static readonly uint[] powers = { 85 * 85 * 85 * 85, 85 * 85 * 85, 85 * 85, 85, 1 };
+    private readonly Dictionary<char, uint> inverseMap = new();
 
     /// <summary>
     /// Base85编码
@@ -83,36 +89,35 @@ public class TuupolaBase85Encoding
         Guard.IsEqualTo(characters.ToHashSet().Count, 85);
         Characters = characters;
         for (int i = 0; i < characters.Length; i++)
-            inverseMap.Add(characters[i], i);
+            inverseMap.Add(characters[i], (uint)i);
         CompressSpaces = compressSpaces;
         CompressZeroes = compressZeroes;
         Prefix = prefix;
         Suffix = suffix;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IEncoding.Encode"/>
     [SkipLocalsInit]
     public string Encode(byte[] bytes)
     {
         int length = bytes.Length.DivCeil(4);
         Span<uint> span = length.CanAllocInt32() ? stackalloc uint[length] : new uint[length];
-        Span<byte> byteSpan = MemoryMarshal.AsBytes(span);
+        Span<byte> byteSpan = bytes.AsSpan();
 
-        span[^1] = 0;
-        length = (length - 1) << 2;
-        int i;
-        for (i = 0; i < length; i += 4)
+        for (int i = 0; i < length - 1; i++)
         {
-            byteSpan[i + 3] = bytes[i];
-            byteSpan[i + 2] = bytes[i + 1];
-            byteSpan[i + 1] = bytes[i + 2];
-            byteSpan[i] = bytes[i + 3];
+            span[i] = BinaryPrimitives.ReadUInt32BigEndian(byteSpan);
+            byteSpan = byteSpan[4..];
         }
-        for (int j = 0; j < 4; j++)
-            if (i + j < bytes.Length)
-                byteSpan[i - j + 3] = bytes[i + j];
+        SpanExtension.WriteBigEndian(ref span[^1], byteSpan);
 
-        var result = new StringBuilder();
+        length = (span.Length + 1) * 5;
+        if (Prefix is not null)
+            length += Prefix.Length;
+        if (Suffix is not null)
+            length += Suffix.Length;
+        var result = new StringBuilder(length);
+
         result.Append(Prefix);
         foreach (var value in span)
         {
@@ -139,16 +144,11 @@ public class TuupolaBase85Encoding
         if (result[^1] == 'z')
             result.RemoveLast().Append("!!!!!");
 
-        int padding = 0;
-        int modulus = bytes.Length % 4;
-        if (modulus != 0)
-            padding = 4 - modulus;
-
-        result.Remove(result.Length - padding, padding);
+        result.RemoveLast(byteSpan.Length.DivPadding(4));
         return result.Append(Suffix).ToString();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc cref="IEncoding.Decode"/>
     public byte[] Decode(string data)
     {
         if (Prefix is not null && data.StartsWith(Prefix))
@@ -159,42 +159,28 @@ public class TuupolaBase85Encoding
             data = data.Replace("z", "!!!!!");
         if (CompressSpaces)
             data = data.Replace("y", "+<VdL");
+        IsVaild(data);
 
-        Guard.IsTrue(data.ToHashSet().IsSubsetOf(Characters));
-
-        int padding = 0;
-        int modulus = data.Length % 5;
-        if (modulus != 0)
-        {
-            padding = 5 - modulus;
-            data += Characters[^1].Repeat(padding);
-        }
-
-        var result = new List<byte>();
-        foreach (string value in data.Partition(5))
-        {
-            AddConvert(result, value);
-        }
-
-        result.RemoveRange(result.Count - padding, padding);
-        return result.ToArray();
+        int padding = data.Length.DivPadding(5);
+        data += Characters[^1].Repeat(padding);
+        var bytes = new byte[data.Length / 5 * 4 - padding];
+        data.ForEachPartition(5, AddConvert);
+        return bytes;
 
         [SkipLocalsInit]
-        void AddConvert(List<byte> result, string value)
+        void AddConvert(ReadOnlySpan<char> span, int index)
         {
-            int accumulator = 0;
-            foreach (var character in value)
+            uint value = 0;
+            foreach (var character in span)
             {
-                accumulator += accumulator << 2;
-                accumulator += accumulator << 4;
-                accumulator += inverseMap[character];
+                value += value << 2;
+                value += value << 4;
+                value += inverseMap[character];
             }
-            Span<byte> bytes = stackalloc byte[4];
-            BitConverter.TryWriteBytes(bytes, accumulator);
-            result.Add(bytes[3]);
-            result.Add(bytes[2]);
-            result.Add(bytes[1]);
-            result.Add(bytes[0]);
+            bytes.AsSpan(4 * index).WriteBigEndian(value);
         }
     }
+
+    [Conditional("DEBUG")]
+    private void IsVaild(string data) => GuardEx.IsSubsetOf(data.ToHashSet(), Characters);
 }

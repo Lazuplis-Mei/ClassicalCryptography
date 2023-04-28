@@ -1,21 +1,37 @@
-﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿using CommunityToolkit.HighPerformance;
+
+namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// 进制转换(2,4,8)进制
 /// </summary>
+/// <remarks>
+/// 16进制请使用<see cref="BaseEncoding"/>中的Base16
+/// </remarks>
 [Introduction("进制转换", "提供(2,4,8)进制的转换")]
 public class BinaryEncoding
 {
     /// <summary>
     /// 转换为二进制字符串
     /// </summary>
+    [SkipLocalsInit]
     public static string EncodeBinary(byte[] bytes, char seperator = ' ', bool trimStart = false)
     {
-        var result = new StringBuilder();
-        for (int i = 0; i < bytes.Length; i++)
+        var result = new StringBuilder(bytes.Length * 9);
+        Span<char> span = stackalloc char[8];
+        ulong_long zeros = new(0x0030_0030_0030_0030, 0x0030_0030_0030_0030);
+        ref ulong_long reference = ref Unsafe.As<char, ulong_long>(ref span.DangerousGetReference());
+        foreach (var value in bytes)
         {
-            var binary = Convert.ToString(bytes[i], 2);
-            result.Append(trimStart ? binary : binary.PadLeft(8, '0'));
+            var binary = Convert.ToString(value, 2);
+            if (trimStart)
+                result.Append(binary);
+            else
+            {
+                reference = zeros;
+                binary.CopyTo(span[^binary.Length..]);
+                result.Append(span);
+            }
             result.Append(seperator);
         }
         return result.RemoveLast().ToString();
@@ -28,21 +44,33 @@ public class BinaryEncoding
     {
         var binarys = text.Split(seperator);
         var result = new byte[binarys.Length];
+        var span = result.AsSpan();
         for (int i = 0; i < binarys.Length; i++)
-            result[i] = Convert.ToByte(binarys[i], 2);
+            span[i] = Convert.ToByte(binarys[i], 2);
         return result;
     }
 
     /// <summary>
     /// 转换为四进制字符串
     /// </summary>
+    [SkipLocalsInit]
     public static string EncodeQuater(byte[] bytes, char seperator = ' ', bool trimStart = false)
     {
         var result = new StringBuilder();
-        for (int i = 0; i < bytes.Length; i++)
+        Span<char> span = stackalloc char[4];
+        ulong zeros = 0x0030_0030_0030_0030;
+        ref ulong reference = ref Unsafe.As<char, ulong>(ref span.DangerousGetReference());
+        foreach (var value in bytes)
         {
-            var binary = BaseConverter.ToBase4(bytes[i]);
-            result.Append(trimStart ? binary : binary.PadLeft(4, '0'));
+            var binary = BaseConverter.ToBase4(value);
+            if (trimStart)
+                result.Append(binary);
+            else
+            {
+                reference = zeros;
+                binary.CopyTo(span[^binary.Length..]);
+                result.Append(span);
+            }
             result.Append(seperator);
         }
         return result.RemoveLast().ToString();
@@ -55,21 +83,33 @@ public class BinaryEncoding
     {
         var binarys = text.Split(seperator);
         var result = new byte[binarys.Length];
+        var span = result.AsSpan();
         for (int i = 0; i < binarys.Length; i++)
-            result[i] = BaseConverter.FromBase4(binarys[i]);
+            span[i] = BaseConverter.FromBase4(binarys[i]);
         return result;
     }
 
     /// <summary>
     /// 转换为八进制字符串
     /// </summary>
+    [SkipLocalsInit]
     public static string EncodeOctal(byte[] bytes, char seperator = ' ', bool trimStart = false)
     {
         var result = new StringBuilder();
-        for (int i = 0; i < bytes.Length; i++)
+        Span<char> span = stackalloc char[4];
+        ulong zeros = 0x0030_0030_0030_0030;
+        ref ulong reference = ref Unsafe.As<char, ulong>(ref span.DangerousGetReference());
+        foreach (var value in bytes)
         {
-            var binary = Convert.ToString(bytes[i], 8);
-            result.Append(trimStart ? binary : binary.PadLeft(3, '0'));
+            var binary = Convert.ToString(value, 8);
+            if (trimStart)
+                result.Append(binary);
+            else
+            {
+                reference = zeros;
+                binary.CopyTo(span[^binary.Length..]);
+                result.Append(span[1..]);
+            }
             result.Append(seperator);
         }
         return result.RemoveLast().ToString();
@@ -82,8 +122,9 @@ public class BinaryEncoding
     {
         var binarys = text.Split(seperator);
         var result = new byte[binarys.Length];
+        var span = result.AsSpan();
         for (int i = 0; i < binarys.Length; i++)
-            result[i] = Convert.ToByte(binarys[i], 8);
+            span[i] = Convert.ToByte(binarys[i], 8);
         return result;
     }
 }

@@ -1,9 +1,7 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
-/// Base32编码
+/// Base32编码(RFC4648)
 /// </summary>
 /// <remarks>
 /// 使用字母表为ABCDEFGHIJKLMNOPQRSTUVWXYZ234567编码字节数据
@@ -31,37 +29,31 @@ public class Base32Encoding : IEncoding
     {
         Guard.IsNotNullOrEmpty(encodeText);
 
-        var base32String = encodeText.TrimEnd('=');
-        int byteCount = base32String.Length;
-        byteCount += byteCount << 2;
-        byteCount >>= 3;
-        var bytes = new byte[byteCount];
+        var base32 = encodeText.AsSpan().TrimEnd('=');
+        var bytes = new byte[(base32.Length * 5 / 8)];
+        var span = bytes.AsSpan();
 
         byte currentByte = 0, bitsRemaining = 8;
         int index = 0;
 
-        foreach (char character in base32String)
+        foreach (var character in base32)
         {
-            int characterValue = CharToValue(character);
-            int mask;
+            int mask, value = CharToValue(character);
             if (bitsRemaining > 5)
             {
-                mask = characterValue << bitsRemaining - 5;
+                mask = value << (bitsRemaining -= 5);
                 currentByte = (byte)(currentByte | mask);
-                bitsRemaining -= 5;
             }
             else
             {
-                mask = characterValue >> 5 - bitsRemaining;
-                currentByte = (byte)(currentByte | mask);
-                bytes[index++] = currentByte;
-                currentByte = (byte)(characterValue << 3 + bitsRemaining);
-                bitsRemaining += 3;
+                mask = value >> (5 - bitsRemaining);
+                span[index++] = (byte)(currentByte | mask);
+                currentByte = (byte)(value << (bitsRemaining += 3));
             }
         }
 
-        if (index != byteCount)
-            bytes[index] = currentByte;
+        if (index != base32.Length * 5 / 8)
+            span[index] = currentByte;
 
         return bytes;
     }
@@ -72,34 +64,33 @@ public class Base32Encoding : IEncoding
     {
         Guard.IsNotNull(bytes);
         Guard.HasSizeGreaterThan(bytes, 0);
-
-        int length = bytes.Length.DivCeil(5) << 3;
+        
+        int length = bytes.Length.DivCeil(5) * 8;
         Span<char> span = length.CanAllocString() ? stackalloc char[length] : new char[length];
 
-        byte nextCharacterCode = 0, bitsRemaining = 5;
+        byte nextCode = 0, bitsRemaining = 5;
         int index = 0;
 
-        foreach (byte b in bytes)
+        foreach (var value in bytes)
         {
-            nextCharacterCode = (byte)(nextCharacterCode | b >> 8 - bitsRemaining);
-            span[index++] = ValueToChar(nextCharacterCode);
+            nextCode = (byte)(nextCode | value >> (8 - bitsRemaining));
+            span[index++] = ValueToChar(nextCode);
 
             if (bitsRemaining < 4)
             {
-                nextCharacterCode = (byte)(b >> 3 - bitsRemaining & 31);
-                span[index++] = ValueToChar(nextCharacterCode);
+                nextCode = (byte)((value >> (3 - bitsRemaining)) & 0B11111);
+                span[index++] = ValueToChar(nextCode);
                 bitsRemaining += 5;
             }
 
             bitsRemaining -= 3;
-            nextCharacterCode = (byte)(b << bitsRemaining & 31);
+            nextCode = (byte)((value << bitsRemaining) & 0B11111);
         }
 
         if (index != length)
         {
-            span[index++] = ValueToChar(nextCharacterCode);
-            while (index != length)
-                span[index++] = '=';
+            span[index++] = ValueToChar(nextCode);
+            span[index..].Fill('=');
         }
 
         return new(span);
@@ -115,8 +106,5 @@ public class Base32Encoding : IEncoding
     };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static char ValueToChar(byte byteCode)
-    {
-        return GlobalTables.Base32_RFC3548[byteCode];
-    }
+    private static char ValueToChar(byte byteCode) => Base32_RFC4648[byteCode];
 }

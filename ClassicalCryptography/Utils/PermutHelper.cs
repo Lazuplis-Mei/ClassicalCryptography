@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using static ClassicalCryptography.Utils.MathExtension;
-
-namespace ClassicalCryptography.Utils;
+﻿namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 组合工具类
@@ -20,7 +17,7 @@ public static class PermutHelper
         var list = new List<ushort>(count + 1).FillOrder(count + 1);
         for (int i = 0; i < count; i++)
         {
-            result[i] = list[(int)BigInteger.DivRem(n, Factorial(count - i - 1), out n)];
+            result[i] = list[(int)BigInteger.DivRem(n, MathEx.Factorial(count - i - 1), out n)];
             list.Remove(result[i]);
         }
         return result;
@@ -34,7 +31,7 @@ public static class PermutHelper
         var list = new List<ushort>(span.Length + 1).FillOrder(span.Length + 1);
         for (int i = 0; i < span.Length; i++)
         {
-            span[i] = list[(int)BigInteger.DivRem(number, Factorial(span.Length - i - 1), out number)];
+            span[i] = list[(int)BigInteger.DivRem(number, MathEx.Factorial(span.Length - i - 1), out number)];
             list.Remove(span[i]);
         }
     }
@@ -48,7 +45,7 @@ public static class PermutHelper
         for (int i = 0; i < permute.Length - 1; i++)
         {
             int t = permute.Length - i - 1;
-            result += permute.TakeLast(t).Count(j => j < permute[i]) * Factorial(t);
+            result += permute.TakeLast(t).Count(j => j < permute[i]) * MathEx.Factorial(t);
         }
         return result;
     }

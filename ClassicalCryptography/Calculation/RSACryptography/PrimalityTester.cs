@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Calculation.RSACryptography;
+﻿namespace ClassicalCryptography.Calculation.RSACryptography;
 
 /// <summary>
 /// 使用MillerRabin算法的质数检测工具
@@ -24,13 +22,29 @@ namespace ClassicalCryptography.Calculation.RSACryptography;
 [ReferenceFrom("https://github.com/IOL0ol1/PrimalityTest/blob/0faadb9d39fb1dcb1c5218654a601ccf56730773/PrimalityTest/Utils/BigIntegerEx.cs")]
 public static partial class MillerRabinPrimalityTester
 {
+    #region 常量
+
     /// <summary>
     /// 默认的重复次数，这将提供 <c>99.99999999854481%</c> 的准确率
     /// </summary>
     public const int TEST_REPEAT_COUNT = 18;
 
+    /// <summary>
+    /// 并行查找质数的范围
+    /// </summary>
     private const int SEARCH_END = 10000;
+
+    /// <summary>
+    /// 在并行查找质数的范围中是否找到质数
+    /// </summary>
     private const int NOT_FOUND = -1;
+
+    /// <summary>
+    /// 使用简单方法检测质数的阈值
+    /// </summary>
+    private const ulong SMALL_PRIME_THRESHOLD = 100_0000UL;
+    
+    #endregion
 
     private static readonly int[] smallPrimes =
     {
@@ -51,7 +65,7 @@ public static partial class MillerRabinPrimalityTester
         int n = NOT_FOUND;
         Parallel.For(0, SEARCH_END, (i, loop) =>
         {
-            int di = i << 1;
+            int di = 2 * i;
             if ((number + di).IsPrime())
             {
                 n = di;
@@ -85,9 +99,10 @@ public static partial class MillerRabinPrimalityTester
         int n = NOT_FOUND;
         Parallel.For(0, SEARCH_END, (i, loop) =>
         {
-            if ((number + (i << 1)).IsPrime())
+            int di = 2 * i;
+            if ((number + di).IsPrime())
             {
-                n = i << 1;
+                n = di;
                 loop.Stop();
             }
         });
@@ -145,9 +160,9 @@ public static partial class MillerRabinPrimalityTester
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TestResult IsPrime(BigInteger number, int testRepeatCount)
     {
-        Guard.IsTrue(BigInteger.IsPositive(number));
+        GuardEx.IsPositive(number);
 
-        if (number < 100_0000UL)
+        if (number < SMALL_PRIME_THRESHOLD)
             return IsPrime((ulong)number) ? TestResult.IS_PRIME : TestResult.NOT_PRIME;
 
         if (number.IsEven)
@@ -213,7 +228,7 @@ public static partial class MillerRabinPrimalityTester
         {
             if (testResult is TestResult.NOT_PRIME)
                 loop.Stop();
-            var x = RandomHelper.RandomBigInt(m);
+            var x = RandomHelper.RandomBigInteger(m);
             testResult = MillerRabinInternal(number, x, q, k);
         });
         return testResult;

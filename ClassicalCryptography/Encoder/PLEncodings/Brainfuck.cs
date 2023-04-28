@@ -1,12 +1,13 @@
-﻿using System.Runtime.CompilerServices;
+﻿using CommunityToolkit.HighPerformance;
+using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.PLEncodings;
 
 /// <summary>
-/// <a href="https://en.wikipedia.org/wiki/Brainfuck">Brainfuck程序</a>
+/// <see href="https://en.wikipedia.org/wiki/Brainfuck">Brainfuck程序</see>
 /// </summary>
 /// <remarks>
-/// 在线工具:<a href="https://www.splitbrain.org/services/ook">Brainfuck</a>
+/// 在线工具:<see href="https://www.splitbrain.org/services/ook">Brainfuck</see>
 /// </remarks>
 public class Brainfuck
 {
@@ -33,7 +34,6 @@ public class Brainfuck
         var stack = new Stack<int>();
         int memoryPointer = 0, inputPointer = 0;
         var result = new List<byte>();
-
         for (int i = 0; i < brainfuckCode.Length; i++)
         {
             switch (brainfuckCode[i])
@@ -121,7 +121,7 @@ public class Brainfuck
                     break;
             }
         }
-        return Encoding.GetString(result.ToArray());
+        return Encoding.GetString(result.AsSpan());
     }
 
     /// <summary>

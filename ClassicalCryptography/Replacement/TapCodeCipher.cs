@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using static ClassicalCryptography.Replacement.CommonTables;
+﻿using static ClassicalCryptography.Replacement.CommonTables;
 
 namespace ClassicalCryptography.Replacement;
 
@@ -20,9 +19,8 @@ public class TapCodeCipher : ICipher<string, string>
     [SkipLocalsInit]
     public string Decrypt(string cipherText)
     {
-        int size = cipherText.Length >> 1;
-        Span<char> result = size.CanAllocString()
-            ? stackalloc char[size] : new char[size];
+        int size = cipherText.Length / 2;
+        Span<char> result = size.CanAllocString() ? stackalloc char[size] : new char[size];
 
         for (int i = 0; i < cipherText.Length; i++)
         {
@@ -39,10 +37,10 @@ public class TapCodeCipher : ICipher<string, string>
     public string Encrypt(string plainText)
     {
         var strBuilder = new StringBuilder();
-        foreach (var c in plainText)
+        foreach (var character in plainText)
         {
-            int si = TapCode.KeyValue.Alphabet.IndexOf(char.ToUpper(c));
-            if (c == 'k' || c == 'K')
+            int si = TapCode.KeyValue.Alphabet.IndexOf(character.ToUpperAscii());
+            if (character == 'k' || character == 'K')
                 si = 2;
             if (si != -1)
             {

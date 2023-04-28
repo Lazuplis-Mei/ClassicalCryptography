@@ -1,207 +1,73 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Replacement;
+﻿namespace ClassicalCryptography.Replacement;
 
 /// <summary>
-/// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">摩斯密码</see>
+/// 摩斯密码
 /// </summary>
 [Introduction("摩斯密码", "一种用信号时长和断续表示内容的代码")]
-public class MorseCode
+public partial class MorseCode
 {
-    private const string standardLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private static readonly string[] standardCodes =
-    {
-        ".-",
-        "-...",
-        "-.-.",
-        "-..",
-        ".",
-        "..-.",
-        "--.",
-        "....",
-        "..",
-        ".---",
-        "-.-",
-        ".-..",
-        "--",
-        "-.",
-        "---",
-        ".--.",
-        "--.-",
-        ".-.",
-        "...",
-        "-",
-        "..-",
-        "...-",
-        ".--",
-        "-..-",
-        "-.--",
-        "--..",
-    };
-    /// <summary>
-    /// 标准摩斯密码
-    /// </summary>
-    public static readonly MorseCode Standred = new(standardLetters, standardCodes);
+    private const char SEPARATOR = '/';
+    private const char WORD_SEPARATOR = ' ';
+    private readonly BidirectionalDictionary<char, string> morseData;
 
-    private const string extendedLetters = $"!\"#$'()*,-./0123456789:;=?@{standardLetters}[]_";
-    private static readonly string[] extendedCodes =
+    private MorseCode(BidirectionalDictionary<char, string> morseData)
     {
-        "-.-.--",
-        ".-..-.",
-        "..--",
-        "...-..-",
-        ".----.",
-        "-.--.",
-        "-.--.-",
-        "----",
-        "--..--",
-        "-....-",
-        ".-.-.-",
-        "-..-.",
-        "-----",
-        ".----",
-        "..---",
-        "...--",
-        "....-",
-        ".....",
-        "-....",
-        "--...",
-        "---..",
-        "----.",
-        "---...",
-        "-.-.-.",
-        "-...-",
-        "..--..",
-        ".--.-.",
-            ".-",
-            "-...",
-            "-.-.",
-            "-..",
-            ".",
-            "..-.",
-            "--.",
-            "....",
-            "..",
-            ".---",
-            "-.-",
-            ".-..",
-            "--",
-            "-.",
-            "---",
-            ".--.",
-            "--.-",
-            ".-.",
-            "...",
-            "-",
-            "..-",
-            "...-",
-            ".--",
-            "-..-",
-            "-.--",
-            "--..",
-        "-.-..",
-        ".---.",
-        "..--.-",
-    };
-    /// <summary>
-    /// 扩展的摩斯密码
-    /// </summary>
-    public static readonly MorseCode Extended = new(extendedLetters, extendedCodes);
-
-    private const string shortDigits = "0123456789";
-    private static readonly string[] shortDigitsCodes =
-    {
-        ".-",
-        "..-",
-        "...--",
-        "....-",
-        ".....",
-        "-....",
-        "--...",
-        "-..",
-        "-.",
-        "-",
-    };
-    /// <summary>
-    /// 数字短码
-    /// </summary>
-    public static readonly MorseCode ShortDigit = new(shortDigits, shortDigitsCodes);
-
-    private readonly string letters;
-    private readonly string lowerLetters;
-    private readonly string[] codes;
-
-    private MorseCode(string letters, string[] codes)
-    {
-        this.letters = letters;
-        lowerLetters = letters.ToLower();
-        this.codes = codes;
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private int GetLetterIndex(char letter)
-    {
-        int index = letters.IndexOf(letter);
-        if (index == -1)
-        {
-            index = lowerLetters.IndexOf(letter);
-            if (index == -1)
-                throw new ArgumentOutOfRangeException(nameof(letter));
-        }
-        return index;
+        this.morseData = morseData;
     }
 
     /// <summary>
-    /// 字符可以编码
+    /// 字符是否可以编码
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsVaildLetter(char letter)
     {
-        return letters.Contains(letter) || lowerLetters.Contains(letter);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private int GetCodeIndex(string code)
-    {
-        int index = Array.IndexOf(codes, code);
-        if (index == -1)
-            throw new ArgumentOutOfRangeException(nameof(code));
-        return index;
+        return morseData.ContainsKey(letter.ToUpperAscii());
     }
 
     /// <summary>
-    /// 存在的摩斯密码
+    /// 是否是合法的摩斯密码
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public bool IsVaildCode(string code)
     {
-        return Array.IndexOf(codes, code) != -1;
+        return morseData.Inverse.ContainsKey(code);
     }
 
     /// <summary>
-    /// 解密
+    /// 解密摩斯密码
     /// </summary>
-    public string FromMorse(string morse, char separator = '/')
+    public string FromMorse(string morse)
     {
-        var strBuilder = new StringBuilder();
-        foreach (var code in morse.Split(separator, StringSplitOptions.RemoveEmptyEntries))
+        var result = new StringBuilder(morse.Length / 4);
+        foreach (string word in morse.Split(WORD_SEPARATOR))
         {
-            strBuilder.Append(letters[GetCodeIndex(code)]);
+            foreach (string code in word.Split(SEPARATOR))
+            {
+                if (morseData.Inverse.TryGetValue(code, out char character))
+                    result.Append(character);
+            }
+            result.Append(WORD_SEPARATOR);
         }
-        return strBuilder.ToString();
+        return result.RemoveLast().ToString();
     }
 
     /// <summary>
-    /// 加密
+    /// 加密为摩斯密码
     /// </summary>
-    public string ToMorse(string text, char separator = '/')
+    public string ToMorse(string text)
     {
-        var result = new string[text.Length];
+        var result = new StringBuilder(text.Length * 4);
         for (int i = 0; i < text.Length; i++)
         {
-            result[i] = codes[GetLetterIndex(text[i])];
-        }
-        return string.Join(separator, result);
-    }
+            char character = text[i];
+            if (character is '*' && morseData.ContainsKey('X'))
+                character = 'X';
 
+            if (character == WORD_SEPARATOR)
+                result.Append(WORD_SEPARATOR);
+            else if (morseData.TryGetValue(character.ToUpperAscii(), out string code))
+                result.Append(code).Append(SEPARATOR);
+        }
+        return result.RemoveLast().ToString();
+    }
 }

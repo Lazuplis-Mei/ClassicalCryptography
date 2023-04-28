@@ -11,25 +11,23 @@ public class Base65536Encoding : IEncoding
 {
     private const int PaddingBlockStart = 5376;
     private const int BmpThreshold = 0x10000;
+    private static readonly BidirectionalDictionary<byte, int> Map;
 
-    private static readonly BidirectionalDictionary<byte, int> Map = new();
+    static Base65536Encoding()
+    {
+        Map = new(256);
+        var numbers = MemoryMarshal.Cast<byte, int>(Resources.Base65536);
+        for (int i = 0; i < 256; i++)
+            Map.Add((byte)i, numbers[i]);
+    }
 
     /// <inheritdoc/>
     public static string Encode(byte[] bytes)
     {
-        if (Map.Count == 0)
-        {
-            var numbers = MemoryMarshal.Cast<byte, int>(Properties.Resources.Base65536);
-            for (int i = 0; i < numbers.Length; i++)
-                Map.Add((byte)i, numbers[i]);
-        }
-
         var result = new StringBuilder(bytes.Length);
-
         for (var i = 0; i < bytes.Length; i += 2)
         {
             var blockStart = i + 1 < bytes.Length ? Map[bytes[i + 1]] : PaddingBlockStart;
-            //此处的原始代码完全可以被化简
             result.Append(char.ConvertFromUtf32(blockStart + bytes[i]));
         }
         return result.ToString();
@@ -72,14 +70,8 @@ public class Base65536Encoding : IEncoding
     /// <param name="ignoreGarbage">忽略错误字符</param>
     public static byte[] Decode(string encodeText, bool ignoreGarbage)
     {
-        if (Map.Count == 0)
-        {
-            var numbers = MemoryMarshal.Cast<byte, int>(Properties.Resources.Base65536);
-            for (int i = 0; i < numbers.Length; i++)
-                Map.Add((byte)i, numbers[i]);
-        }
         bool sequenceEnded = false;
-        var bytes = new List<byte>(encodeText.Length << 1);
+        var bytes = new List<byte>(encodeText.Length * 2);
         for (int i = 0; i < encodeText.Length;)
         {
             int codePoint = char.ConvertToUtf32(encodeText, i++);
@@ -90,7 +82,8 @@ public class Base65536Encoding : IEncoding
 
             if (blockStart == PaddingBlockStart)
             {
-                if (sequenceEnded) throw new ArgumentException("Base65536序列已结束");
+                if (sequenceEnded)
+                    throw new ArgumentException("Base65536序列已结束");
 
                 bytes.Add(point1);
                 sequenceEnded = true;
@@ -100,14 +93,15 @@ public class Base65536Encoding : IEncoding
             {
                 if (Map.Inverse.TryGetValue(blockStart, out byte point2))
                 {
-                    if (sequenceEnded) throw new ArgumentException("Base65536序列已结束");
+                    if (sequenceEnded)
+                        throw new ArgumentException("Base65536序列已结束");
 
                     bytes.Add(point1);
                     bytes.Add(point2);
                 }
                 else if (!ignoreGarbage)
                 {
-                    throw new ArgumentException("不正确的Base65536字符" + codePoint);
+                    throw new ArgumentException($"不正确的Base65536字符:`{codePoint}`");
                 }
             }
         }

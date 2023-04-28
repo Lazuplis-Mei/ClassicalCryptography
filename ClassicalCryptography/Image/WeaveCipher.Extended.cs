@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Runtime.CompilerServices;
 using ZXing.Common;
 
 namespace ClassicalCryptography.Image;

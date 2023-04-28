@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Utils;
 
@@ -8,6 +7,9 @@ namespace ClassicalCryptography.Utils;
 /// </summary>
 internal static class MathExtension
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static byte MakeByte(byte high, byte low) => (byte)((high << 4) | low);
+
     /// <summary>
     /// 求模逆元
     /// </summary>
@@ -40,23 +42,24 @@ internal static class MathExtension
     public static int ToInt32(this BitArray bits)
     {
         int number = 0;
-        for (int i = 0; i < bits.Length; i++)
+        foreach (var value in bits.EnumeratorUnBox())
         {
             number <<= 1;
-            if (bits[i])
+            if (value)
                 number++;
         }
         return number;
     }
 
     /// <summary>
-    /// 数值转换成二进制序列
+    /// 数值转换成<see cref="BitArray"/>
     /// </summary>
     /// <param name="number">数值</param>
-    /// <param name="count">序列长度</param>
-    public static BitArray ToBinary(this int number, int count)
+    /// <param name="count">长度</param>
+    public static BitArray ToBitArray(this int number, int count)
     {
         var bits = new BitArray(count);
+        //如果可以直接修改m-array就好了
         for (int i = 0; i < count; i++)
             bits[i] = (number >> (count - i - 1) & 1) != 0;
         return bits;
@@ -72,6 +75,18 @@ internal static class MathExtension
     {
         var (quotient, remainder) = Math.DivRem(dividend, divisor);
         return remainder == 0 ? quotient : quotient + 1;
+    }
+
+    /// <summary>
+    /// 距离整除还差多少
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int DivPadding(this int dividend, int divisor)
+    {
+        int modulus = dividend % divisor, padding = 0;
+        if (modulus != 0)
+            padding = divisor - modulus;
+        return padding;
     }
 
     /// <summary>

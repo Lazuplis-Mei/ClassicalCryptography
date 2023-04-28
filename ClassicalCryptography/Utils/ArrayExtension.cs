@@ -1,25 +1,36 @@
 ﻿using CommunityToolkit.HighPerformance;
-using System.Runtime.CompilerServices;
+using System.Collections;
 
 namespace ClassicalCryptography.Utils;
 
 internal static class ArrayExtension
 {
-    /// <summary>
-    /// 找到元素出现的所有位置
-    /// </summary>
-    public static List<int> FindAll<T>(this T[] array, T item) where T : notnull
+    public static IEnumerable<bool> EnumeratorUnBox(this BitArray array)
     {
-        var result = new List<int>();
-        for (int i = 0; i < array.Length; i++)
-            if (array[i].Equals(item))
-                result.Add(i);
-        return result;
+        for (int i = 0; i < array.Count; i++)
+            yield return array[i];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static List<T> RemoveLast<T>(this List<T> list, int count) where T : notnull
+    {
+        list.RemoveRange(list.Count - count, count);
+        return list;
     }
 
     /// <summary>
     /// 找到元素出现的所有位置
     /// </summary>
+    public static List<int> FindAll<T>(this IList<T> list, T item) where T : notnull
+    {
+        var result = new List<int>();
+        for (int i = 0; i < list.Count; i++)
+            if (list[i].Equals(item))
+                result.Add(i);
+        return result;
+    }
+
+    /// <inheritdoc cref="Array.IndexOf{T}(T[], T)"/>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int IndexOf<T>(this T[] array, T item) where T : notnull
     {
@@ -60,16 +71,5 @@ internal static class ArrayExtension
         Guard.IsNotNull(source.Array);
         Span<T> span = source.Array.AsSpan();
         span.Slice(source.Offset, source.Count).CopyTo(dest[start..]);
-    }
-
-    /// <summary>
-    /// 二维转一维
-    /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T[] ToFlatArray<T>(this Span2D<T> span2D)
-    {
-        var array = new T[span2D.Length];
-        span2D.CopyTo(array);
-        return array;
     }
 }

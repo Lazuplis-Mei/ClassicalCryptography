@@ -7,32 +7,11 @@
 [ReferenceFrom("https://github.com/qntm/base32768/blob/main/src/index.js", ProgramingLanguage.JavaScript, License.MIT)]
 public class Base32768Encoding : IEncoding
 {
-    private const int BITS_PER_CHAR = 15;
-    private const int BITS_PER_BYTE = 8;
-
-    private static readonly string[] pairStrings =
-    {
-        string.Empty,
-        "ƀƟɀʟ"
-    };
-
-    private static BaseXXXXEncoding? base32768;
+    private static readonly BaseXXXXEncoding base32768 = new(15, new[] { Resources.Base32768PairString, "ƀƟɀʟ" });
+    
+    /// <inheritdoc/>
+    public static string Encode(byte[] bytes) => base32768.Encode(bytes);
 
     /// <inheritdoc/>
-    public static string Encode(byte[] bytes)
-    {
-        if (pairStrings[0] == string.Empty)
-            pairStrings[0] = Properties.Resources.Base32768PairString;
-        base32768 ??= new(BITS_PER_CHAR, BITS_PER_BYTE, pairStrings);
-        return base32768.Encode(bytes);
-    }
-
-    /// <inheritdoc/>
-    public static byte[] Decode(string encodeText)
-    {
-        if (pairStrings[0] == string.Empty)
-            pairStrings[0] = Properties.Resources.Base32768PairString;
-        base32768 ??= new(BITS_PER_CHAR, BITS_PER_BYTE, pairStrings);
-        return base32768.Decode(encodeText);
-    }
+    public static byte[] Decode(string encodeText) => base32768.Decode(encodeText);
 }

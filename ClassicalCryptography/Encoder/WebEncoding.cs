@@ -1,7 +1,5 @@
 ﻿using System.Net;
-using System.Runtime.CompilerServices;
 using System.Web;
-
 
 namespace ClassicalCryptography.Encoder;
 
@@ -11,23 +9,26 @@ namespace ClassicalCryptography.Encoder;
 public static class WebEncoding
 {
     /// <summary>
+    /// 字符编码
+    /// </summary>
+    public static Encoding Encoding { get; set; } = Encoding.UTF8;
+
+    /// <summary>
     /// 转换为Url编码
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string UrlEncode(string input, Encoding? encoding = null)
+    public static string UrlEncode(string input)
     {
-        encoding ??= Encoding.UTF8;
-        return HttpUtility.UrlEncode(input, encoding);
+        return HttpUtility.UrlEncode(input, Encoding);
     }
 
     /// <summary>
     /// 从Url编码转换
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string UrlDecode(string input, Encoding? encoding = null)
+    public static string UrlDecode(string input)
     {
-        encoding ??= Encoding.UTF8;
-        return HttpUtility.UrlDecode(input, encoding);
+        return HttpUtility.UrlDecode(input, Encoding);
     }
 
     /// <summary>
@@ -63,8 +64,7 @@ public static class WebEncoding
     /// </summary>
     public static string Base85Ipv6Encode(string ipv6)
     {
-        var number = new BigInteger(Ipv6Encode(ipv6), true, true);
-        return BaseEncoding.NumberToBase(number, GlobalTables.Ascii85_IPv6);
+        return SimpleBase.Base85.Rfc1924.EncodeIpv6(IPAddress.Parse(ipv6));
     }
 
     /// <summary>
@@ -72,8 +72,7 @@ public static class WebEncoding
     /// </summary>
     public static string Base85Ipv6Decode(string base85)
     {
-        var number = BaseEncoding.NumberFromBase(base85, GlobalTables.Ascii85_IPv6);
-        return Ipv6Decode(number.ToByteArray(true, true));
+        return SimpleBase.Base85.Rfc1924.DecodeIpv6(base85).ToString();
     }
 
     /// <summary>

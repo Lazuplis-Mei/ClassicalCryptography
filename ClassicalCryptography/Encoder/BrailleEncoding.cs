@@ -1,7 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Encoder;
+﻿namespace ClassicalCryptography.Encoder;
 
 /// <summary>
 /// 盲文编码，用盲文符号编码字节
@@ -11,36 +8,32 @@ namespace ClassicalCryptography.Encoder;
 public class BrailleEncoding : IEncoding
 {
     /// <summary>
-    /// 字符编码
-    /// </summary>
-    public static Encoding Encoding { get; set; } = Encoding.UTF8;
-
-    /// <summary>
-    /// <a href="http://www.unicode.org/charts/PDF/U2800.pdf">U2800</a>
+    /// <see href="http://www.unicode.org/charts/PDF/U2800.pdf">U2800</see>
     /// </summary>
     public const int FIRST_BRAILLE = '\u2800';
 
-    private static readonly string characters = Properties.Resources.BrailleEncodingString;
+    private static readonly string characters = Resources.BrailleEncodingString;
+    private static readonly Dictionary<char, byte> decodeMap;
 
-    private static Dictionary<char, byte>? decodeMap;
-
-    [MemberNotNull(nameof(decodeMap))]
-    private static void BuildMap()
+    static BrailleEncoding()
     {
-        decodeMap = new();
+        decodeMap = new(256);
         for (int i = 0; i < characters.Length; i++)
-        {
             decodeMap.Add(characters[i], (byte)i);
-        }
     }
+
+    /// <summary>
+    /// 字符编码
+    /// </summary>
+    public static Encoding Encoding { get; set; } = Encoding.UTF8;
 
     /// <inheritdoc/>
     [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
-        Span<char> span = bytes.Length.CanAllocString()
-            ? stackalloc char[bytes.Length] : new char[bytes.Length];
-        for (int i = 0; i < bytes.Length; i++)
+        int count = bytes.Length;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        for (int i = 0; i < count; i++)
             span[i] = characters[bytes[i]];
         return new(span);
     }
@@ -51,9 +44,9 @@ public class BrailleEncoding : IEncoding
     [SkipLocalsInit]
     public static string EncodeWithUnicodeOrder(byte[] bytes)
     {
-        Span<char> span = bytes.Length.CanAllocString()
-            ? stackalloc char[bytes.Length] : new char[bytes.Length];
-        for (int i = 0; i < bytes.Length; i++)
+        int count = bytes.Length;
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        for (int i = 0; i < count; i++)
             span[i] = (char)(FIRST_BRAILLE + bytes[i]);
         return new(span);
     }
@@ -61,17 +54,12 @@ public class BrailleEncoding : IEncoding
     /// <summary>
     /// 用盲文符号编码字符串
     /// </summary>
-    public static string EncodeString(string text)
-    {
-        return Encode(Encoding.GetBytes(text));
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string EncodeString(string text) => Encode(Encoding.GetBytes(text));
 
     /// <inheritdoc/>
     public static byte[] Decode(string brailles)
     {
-        if (decodeMap is null)
-            BuildMap();
-
         var bytes = new byte[brailles.Length];
         for (int i = 0; i < brailles.Length; i++)
             bytes[i] = decodeMap[brailles[i]];
@@ -92,8 +80,6 @@ public class BrailleEncoding : IEncoding
     /// <summary>
     /// 解码盲文符号字符串
     /// </summary>
-    public static string DecodeString(string text)
-    {
-        return Encoding.GetString(Decode(text));
-    }
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static string DecodeString(string text) => Encoding.GetString(Decode(text));
 }

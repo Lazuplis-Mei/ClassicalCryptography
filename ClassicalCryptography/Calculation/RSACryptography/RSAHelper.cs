@@ -1,8 +1,5 @@
-﻿using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Xml;
-using static ClassicalCryptography.Calculation.RSACryptography.RSASteganograph;
-using static ClassicalCryptography.Utils.MathExtension;
 
 namespace ClassicalCryptography.Calculation.RSACryptography;
 
@@ -11,7 +8,6 @@ namespace ClassicalCryptography.Calculation.RSACryptography;
 /// </summary>
 public static class RSAHelper
 {
-
     /// <summary>
     /// 默认的RSA指数
     /// </summary>
@@ -23,6 +19,7 @@ public static class RSAHelper
     public const string RSA_EXPONENT_STRING = "AQAB";
 
     private static readonly RSACryptoServiceProvider RSA_CSP = new();
+    private static readonly XmlWriterSettings settings = new() { Indent = true, OmitXmlDeclaration = true };
 
     /// <summary>
     /// 生成可被破解的弱RSA私钥
@@ -33,43 +30,40 @@ public static class RSAHelper
     public static string GenerateWeakRSAPrivateKey(RSAKeySize keySize)
     {
         GuardEx.IsDefined(keySize);
+        
         int size = (int)keySize;
         Span<byte> buffer = stackalloc byte[size];
         Random.Shared.NextBytes(buffer);
         var p = new BigInteger(buffer, true, true);
-        Random.Shared.NextBytes(buffer[^(size >> 2)..]);
+        Random.Shared.NextBytes(buffer[^(size / 4)..]);
         var q = new BigInteger(buffer, true, true);
+
         return GenerateRSAPrivateKey(p.FindPrime(), q.FindPrime());
     }
 
     /// <summary>
     /// 使用指定的质数生成RSA私钥
     /// </summary>
-    /// <param name="P">质数P</param>
-    /// <param name="Q">质数Q</param>
+    /// <param name="p">质数P</param>
+    /// <param name="q">质数Q</param>
     /// <returns>xml格式的RSA私钥</returns>
-    public static string GenerateRSAPrivateKey(BigInteger P, BigInteger Q)
+    public static string GenerateRSAPrivateKey(BigInteger p, BigInteger q)
     {
-        var Modulus = P * Q;
-        var Exponent = RSA_EXPONENT;
-        var D = ModularInverse(Exponent, Modulus - (P + Q - 1));
-        var DP = D % (P - 1);
-        var DQ = D % (Q - 1);
-        var InverseQ = ModularInverse(Q, P);
-
-        var xml = new StringBuilder();
-        using (var writer = XmlWriter.Create(xml, new() { Indent = true, OmitXmlDeclaration = true }))
+        var n = p * q;
+        var d = MathEx.ModularInverse(RSA_EXPONENT, n - (p + q - 1));
+        var xml = new StringBuilder(1000);
+        using (var writer = XmlWriter.Create(xml, settings))
         {
             writer.WriteStartElement("RSAKeyValue");
 
-            writer.WriteElement(nameof(Modulus), Modulus);
-            writer.WriteElement(nameof(Exponent), RSA_EXPONENT_STRING);
-            writer.WriteElement(nameof(D), D);
-            writer.WriteElement(nameof(P), P);
-            writer.WriteElement(nameof(Q), Q);
-            writer.WriteElement(nameof(DP), DP);
-            writer.WriteElement(nameof(DQ), DQ);
-            writer.WriteElement(nameof(InverseQ), InverseQ);
+            writer.WriteElement("Modulus", n);
+            writer.WriteElement("Exponent", RSA_EXPONENT_STRING);
+            writer.WriteElement("D", d);
+            writer.WriteElement("P", p);
+            writer.WriteElement("Q", q);
+            writer.WriteElement("DP", d % (p - 1));
+            writer.WriteElement("DQ", d % (q - 1));
+            writer.WriteElement("InverseQ", MathEx.ModularInverse(q, p));
 
             writer.WriteEndElement();
         }

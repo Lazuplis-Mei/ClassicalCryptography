@@ -19,10 +19,12 @@ public static partial class PLEncoding
     public static string ToPythonBytes(string input)
     {
         var bytes = Encoding.UTF8.GetBytes(input);
-        var result = new StringBuilder(bytes.Length << 2);
+        var result = new StringBuilder(bytes.Length * 4);
         foreach (var code in bytes)
         {
-            result.Append(@"\x").Append(code.ToString("x2"));
+            result.Append(@"\x");
+            result.Append(HexLower[code >> 4]);
+            result.Append(HexLower[code & 0xF]);
         }
         return result.ToString();
     }
@@ -33,9 +35,9 @@ public static partial class PLEncoding
     public static string FromPythonBytes(string input)
     {
         var matches = PYHexRegex().Matches(input);
-        Span<byte> bytes = matches.Count.CanAlloc()
-            ? stackalloc byte[matches.Count] : new byte[matches.Count];
-        for (int i = 0; i < matches.Count; i++)
+        int count = matches.Count;
+        Span<byte> bytes = count.CanAlloc() ? stackalloc byte[count] : new byte[count];
+        for (int i = 0; i < count; i++)
         {
             bytes[i] = Convert.ToByte(matches[i].Value[2..], 16);
         }
@@ -54,35 +56,34 @@ public static partial class PLEncoding
     /// </summary>
     public static string FromPunycode(string input) => idnMapping.GetUnicode(input);
 
-
     /// <summary>
     /// Perl的一个子集，限制了源代码只能有Perl的关键字
     /// </summary>
     [ReferenceFrom("https://github.com/ezeeo/ctf-tools/blob/095808a84d34e7ebfa6bcbe063275da24563f092/Library/ppencode/ppencode.js", ProgramingLanguage.JavaScript)]
     public static string PPEncode(string code)
     {
-        static void AppendCharacter(int character, StringBuilder strBuilder)
-        {
-            if (character > 255)
-                return;
-            var code = ppCodes[character].RandomItem();
-            for (var i = 0; i < code.Length; i += 2)
-            {
-                strBuilder.Append(ppWords[Convert.ToInt32(code.Substring(i, 2), 16)]);
-                strBuilder.Append(' ');
-            }
-        }
-
         var result = new StringBuilder();
         result.AppendLine("#!/usr/bin/perl -w");
-        AppendCharacter(Random.Shared.Next(1, 10), result);
+        result.AppendCharacter(Random.Shared.Next(1, 10));
         for (var i = 0; i < code.Length; i++)
         {
             result.Append("and print chr ");
-            AppendCharacter(code[i], result);
+            result.AppendCharacter(code[i]);
         }
         result.AppendLine();
         return result.ToString();
+    }
+
+    private static void AppendCharacter(this StringBuilder strBuilder, int index)
+    {
+        if (index > 255)
+            return;
+        var code = ppCodes[index, Random.Shared.Next(3)];
+        for (var i = 0; i < code.Length; i += 2)
+        {
+            strBuilder.Append(ppWords[Convert.ToInt32(code.Substring(i, 2), 16)]);
+            strBuilder.Append(' ');
+        }
     }
 
     /// <summary>
@@ -93,7 +94,7 @@ public static partial class PLEncoding
     public static string AAEncode(string jsCode)
     {
         var result = new StringBuilder();
-        result.Append(Properties.Resources.AAEncodingString);
+        result.Append(Resources.AAEncodingString);
 
         for (int i = 0; i < jsCode.Length; i++)
         {
@@ -214,7 +215,7 @@ public static partial class PLEncoding
         if (tempString.Length > 0)
             result.Append($@"""{tempString}""+");
 
-        return string.Format(Properties.Resources.JJEncodngString, varName, result);
+        return string.Format(Resources.JJEncodngString, varName, result);
     }
 
     /// <summary>

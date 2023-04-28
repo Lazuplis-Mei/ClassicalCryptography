@@ -1020,9 +1020,12 @@ TwiddlePuzzle.Cipher.Encrypt("0123456789ABCDEF", key);
 
 ### MorseCode
 
-* 纯英文字母摩斯密码(`MorseCode.Standred`)
-* 扩展数字和符号的摩斯密码(`MorseCode.Extended`)
-* 数字短码(`MorseCode.ShortDigit`)
+一种用信号时长和断续表示内容的代码，包含了一下几种类别
+
+* 英文字母+数字+符号(`English`)
+* 数字短码(`ShortDigit`)
+* 注音符号(`ChineseZhuyin`)
+
 
 ----------------------------------------
 
@@ -1068,8 +1071,9 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
 * Base65536[^12]
 * Base32768[^13]
 * Base32[^14]
+* Base58(比特币地址编码)
 * Base85[^15]
-* Base16(Hex)
+* Base16(Hex/16进制)
 * Base(使用任意的表来编码)
 * 2,4,8进制(`BinaryEncoding`)
 * 盲文编码[^16]
@@ -1115,20 +1119,30 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
   ChineseCommonBraille.DistinguishThird = false;
   ChineseCommonBraille.UseAbbreviations = false;
   var bt = ChineseCommonBraille.Encode("谁水双举盲文编码就说(shuo1)指纹很准噶");
-  var py = ChineseCommonBraille.DecodePinyin(bt);
-  ChineseCommonBraille.ResolveAlternatePinyin(py);
+  var py = ChineseCommonBraille.DecodePinyins(bt);
+  ChineseCommonBraille.ResolvePinyins(py);
   //bt> ⠱⠮⠂⠱⠺⠄⠱⠶⠁⠛⠥⠄⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠛⠳⠆⠱⠕⠁⠌⠄⠒⠂⠓⠴⠄⠌⠒⠄⠛⠔⠂
-  //py> SH(I)EI2SH(I)[UI/WEI]3SH(I)UANG1[G/J]U3MANG2[UN/WEN]2BIAN1MA3[G/J][IU/YOU]4SH(I)UO1ZH(I)3[UN/WEN]2[H/X]EN3ZH(I)[UN/WEN]3[G/J]A2
+  //py> SH(I)EI2SH(I)[UI/WEI]3SH(I)[UANG/WANG]1[G/J][U/WU]3MANG2[UN/WEN]2B[IAN/YAN]1MA3[G/J][IU/YOU]4SH(I)[UO/WO]1ZH(I)3[UN/WEN]2[H/X]EN3ZH(I)[UN/WEN]3[G/J]A2
   //> SHEI2SHUI3SHUANG1[G/J]U3MANG2WEN2BIAN1MA3JIU4SHUO1ZHI3WEN2HEN3ZHUN3GA2
   ```
 
 * 四角号码(`FourCornerCode`)[^19]
+* 注音符号(`ChinesePinyin`)[^30]
+
+    ```csharp
+    var pinyins = ChineseHelper.GetPinyinFromText("就是这样");
+    string.Join(',', pinyins.Select(py => py.ToZhuyin()));
+    //> ㄐㄧㄡ,ㄕ,ㄓㄜ,ㄧㄤ
+    ```
+  * 也可以使用`ChinesePinyin.FromZhuyin`将注音转换回拼音
+
 * QuotedPrintable[^20]
 * Unicode字符串(`UnicodeEncoding`)
 * UrlEncode(`WebEncoding`)
 * HtmlEncode(`WebEncoding`)
 * ipv6地址编码(`WebEncoding`)
 * Base85ipv6地址(`WebEncoding`)
+* PGP单词表格(`PGPWordList`)[^29]
 
 [^10]:[base100](https://github.com/AdamNiederer/base100)
 [^11]:[base2048](https://github.com/qntm/base2048)
@@ -1141,6 +1155,8 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
 [^18]:[国家通用盲文方案](http://www.moe.gov.cn/jyb_sjzl/ziliao/A19/201807/W020180725666187054299.pdf)
 [^19]:[wikipedia/四角号码](https://zh.wikipedia.org/zh-cn/%E5%9B%9B%E8%A7%92%E5%8F%B7%E7%A0%81)
 [^20]:[wikipedia/Quoted-printable](https://en.wikipedia.org/wiki/Quoted-printable)
+[^29]:[Whole-Word Phonetic Distances and the PGPfone Alphabet](http://www.asel.udel.edu/icslp/cdrom/vol1/005/a005.pdf)
+[^30]:[wikipedia/注音符號](https://zh.wikipedia.org/wiki/%E6%B3%A8%E9%9F%B3%E7%AC%A6%E8%99%9F)
 
 ----------------------------------------
 
@@ -1151,10 +1167,10 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
 * Python中的bytes字符串
 * Punycode[^21]
 * PPEncode[^22]
-* AAEncode
-* JJEncode
-* Jother
-* Brainfuck[^23]
+* AAEncode(可直接用浏览器运行的js代码)
+* JJEncode(可直接用浏览器运行的js代码)
+* Jother(可直接用浏览器运行的js代码)
+* Brainfuck[^23]\(事实上它还支持几个扩展的指令\)
 
 [^21]:[wikipedia/Punycode](https://en.wikipedia.org/wiki/Punycode)
 [^22]:[esolangs/Ppencode](https://esolangs.org/wiki/Ppencode)
@@ -1222,7 +1238,7 @@ RSASteganograph.GetTextFrom(pemkey);//获取其中的文本
 * [图片加密工具](#NotMosaic)
 * [幻影坦克](#PhantomTank)
 * [裸眼3D图](#Stereogram)
-* ~~[钉线画](#StringArtCipher)~~
+* ~~[钉线画(我觉得我知道怎么做，但钉线画是一种非常低效的方式)](#StringArtCipher)~~
 
 ### PigpenCipher
 

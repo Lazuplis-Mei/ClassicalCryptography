@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Utils;
+﻿namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 随机数
@@ -21,7 +19,7 @@ internal static class RandomHelper
     /// 随机的字节值
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte RandomByte(byte maxValue)
+    public static byte NextByte(byte maxValue)
     {
         return (byte)Random.Shared.Next(maxValue);
     }
@@ -30,7 +28,7 @@ internal static class RandomHelper
     /// 随机的字节值
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static byte RandomByte(byte minValue, byte maxValue)
+    public static byte NextByte(byte minValue, byte maxValue)
     {
         return (byte)Random.Shared.Next(minValue, maxValue);
     }
@@ -99,13 +97,13 @@ internal static class RandomHelper
     /// </summary>
     /// <param name="maxValue">最大值</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BigInteger RandomBigInt(BigInteger maxValue)
+    public static BigInteger RandomBigInteger(BigInteger maxValue)
     {
         GuardEx.IsPositive(maxValue);
         if (maxValue <= long.MaxValue)
             return Random.Shared.NextInt64((long)maxValue);
         Span<byte> bytes = maxValue.ToByteArray(true, true);
-        bytes[0] = RandomByte(bytes[0]);
+        bytes[0] = NextByte(bytes[0]);
         Random.Shared.NextBytes(bytes[1..]);
         return new BigInteger(bytes, true, true);
     }
@@ -116,7 +114,7 @@ internal static class RandomHelper
     /// <param name="minValue">最小值</param>
     /// <param name="maxValue">最大值</param>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static BigInteger RandomBigInt(BigInteger minValue, BigInteger maxValue)
+    public static BigInteger RandomBigInteger(BigInteger minValue, BigInteger maxValue)
     {
         GuardEx.IsPositive(minValue);
         GuardEx.IsPositive(maxValue);
@@ -136,7 +134,7 @@ internal static class RandomHelper
         maxBytes = maxBytes[j..];
 
         var minByte = minBytes[0];
-        minBytes[0] = RandomByte(minByte, maxBytes[0]);
+        minBytes[0] = NextByte(minByte, maxBytes[0]);
         if (minBytes[0] != minByte)
             Random.Shared.NextBytes(minBytes[1..]);
         else
@@ -144,7 +142,7 @@ internal static class RandomHelper
             minBytes = minBytes[1..];
             for (int i = 0; i < minBytes.Length; i++)
             {
-                var value = RandomByte(minBytes[i], byte.MaxValue);
+                var value = NextByte(minBytes[i], byte.MaxValue);
                 if (value != minBytes[i])
                 {
                     minBytes[i++] = value;
@@ -160,7 +158,7 @@ internal static class RandomHelper
     /// 随机的列表项目
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static T RandomItem<T>(this List<T> list)
+    public static T RandomItem<T>(this IList<T> list)
     {
         Guard.HasSizeGreaterThan(list, 0);
         if (list.Count == 1)

@@ -93,7 +93,7 @@ public partial class AdvancedRailFenceCipher
         /// <inheritdoc/>
         public static BigInteger GetKeySpace(int textLength)
         {
-            return MathExtension.Factorial(textLength);
+            return MathEx.Factorial(textLength);
         }
 
         /// <inheritdoc/>

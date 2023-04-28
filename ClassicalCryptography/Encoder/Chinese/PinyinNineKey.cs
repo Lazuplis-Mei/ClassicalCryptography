@@ -1,7 +1,6 @@
 ﻿using Microsoft.International.Converters.PinYinConverter;
-using System.Runtime.CompilerServices;
 
-namespace ClassicalCryptography.Encoder;
+namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// 汉字的拼音九键输入法
@@ -28,13 +27,13 @@ public partial class PinyinNineKey
     /// </summary>
     public static string LettersToCodes(string text)
     {
-        var count = text.Length << 1;
+        var count = text.Length * 2;
         Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
         for (int i = 0; i < count; i += 2)
         {
-            var code = keyboards[char.ToUpper(text[i >> 1])];
-            span[i] = (char)('0' + (code / 10));
-            span[i + 1] = (char)('0' + (code % 10));
+            var code = keyboards[text[i / 2].ToUpperAscii()];
+            span[i] = Digits[code / 10];
+            span[i + 1] = Digits[code % 10];
         }
         return new(span);
     }
@@ -45,7 +44,7 @@ public partial class PinyinNineKey
     /// <remarks>
     /// 对于多音字，无法得知具体使用哪个读音，可以用括号指定<br/>
     /// 例如:<c>说(shuo)</c><br/>
-    /// 如不指定，将使用默认读音
+    /// 如不指定，将使用默认读音，不包含声调
     /// </remarks>
     /// <param name="text">汉字(拼音)组成的文本</param>
     /// <param name="includePosition">是否要包括拼音的位置</param>
@@ -55,20 +54,16 @@ public partial class PinyinNineKey
         IEnumerable<Match> chineseChars = ChineseCharWithPinyin().Matches(text);
         foreach (var match in chineseChars)
         {
-            var chineseChar = new ChineseChar(match.Value[0]);
-            var defaultPinYin = chineseChar.Pinyins[0];
+            var defaultPinYin = ChineseHelper.GetDefaultPinyin(match.Value[0]);
             string pinYin;
             var group = match.Groups["Pinyin"];
-            if (group.Success)
-                pinYin = group.Value.ToUpper();
-            else
-                pinYin = defaultPinYin[..^1];
+            pinYin = group.Success ? group.Value.ToUpperAscii() : defaultPinYin[..^1];
             foreach (var character in pinYin)
             {
-                if (!includePosition)
-                    result.Append(keyboards[character] / 10);
-                else
+                if (includePosition)
                     result.Append(keyboards[character]);
+                else
+                    result.Append(keyboards[character] / 10);
             }
         }
 
@@ -81,11 +76,13 @@ public partial class PinyinNineKey
     [SkipLocalsInit]
     public static string FromCodes(string text)
     {
-        var count = text.Length >> 1;
+        var count = text.Length / 2;
         Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
         for (int i = 0; i < count; i++)
         {
-            span[i] = keyboards.Inverse[Convert.ToByte(text.Substring(i << 1, 2))];
+            int j = i * 2;
+            int value = text[j++].Base36Number() * 10 + text[j].Base36Number();
+            span[i] = keyboards.Inverse[(byte)value];
         }
         return new(span);
     }

@@ -5,7 +5,7 @@ namespace ClassicalCryptography.Image;
 /// <summary>
 /// 加密区域信息
 /// </summary>
-public class EncryptRegions
+public struct EncryptRegions
 {
     /// <summary>
     /// 加密区域信息
@@ -48,8 +48,7 @@ public class EncryptRegions
     /// </summary>
     public static EncryptRegions FromBytes(byte[] bytes)
     {
-        using var memory = new MemoryStream(bytes);
-        using var reader = new BinaryReader(memory);
+        using var reader = new BinaryReader(new MemoryStream(bytes));
         bool includePassword = reader.ReadBoolean();
         int count = reader.ReadInt32();
         var regions = new Rectangle[count];
@@ -69,7 +68,7 @@ public class EncryptRegions
     /// </summary>
     public byte[] ToBytes()
     {
-        using var memory = new MemoryStream();
+        using var memory = new MemoryStream(5 + 16 * Regions.Length);
         using var writer = new BinaryWriter(memory);
         writer.Write(IncludePassword);
         writer.Write(Regions.Length);
@@ -80,6 +79,6 @@ public class EncryptRegions
             writer.Write(rect.Width);
             writer.Write(rect.Height);
         }
-        return memory.ToArray();
+        return memory.GetBuffer();
     }
 }

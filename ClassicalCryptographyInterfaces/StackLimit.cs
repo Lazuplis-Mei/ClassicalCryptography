@@ -8,7 +8,7 @@ public static class StackLimit
     /// <summary>
     /// 最大栈长度
     /// </summary>
-    public const int MAX_STACK_SIZE = 1024;
+    public const int MAX_STACK_SIZE = 512;
 
     /// <summary>
     /// 最大栈字节长度

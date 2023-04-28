@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Encoder.BaseEncodings;
+using CommunityToolkit.HighPerformance.Buffers;
 
 namespace ClassicalCryptography.Encoder;
 
@@ -21,14 +22,6 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 转换为Base64URL编码
-    /// </summary>
-    public static string ToBase64URL(string input)
-    {
-        return K4os.Text.BaseX.Base64.Url.Encode(Encoding.GetBytes(input));
-    }
-
-    /// <summary>
     /// 从Base64编码转换
     /// </summary>
     public static string FromBase64(string input)
@@ -37,24 +30,46 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
+    /// 转换为Base64URL编码
+    /// </summary>
+    /// <remarks>
+    /// 适用于URL和文件名的Base64字符表:<see href="https://www.rfc-editor.org/rfc/rfc4648.html#page-7">rfc4648/page-7</see>
+    /// </remarks>
+    public static string ToBase64URL(string input)
+    {
+        return K4os.Text.BaseX.Base64.Url.Encode(Encoding.GetBytes(input));
+    }
+
+    /// <summary>
     /// 从Base64URL编码转换
     /// </summary>
+    /// <remarks>
+    /// 适用于URL和文件名的Base64字符表:<see href="https://www.rfc-editor.org/rfc/rfc4648.html#page-7">rfc4648/page-7</see>
+    /// </remarks>
     public static string FromBase64URL(string input)
     {
         return Encoding.GetString(K4os.Text.BaseX.Base64.Url.Decode(input));
     }
 
     /// <summary>
-    /// 转换为Base32编码
+    /// 转换为Base32编码(RFC4648)
     /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="Base32Encoding"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base32"/>
+    /// </remarks>
     public static string ToBase32(string input)
     {
         return Base32Encoding.Encode(Encoding.GetBytes(input));
     }
 
     /// <summary>
-    /// 从Base32编码转换
+    /// 从Base32编码转换(RFC4648)
     /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="Base32Encoding"/><br/>
+    /// 更多变体请参考<see cref="SimpleBase.Base32"/>
+    /// </remarks>
     public static string FromBase32(string input)
     {
         return Encoding.GetString(Base32Encoding.Decode(input));
@@ -109,48 +124,65 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 转换为16进制编码
+    /// 转换为16进制编码(大写)
     /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="Convert.ToHexString(byte[])"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base16"/><br/>
+    /// 硬件加速请使用<see cref="K4os.Text.BaseX.Base16"/>
+    /// </remarks>
     public static string ToBase16(string input)
     {
         return Convert.ToHexString(Encoding.GetBytes(input));
     }
 
     /// <summary>
+    /// 从16进制编码转换(大写)
+    /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="Convert.FromHexString(string)"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base16"/><br/>
+    /// 硬件加速请使用<see cref="K4os.Text.BaseX.Base16"/>
+    /// </remarks>
+    public static string FromBase16(string input)
+    {
+        return Encoding.GetString(Convert.FromHexString(input));
+    }
+
+    /// <summary>
     /// 编码最基本形式的QuotedPrintable
     /// </summary>
+    [SkipLocalsInit]
     public static string ToQuotedPrintable(string input)
     {
-        var result = new StringBuilder();
+        var result = new StringBuilder(input.Length + 16);
+        Span<char> oneCharacter = stackalloc char[1];
+        Span<byte> span = stackalloc byte[4];
         foreach (var character in input)
         {
             if (char.IsAscii(character))
             {
-                if (character == '=')
-                    result.Append("=3D");
-                else
-                    result.Append(character);
-            }
-            else
-            {
-                var bytes = Encoding.GetBytes(character.ToString());
-                foreach (var value in bytes)
+                if (character is not '=' and not < '!' and not > '~')
                 {
-                    result.Append('=');
-                    result.Append(GlobalTables.UHexString[value >> 4]);
-                    result.Append(GlobalTables.UHexString[value & 0xF]);
+                    result.Append(character);
+                    continue;
                 }
+                ushort value = character;
+                result.Append('=');
+                result.Append(HexUpper[value >> 4]);
+                result.Append(HexUpper[value & 0xF]);
+                continue;
+            }
+            oneCharacter[0] = character;
+            var count = Encoding.GetBytes(oneCharacter, span);
+            foreach (var value in span[..count])
+            {
+                result.Append('=');
+                result.Append(HexUpper[value >> 4]);
+                result.Append(HexUpper[value & 0xF]);
             }
         }
         return result.ToString();
-    }
-
-    /// <summary>
-    /// 从16进制编码转换
-    /// </summary>
-    public static string FromBase16(string input)
-    {
-        return Encoding.GetString(Convert.FromHexString(input));
     }
 
     /// <summary>
@@ -159,25 +191,25 @@ public static partial class BaseEncoding
     public static string FromQuotedPrintable(string input)
     {
         IEnumerable<Match> matches = QuotedPrintableRegex().Matches(input);
-        var result = new StringBuilder();
+        var result = new StringBuilder(input.Length / 2);
         foreach (var match in matches)
         {
-            var group = match.Groups["Hex"];
-            if (group.Success)
+            Group group;
+            if ((group = match.Groups["Hex"]).Success)
             {
                 int length = group.Value.Length / 3;
-                var bytes = new byte[length];
-                for (int i = 0; i < group.Value.Length; i += 3)
+                using var memory = MemoryOwner<byte>.Allocate(length);
+                var bytes = memory.Span;
+                for (int i = 0; i < group.Value.Length; i++)
                 {
-                    bytes[i / 3] = (byte)(group.Value[i + 1].Base36Number() << 4);
-                    bytes[i / 3] += (byte)group.Value[i + 2].Base36Number();
+                    int high = group.Value[++i].Base36Number();
+                    int low = group.Value[++i].Base36Number();
+                    bytes[i / 3] = MathEx.MakeByte((byte)high, (byte)low);
                 }
                 result.Append(Encoding.GetString(bytes));
                 continue;
             }
-            group = match.Groups["Other"];
-            if (group.Success)
-                result.Append(group.Value);
+            result.Append(match.Value);
         }
         return result.ToString();
     }
@@ -199,23 +231,55 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 转换为Base85
+    /// 转换为Base85(Ascii85)
     /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="K4os.Text.BaseX.Base85"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base85"/>和<seealso cref="TuupolaBase85Encoding"/>
+    /// </remarks>
     public static string ToBase85(string input)
     {
         return K4os.Text.BaseX.Base85.ToBase85(Encoding.GetBytes(input));
     }
 
     /// <summary>
-    /// 从Base85转换
+    /// 从Base85转换(Ascii85)
     /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="K4os.Text.BaseX.Base85"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base85"/>和<seealso cref="TuupolaBase85Encoding"/>
+    /// </remarks>
     public static string FromBase85(string input)
     {
         return Encoding.GetString(K4os.Text.BaseX.Base85.FromBase85(input));
     }
 
     /// <summary>
-    /// 使用指定表(如<see cref="GlobalTables.Base36"/>等)编码
+    /// 转换为Base58
+    /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="SimpleBase.Base58.Bitcoin"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base58"/>
+    /// </remarks>
+    public static string ToBase58(string input)
+    {
+        return SimpleBase.Base58.Bitcoin.Encode(Encoding.GetBytes(input));
+    }
+
+    /// <summary>
+    /// 从Base58转换
+    /// </summary>
+    /// <remarks>
+    /// 默认使用<see cref="SimpleBase.Base58.Bitcoin"/><br/>
+    /// 更多变体请参考<seealso cref="SimpleBase.Base58"/>
+    /// </remarks>
+    public static string FromBase58(string input)
+    {
+        return Encoding.GetString(SimpleBase.Base58.Bitcoin.Decode(input));
+    }
+
+    /// <summary>
+    /// 使用指定表(如<see cref="Base36"/>等)编码
     /// </summary>
     public static string ToBase(string input, string table)
     {
@@ -239,7 +303,7 @@ public static partial class BaseEncoding
     }
 
     /// <summary>
-    /// 使用指定表(如<see cref="GlobalTables.Base36"/>等)编码
+    /// 使用指定表(如<see cref="Base36"/>等)编码
     /// </summary>
     public static string FromBase(string input, string table)
     {
@@ -260,11 +324,9 @@ public static partial class BaseEncoding
             var poweredNumber = BigInteger.Pow(baseNumber, input.Length - i - 1);
             number += table.IndexOf(input[i]) * poweredNumber;
         }
-
         return number;
     }
 
-    [GeneratedRegex("(?<Hex>(=[0-9a-fA-F]{2})+)|(?<Other>[^=]+)")]
+    [GeneratedRegex("(?<Hex>(=[0-9a-fA-F]{2})+)|[^=]+")]
     private static partial Regex QuotedPrintableRegex();
-
 }

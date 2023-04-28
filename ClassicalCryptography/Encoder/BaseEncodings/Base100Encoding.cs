@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace ClassicalCryptography.Encoder.BaseEncodings;
+﻿namespace ClassicalCryptography.Encoder.BaseEncodings;
 
 /// <summary>
 /// Base100编码
@@ -30,18 +28,18 @@ public class Base100Encoding : IEncoding
     [SkipLocalsInit]
     public static string Encode(byte[] bytes)
     {
-        int length = bytes.Length << 2;
-        Span<byte> emojiBytes = length.CanAlloc() ? stackalloc byte[length] : new byte[length];
+        int size = bytes.Length * 4;
+        Span<byte> buffer = size.CanAlloc() ? stackalloc byte[size] : new byte[size];
         for (int i = 0; i < bytes.Length; i++)
         {
-            int j = i << 2;
-            emojiBytes[j++] = 0xF0;
-            emojiBytes[j++] = 0x9F;
+            int j = 4 * i;
+            buffer[j++] = 0xF0;
+            buffer[j++] = 0x9F;
             (int quotient, int remainder) = int.DivRem(bytes[i] + 55, 0x40);
-            emojiBytes[j++] = (byte)(quotient + 0x8F);
-            emojiBytes[j] = (byte)(remainder + 0x80);
+            buffer[j++] = (byte)(quotient + 0x8F);
+            buffer[j] = (byte)(remainder + 0x80);
         }
-        return Encoding.UTF8.GetString(emojiBytes);
+        return Encoding.UTF8.GetString(buffer);
     }
 
     /// <inheritdoc/>
@@ -51,15 +49,16 @@ public class Base100Encoding : IEncoding
     public static byte[] Decode(string encodeText)
     {
         var emojiBytes = Encoding.UTF8.GetBytes(encodeText);
-        Guard.IsEqualTo(emojiBytes.Length & 0B11, 0);
+        Guard.IsEqualTo(emojiBytes.Length % 4, 0);
 
-        var bytes = new byte[emojiBytes.Length >> 2];
+        var bytes = new byte[emojiBytes.Length / 4];
+        var span = bytes.AsSpan();
         for (int i = 0, temp = 0; i < emojiBytes.Length; i++)
         {
-            if ((i & 0B11) == 2)
+            if (i % 4 == 2)
                 temp = (byte)((emojiBytes[i] - 0x8F) << 6);
-            else if ((i & 0B11) == 3)
-                bytes[i >> 2] = (byte)(emojiBytes[i] - 0xB7 + temp);
+            else if (i % 4 == 3)
+                span[i / 4] = (byte)(emojiBytes[i] - 0xB7 + temp);
         }
         return bytes;
     }

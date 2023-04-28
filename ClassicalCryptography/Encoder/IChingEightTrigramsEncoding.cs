@@ -1,5 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-using static ClassicalCryptography.Replacement.CommonTables;
+﻿using static ClassicalCryptography.Replacement.CommonTables;
 namespace ClassicalCryptography.Encoder;
 
 /// <summary>
