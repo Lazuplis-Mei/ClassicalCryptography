@@ -152,8 +152,6 @@ public static partial class ChineseHelper
     /// <summary>
     /// 将形如`shuǐ`的拼音转换成`SHUI3`
     /// </summary>
-    /// <param name="pinyin"></param>
-    /// <returns></returns>
     public static string ParsePinyin(string pinyin)
     {
         int tonenote = -1;

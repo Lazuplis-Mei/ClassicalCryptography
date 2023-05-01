@@ -11,15 +11,21 @@ public class CeaserCipher : SingleReplacementCipher
     /// </summary>
     public CeaserCipher(int key = 3)
     {
+        Guard.IsGreaterThanOrEqualTo(key, 0);
+        key %= 26;
         ReflectionCharSet = $"{U_Letters[key..]}{U_Letters[..key]}";
-        ReflectionCharSet += $"{L_Letters[key..]}{L_Letters[..key]}";
         BuildMap();
     }
 
     /// <summary>
     /// 英文字母
     /// </summary>
-    public override string SupposedCharSet => UL_Letters;
+    public override string SupposedCharSet => U_Letters;
+
+    /// <summary>
+    /// 忽略大小写
+    /// </summary>
+    public override bool IgnoreCase => true;
 
     /// <summary>
     /// 位移后的字母表

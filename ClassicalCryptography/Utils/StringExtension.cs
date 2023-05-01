@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.HighPerformance;
 using System.Buffers;
+using System.Text.Unicode;
 using System.Xml;
 
 namespace ClassicalCryptography.Utils;
@@ -8,6 +9,14 @@ internal delegate TResult ReadOnlySpanFunc<T, out TResult>(ReadOnlySpan<T> span)
 
 internal static class StringExtension
 {
+
+    public static bool IsCjkUnifiedIdeographs(this char character)
+    {
+        var unicodeRange = UnicodeRanges.CjkUnifiedIdeographs;
+        char first = (char)unicodeRange.FirstCodePoint;
+        char end = (char)(unicodeRange.FirstCodePoint + unicodeRange.Length);
+        return char.IsBetween(character, first, end);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static char ToUpperAscii(this char character)

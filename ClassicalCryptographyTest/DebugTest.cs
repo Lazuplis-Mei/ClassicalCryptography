@@ -1,6 +1,7 @@
 ﻿using ClassicalCryptography.Encoder;
 using ClassicalCryptography.Encoder.BaseEncodings;
 using ClassicalCryptography.Encoder.Chinese;
+using ClassicalCryptography.Encoder.Japanese;
 using ClassicalCryptography.Encoder.PLEncodings;
 using ClassicalCryptography.Image;
 using ClassicalCryptography.Replacement;
@@ -26,6 +27,7 @@ namespace ClassicalCryptographyTest
         {
             //Stereogram.MakeWithPattern(new("E:/shark.png"),new("E:/jellybeans2.jpg")).Save("E:/stereogram.png");
             
+
         }
     }
 }

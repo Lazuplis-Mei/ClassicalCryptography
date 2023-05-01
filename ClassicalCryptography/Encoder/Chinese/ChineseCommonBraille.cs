@@ -129,7 +129,6 @@ public static partial class ChineseCommonBraille
         { '⠆', "4" },
     };
 
-
     private static readonly Dictionary<char, string> punctuations = new()
     {
         { '。', "⠐⠆" },
@@ -181,7 +180,7 @@ public static partial class ChineseCommonBraille
     public static bool EncodeLetters { get; set; } = true;
 
     /// <summary>
-    /// 指示应当区分他它她
+    /// 指示应当区分`他它她`
     /// </summary>
     /// <remarks>
     /// <see cref="EncodeTonenote"/>须为<see langword="true"/><br/>
@@ -406,7 +405,6 @@ public static partial class ChineseCommonBraille
                 else
                 {
                     rhyme = m[1].Groups["F"].Value;
-                    vowel = m[0].Value;
                     if (rhyme[0] == 'I' || rhyme[0] == 'V')
                         vowel = m[0].Groups["S"].Value;
                     else if (rhyme[0] == 'A' || rhyme[0] == 'E')

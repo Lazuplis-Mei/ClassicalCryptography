@@ -1,5 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
-
+[assembly: InternalsVisibleTo("ClassicalCryptography")]
 namespace ClassicalCryptography.Interfaces;
 
 /// <summary>
@@ -8,7 +8,7 @@ namespace ClassicalCryptography.Interfaces;
 [Introduction("单表替换密码", "最经典朴素的密码，通过将明文内容替换成其他内容实现。")]
 public class SingleReplacementCipher : ICipher<string, string>
 {
-    private readonly BidirectionalDictionary<char, char> map = new();
+    internal readonly BidirectionalDictionary<char, char> map = new();
 
     /// <summary>
     /// 单表替换密码
@@ -16,15 +16,17 @@ public class SingleReplacementCipher : ICipher<string, string>
     public SingleReplacementCipher()
     {
         SupposedCharSet = ReflectionCharSet = string.Empty;
+        IgnoreCase = false;
     }
 
     /// <summary>
     /// 初始化单表
     /// </summary>
-    public SingleReplacementCipher(string supposedCharSet, string reflectionCharSet)
+    public SingleReplacementCipher(string supposedCharSet, string reflectionCharSet, bool ignoreCase = false)
     {
         SupposedCharSet = supposedCharSet;
         ReflectionCharSet = reflectionCharSet;
+        IgnoreCase = ignoreCase;
         BuildMap();
     }
 
@@ -44,6 +46,11 @@ public class SingleReplacementCipher : ICipher<string, string>
     public virtual string ReflectionCharSet { get; }
 
     /// <summary>
+    /// 是否忽略大小写
+    /// </summary>
+    public virtual bool IgnoreCase { get; }
+
+    /// <summary>
     /// 解密文本
     /// </summary>
     [SkipLocalsInit]
@@ -54,10 +61,14 @@ public class SingleReplacementCipher : ICipher<string, string>
 
         for (int i = 0; i < length; i++)
         {
-            if (map.Inverse.ContainsKey(cipherText[i]))
-                result[i] = map.Inverse[cipherText[i]];
-            else
-                result[i] = cipherText[i];
+            var character = cipherText[i];
+            bool lower = char.IsAsciiLetterLower(character);
+            if (IgnoreCase && lower)
+                character = (char)(character & 0B11011111);
+            character = map.Inverse.TryGetValue(character, out char value) ? value : character;
+            if (IgnoreCase && lower && char.IsAsciiLetterUpper(character))
+                character = (char)(character | 0B00100000);
+            result[i] = character;
         }
         return result.ToString();
     }
@@ -73,12 +84,38 @@ public class SingleReplacementCipher : ICipher<string, string>
 
         for (int i = 0; i < length; i++)
         {
-            if (map.ContainsKey(plainText[i]))
-                result[i] = map[plainText[i]];
-            else
-                result[i] = plainText[i];
+            var character = plainText[i];
+            bool lower = char.IsAsciiLetterLower(character);
+            if (IgnoreCase && lower)
+                character = (char)(character & 0B11011111);
+            character = map.TryGetValue(character, out char value) ? value : character;
+            if (IgnoreCase && lower && char.IsAsciiLetterUpper(character))
+                character = (char)(character | 0B00100000);
+            result[i] = character;
         }
         return result.ToString();
+    }
+
+    /// <summary>
+    /// 是否是可加密的字符
+    /// </summary>
+    public bool IsVaildChar(char character)
+    {
+        bool lower = char.IsAsciiLetterLower(character);
+        if (IgnoreCase && lower)
+            character = (char)(character & 0B11011111);
+        return map.ContainsKey(character);
+    }
+
+    /// <summary>
+    /// 是否是可解密的字符
+    /// </summary>
+    public bool IsVaildCharInverse(char character)
+    {
+        bool lower = char.IsAsciiLetterLower(character);
+        if (IgnoreCase && lower)
+            character = (char)(character & 0B11011111);
+        return map.Inverse.ContainsKey(character);
     }
 
     /// <summary>

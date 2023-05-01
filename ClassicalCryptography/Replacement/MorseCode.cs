@@ -10,7 +10,7 @@ public partial class MorseCode
     private const char WORD_SEPARATOR = ' ';
     private readonly BidirectionalDictionary<char, string> morseData;
 
-    private MorseCode(BidirectionalDictionary<char, string> morseData)
+    internal MorseCode(BidirectionalDictionary<char, string> morseData)
     {
         this.morseData = morseData;
     }
@@ -34,6 +34,21 @@ public partial class MorseCode
     }
 
     /// <summary>
+    /// 解密字符时的特别处理
+    /// </summary>
+    protected virtual char ConvertInverse(char character) => character;
+
+    /// <summary>
+    /// 加密字符时的特别处理
+    /// </summary>
+    protected virtual char Convert(char character)
+    {
+        if (character is '*' && morseData.ContainsKey('X'))
+            character = 'X';
+        return character;
+    }
+
+    /// <summary>
     /// 解密摩斯密码
     /// </summary>
     public string FromMorse(string morse)
@@ -44,7 +59,7 @@ public partial class MorseCode
             foreach (string code in word.Split(SEPARATOR))
             {
                 if (morseData.Inverse.TryGetValue(code, out char character))
-                    result.Append(character);
+                    result.Append(ConvertInverse(character));
             }
             result.Append(WORD_SEPARATOR);
         }
@@ -59,10 +74,7 @@ public partial class MorseCode
         var result = new StringBuilder(text.Length * 4);
         for (int i = 0; i < text.Length; i++)
         {
-            char character = text[i];
-            if (character is '*' && morseData.ContainsKey('X'))
-                character = 'X';
-
+            char character = Convert(text[i]);
             if (character == WORD_SEPARATOR)
                 result.Append(WORD_SEPARATOR);
             else if (morseData.TryGetValue(character.ToUpperAscii(), out string code))

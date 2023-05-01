@@ -1080,12 +1080,14 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
 * 罗马数字转换(`RomanNumerals`)
 * 拼音9键(`PinyinNineKey`)
 
+  * Default
+
   ```csharp
-  PinyinNineKey.LettersToCodes("HELLO");
+  PinyinNineKey.Default.LettersToCodes("HELLO");
   //> 4232535363
-  PinyinNineKey.ToCodes("拼音");
+  PinyinNineKey.Default.ToCodes("拼音");
   //> 714362934362
-  PinyinNineKey.FromCodes("4232535363714362934362");
+  PinyinNineKey.Default.FromCodes("4232535363714362934362");
   //> HELLOPINYIN
   ```
 

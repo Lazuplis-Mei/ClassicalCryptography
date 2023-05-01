@@ -20,14 +20,18 @@ public class AffineCipher : SingleReplacementCipher
         for (int i = 0; i < 26; i++)
             arr[i] = (ushort)((a * i + b) % 26);
         ReflectionCharSet = arr.AssembleText(U_Letters);
-        ReflectionCharSet += arr.AssembleText(L_Letters);
         BuildMap();
     }
 
     /// <summary>
     /// 英文字母
     /// </summary>
-    public override string SupposedCharSet => UL_Letters;
+    public override string SupposedCharSet => U_Letters;
+
+    /// <summary>
+    /// 忽略大小写
+    /// </summary>
+    public override bool IgnoreCase => true;
 
     /// <summary>
     /// 变化后的字母表

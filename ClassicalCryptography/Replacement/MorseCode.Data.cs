@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Replacement;
+﻿using ClassicalCryptography.Encoder.Japanese;
+
+namespace ClassicalCryptography.Replacement;
 
 public partial class MorseCode
 {
@@ -129,9 +131,13 @@ public partial class MorseCode
     });
 
     /// <summary>
-    /// 日语
+    /// 日语片假名
     /// </summary>
-    public static readonly MorseCode Japanese = new(new()
+    /// <remarks>
+    /// 可以使用<see cref="JapaneseHelper"/>将文本转换成片假名。<br/>
+    /// 和标准的摩斯密码混合使用时，可以用『』代替标准交信略号DO和SN包裹正文内容
+    /// </remarks>
+    public static readonly WabunCode Japanese = new(new()
     {
         { 'ア' , "--.--" },
         { 'カ' , ".-.." },
@@ -181,13 +187,17 @@ public partial class MorseCode
         { 'ヨ' , "--" },
         { 'ロ' , ".-.-" },
         { 'ヲ' , ".---" },
+
         { '゛' , ".." },
         { '゜' , "..--." },
 
         { 'ー' , ".--.-" },
         { '、' , ".-.-.-" },
-        { '」' , ".-.-.." },
+        { '。' , ".-.-.." },
         { '（' , "-.--.-" },
         { '）' , ".-..-." },
+
+        { '『' , "-..---" },
+        { '』' , "...-." },
     });
 }

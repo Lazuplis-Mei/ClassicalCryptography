@@ -7,6 +7,19 @@ namespace ClassicalCryptography.Utils;
 /// </summary>
 public static class GlobalTables
 {
+
+    /// <summary>
+    /// 根据字符串创建字典
+    /// </summary>
+    public static BidirectionalDictionary<char, char> BuildDictionary(string keys, string values)
+    {
+        Guard.IsEqualTo(keys.Length, values.Length);
+        var dict = new BidirectionalDictionary<char, char>();
+        for (int i = 0; i < keys.Length; i++)
+            dict[keys[i]] = values[i];
+        return dict;
+    }
+
     /// <summary>
     /// 数字:<c>0123456789</c>
     /// </summary>
@@ -33,6 +46,11 @@ public static class GlobalTables
     public static readonly string Hiragana = "あいうえおかきくけこさしすせそたちつてとなにぬねのはひふへほまみむめもやゆよらりるれろわをん";
 
     /// <summary>
+    /// 日语平假名
+    /// </summary>
+    public static readonly string Katakana = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン";
+
+    /// <summary>
     /// 64进制的字符:<c>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/</c>
     /// </summary>
     public static readonly string VChar64 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
@@ -46,6 +64,11 @@ public static class GlobalTables
     /// 36进制字符:<c>0123456789abcdefghijklmnopqrstuvwxyz</c>
     /// </summary>
     public static readonly string Base36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+    /// <summary>
+    /// 大写36进制字符:<c>0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ</c>
+    /// </summary>
+    public static readonly string U_Base36 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     /// <summary>
     /// 26个大写字母:<c>ABCDEFGHIJKLMNOPQRSTUVWXYZ</c>
@@ -142,6 +165,11 @@ public static class GlobalTables
     /// <see href="https://www.rfc-editor.org/rfc/rfc1924">Ascii85_IPv6(RFC1924)</see>
     /// </summary>
     public static readonly string Ascii85_IPv6 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!#$%&()*+-;<=>?@^_`{|}~";
+
+    /// <summary>
+    /// 键盘布局:<c>QWERTYUIOPASDFGHJKLZXCVBNM</c>
+    /// </summary>
+    public static readonly string QWER_Keyboard = "QWERTYUIOPASDFGHJKLZXCVBNM";
 
     #endregion
 }
