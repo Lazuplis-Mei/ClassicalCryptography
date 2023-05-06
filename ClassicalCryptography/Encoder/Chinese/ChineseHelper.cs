@@ -92,10 +92,9 @@ public static partial class ChineseHelper
         for (int i = 0; i < chineseChars.Count; i++)
         {
             var match = chineseChars[i];
-            var character = match.Value[0];
-            var defaultPinYin = GetDefaultPinyin(character);
+            var character = match.ValueSpan[0];
             var group = match.Groups["Pinyin"];
-            string pinYin = group.Success ? ParsePinyin(group.Value) : defaultPinYin;
+            string pinYin = group.Success ? ParsePinyin(group.Value) : GetDefaultPinyin(character);
             result[i] = ChinesePinyin.Parse(pinYin);
         }
         return result;
@@ -141,7 +140,7 @@ public static partial class ChineseHelper
     /// 获取汉字的拼音
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string[] GetPinyins(char character)
+    public static string[] GetAllPinyins(char character)
     {
         var chineseCharacter = new ChineseChar(character);
         return chineseCharacter.Pinyins.Take(chineseCharacter.PinyinCount).ToArray();
@@ -158,7 +157,7 @@ public static partial class ChineseHelper
         var result = PinyinRegex().Replace(pinyin, match =>
         {
             Guard.IsEqualTo(tonenote, -1);
-            tonenote = match.Value[0] switch
+            tonenote = match.ValueSpan[0] switch
             {
                 'ā' or 'ō' or 'ē' or 'ī' or 'ū' or 'ǖ' or '1' => 1,
                 'á' or 'ó' or 'é' or 'í' or 'ú' or 'ǘ' or '2' => 2,
@@ -173,9 +172,9 @@ public static partial class ChineseHelper
         return tonenote == -1 ? result.ToUpperAscii() : result.ToUpperAscii() + tonenote;
     }
 
-    [GeneratedRegex("(?<A>[āáǎà])|(?<O>[ōóǒò])|(?<E>[ēéěè])|(?<I>[īíǐì])|(?<U>[ūúǔù])|(?<V>[ǖǘǚǜ])|(?<Tonenote>[12345])")]
+    [GeneratedRegex("(?<A>[āáǎà])|(?<O>[ōóǒò])|(?<E>[ēéěè])|(?<I>[īíǐì])|(?<U>[ūúǔù])|(?<V>[ǖǘǚǜ])|(?<Tonenote>[1-5])")]
     private static partial Regex PinyinRegex();
 
-    [GeneratedRegex(@"\p{IsCJKUnifiedIdeographs}(?<Pinyin>\([A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6}[1-4]?\))?")]
+    [GeneratedRegex(@"\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6}[1-5]?)\))?")]
     private static partial Regex ChineseCharWithPinyin();
 }

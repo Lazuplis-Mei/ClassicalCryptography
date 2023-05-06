@@ -41,7 +41,17 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
     /// <summary>
     /// 转换成注音符号(不包含声调)
     /// </summary>
-    public string ToZhuyin() => $"{zhuYins[Vowel.ToString()]}{zhuYins[Rhyme.ToString()]}";
+    public string ToZhuyinWithoutToneNote() => $"{zhuYins[Vowel.ToString()]}{zhuYins[Rhyme.ToString()]}";
+
+    /// <summary>
+    /// 转换成注音符号(包含声调)
+    /// </summary>
+    public string ToZhuyin()
+    {
+        if (ToneNote is ChineseToneNote.None)
+            return ToZhuyinWithoutToneNote();
+        return $"{zhuYins[Vowel.ToString()]}{zhuYins[Rhyme.ToString()]}{toneNotes[(int)ToneNote - 1]}";
+    }
 
     /// <summary>
     /// 注音符号
@@ -50,6 +60,9 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
     {
         var vowel = ChineseVowel.None;
         var rhyme = ChineseRhyme.None;
+        var toneNote = (ChineseToneNote)(toneNotes.IndexOf(zhuyin[^1]) + 1);
+        if (toneNote != ChineseToneNote.None)
+            zhuyin = zhuyin[..^1];
         if (zhuYins.Inverse.TryGetValue(zhuyin, out string pinYin))
         {
             if (SingleVowels.Inverse.ContainsKey(pinYin))
@@ -62,7 +75,7 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
             vowel = Enum.Parse<ChineseVowel>(zhuYins.Inverse[zhuyin[..1]]);
             rhyme = Enum.Parse<ChineseRhyme>(zhuYins.Inverse[zhuyin[1..]]);
         }
-        return new(vowel, rhyme, ChineseToneNote.None);
+        return new(vowel, rhyme, toneNote);
     }
 
 }

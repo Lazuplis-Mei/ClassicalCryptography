@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.HighPerformance;
+using CommunityToolkit.HighPerformance.Buffers;
 using System.Buffers.Binary;
 using System.Diagnostics;
 
@@ -32,12 +33,12 @@ public class TuupolaBase85Encoding
     /// <summary>
     /// 默认的Base85编码
     /// </summary>
-    public static readonly TuupolaBase85Encoding Default = new(GlobalTables.Ascii85, false, true);
+    public static readonly TuupolaBase85Encoding Default = new(Ascii85, false, true);
 
     /// <summary>
     /// Adobe ASCII85
     /// </summary>
-    public static readonly TuupolaBase85Encoding Ascii85 = new(GlobalTables.Ascii85, false, true, "<~", "~>");
+    public static readonly TuupolaBase85Encoding AdobeAscii85 = new(Ascii85, false, true, "<~", "~>");
 
     /// <summary>
     /// <see href="https://rfc.zeromq.org/spec/32/">ZeroMQ (Z85)</see>
@@ -101,7 +102,8 @@ public class TuupolaBase85Encoding
     public string Encode(byte[] bytes)
     {
         int length = bytes.Length.DivCeil(4);
-        Span<uint> span = length.CanAllocInt32() ? stackalloc uint[length] : new uint[length];
+        using var memory = length.CanAllocInt32() ? SpanOwner<uint>.Empty : SpanOwner<uint>.Allocate(length);
+        Span<uint> span = length.CanAllocInt32() ? stackalloc uint[length] : memory.Span;
         Span<byte> byteSpan = bytes.AsSpan();
 
         for (int i = 0; i < length - 1; i++)
@@ -167,7 +169,6 @@ public class TuupolaBase85Encoding
         data.ForEachPartition(5, AddConvert);
         return bytes;
 
-        [SkipLocalsInit]
         void AddConvert(ReadOnlySpan<char> span, int index)
         {
             uint value = 0;

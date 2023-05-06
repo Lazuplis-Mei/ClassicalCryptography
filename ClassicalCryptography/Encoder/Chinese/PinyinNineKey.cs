@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Encoder.Chinese;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+
+namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// 汉字的拼音九键输入法
@@ -26,7 +28,8 @@ public partial class PinyinNineKey
     public string LettersToCodes(string text)
     {
         var count = text.Length * 2;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i += 2)
         {
             var (Key, Position) = keyboards[text[i / 2].ToUpperAscii()];
@@ -51,10 +54,9 @@ public partial class PinyinNineKey
         IEnumerable<Match> chineseChars = ChineseCharWithPinyin().Matches(text);
         foreach (var match in chineseChars)
         {
-            var defaultPinYin = ChineseHelper.GetDefaultPinyin(match.Value[0]);
-            string pinYin;
+            var defaultPinYin = ChineseHelper.GetDefaultPinyin(match.ValueSpan[0]);
             var group = match.Groups["Pinyin"];
-            pinYin = group.Success ? group.Value.ToUpperAscii() : defaultPinYin[..^1];
+            var pinYin = group.Success ? group.Value.ToUpperAscii() : defaultPinYin[..^1];
             foreach (var character in pinYin)
             {
                 var (Key, Position) = keyboards[character];
@@ -74,7 +76,8 @@ public partial class PinyinNineKey
     {
         Guard.IsTrue(IncludePosition);
         var count = text.Length / 2;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
         {
             int j = i * 2;

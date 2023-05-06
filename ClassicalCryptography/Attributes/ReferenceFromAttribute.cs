@@ -28,6 +28,7 @@ public sealed class ReferenceFromAttribute : Attribute
     /// 参考代码的编程语言
     /// </summary>
     public ProgramingLanguage SourceLanguage { get; }
+
     /// <summary>
     /// 参考代码的开源协议
     /// </summary>

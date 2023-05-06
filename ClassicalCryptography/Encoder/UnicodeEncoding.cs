@@ -1,26 +1,35 @@
 ﻿namespace ClassicalCryptography.Encoder;
 
 /// <summary>
-/// Unicode字符串
+/// Unicode字符串(使用C#默认的字符串编码转换)
 /// </summary>
 public partial class UnicodeEncoding
 {
     /// <summary>
     /// 转换成\u字符串
     /// </summary>
+    /// <remarks>
+    /// 所有字符都会被转换为\u0000这样的形式
+    /// </remarks>
     [SkipLocalsInit]
     public static string Encode(string str)
     {
         int size = str.Length * 6;
-        Span<char> span = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        using var memory = size.TryAllocString();
+        Span<char> span = size.CanAllocString() ? stackalloc char[size] : memory.Span;
         var orignalSpan = span;
-        for (int i = 0; i < str.Length; i++)
+        foreach (int character in str)
         {
-            @$"\u{(int)str[i]:x4}".CopyTo(span);
+            @$"\u{character:x4}".CopyTo(span);
             span = span[6..];
         }
         return new string(orignalSpan);
     }
+
+    /// <summary>
+    /// 转义字符
+    /// </summary>
+    public static string Escape(string str) => Regex.Escape(str);
 
     /// <summary>
     /// 转义字符
@@ -30,12 +39,16 @@ public partial class UnicodeEncoding
     /// <summary>
     /// 从\u字符串转换
     /// </summary>
+    /// <remarks>
+    /// 非\u0000形式的字符都会被忽略
+    /// </remarks>
     [SkipLocalsInit]
     public static string Decode(string str)
     {
         var matches = UnicodeRegex().Matches(str);
         int count = matches.Count;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
 
         for (int i = 0; i < matches.Count; i++)
         {

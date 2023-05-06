@@ -1,5 +1,4 @@
 ﻿using CommunityToolkit.HighPerformance;
-using System.Runtime.CompilerServices;
 
 namespace ClassicalCryptography.Encoder.PLEncodings;
 
@@ -133,7 +132,7 @@ public class Brainfuck
     {
         int value = 0;
         var bytes = Encoding.GetBytes(text);
-        var result = new StringBuilder();
+        var result = new StringBuilder(128);
         for (int i = 0; i < bytes.Length; i++)
         {
             var difference = bytes[i] - value;

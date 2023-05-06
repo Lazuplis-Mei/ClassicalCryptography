@@ -43,7 +43,7 @@ public static partial class MillerRabinPrimalityTester
     /// 使用简单方法检测质数的阈值
     /// </summary>
     private const ulong SMALL_PRIME_THRESHOLD = 100_0000UL;
-    
+
     #endregion
 
     private static readonly int[] smallPrimes =
@@ -60,6 +60,9 @@ public static partial class MillerRabinPrimalityTester
     /// </summary>
     public static BigInteger NextPrime(this BigInteger number)
     {
+        if (number < 2)
+            return 2;
+
         if (number.IsEven) number++;
 
         int n = NOT_FOUND;
@@ -94,6 +97,9 @@ public static partial class MillerRabinPrimalityTester
     /// </remarks>
     public static BigInteger FindPrime(this BigInteger number)
     {
+        if (number < 2)
+            return 2;
+
         if (number.IsEven) number++;
 
         int n = NOT_FOUND;
@@ -157,7 +163,6 @@ public static partial class MillerRabinPrimalityTester
     /// <see cref="TestResult.TRUSTED_PRIME"/> 如果<paramref name="number"/><strong>非常可能</strong>是质数<br/>
     /// <see cref="TestResult.IS_PRIME"/> 如果<paramref name="number"/>是质数
     /// </returns>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TestResult IsPrime(BigInteger number, int testRepeatCount)
     {
         GuardEx.IsPositive(number);
@@ -184,11 +189,10 @@ public static partial class MillerRabinPrimalityTester
     /// </returns>
     public static bool IsPrime(ulong number)
     {
+        if (number < 3 || ulong.IsEvenInteger(number))
+            return number is 2;
+
         ulong quotient, remainder, divisor;
-
-        if (number < 3 || (number & 1) == 0)
-            return number == 2;
-
         for (divisor = 3, remainder = 1; remainder != 0; divisor += 2)
         {
             (quotient, remainder) = ulong.DivRem(number, divisor);
@@ -211,7 +215,7 @@ public static partial class MillerRabinPrimalityTester
     /// <see cref="TestResult.TRUSTED_PRIME"/> 如果<paramref name="number"/><strong>非常可能</strong>是质数<br/>
     /// <see cref="TestResult.IS_PRIME"/> 如果<paramref name="number"/>是质数
     /// </returns>
-    public static TestResult MillerRabin(BigInteger number, int testRepeatCount)
+    private static TestResult MillerRabin(BigInteger number, int testRepeatCount)
     {
         var m = number - 1;
 
@@ -221,10 +225,10 @@ public static partial class MillerRabinPrimalityTester
         BigInteger q = m;
         int k;
         for (k = 0; q.IsEven; k++)
-            q >>= 1;
+            q >>>= 1;
 
         var testResult = TestResult.TRUSTED_PRIME;
-        Parallel.For(0, testRepeatCount, (i, loop) =>
+        Parallel.For(0, testRepeatCount, (_, loop) =>
         {
             if (testResult is TestResult.NOT_PRIME)
                 loop.Stop();
@@ -236,8 +240,7 @@ public static partial class MillerRabinPrimalityTester
 
     private static TestResult MillerRabinInternal(BigInteger n, BigInteger x, BigInteger q, int k)
     {
-        var m = n - 1;
-        var y = BigInteger.ModPow(x, q, n);
+        BigInteger y = BigInteger.ModPow(x, q, n), m = n - 1;
 
         if (y.IsOne || y == m)
             return TestResult.TRUSTED_PRIME;

@@ -18,7 +18,7 @@ public static class RSAHelper
     /// </summary>
     public const string RSA_EXPONENT_STRING = "AQAB";
 
-    private static readonly RSACryptoServiceProvider RSA_CSP = new();
+    private static readonly RSA RSA = RSA.Create(512);
     private static readonly XmlWriterSettings settings = new() { Indent = true, OmitXmlDeclaration = true };
 
     /// <summary>
@@ -30,7 +30,7 @@ public static class RSAHelper
     public static string GenerateWeakRSAPrivateKey(RSAKeySize keySize)
     {
         GuardEx.IsDefined(keySize);
-        
+
         int size = (int)keySize;
         Span<byte> buffer = stackalloc byte[size];
         Random.Shared.NextBytes(buffer);
@@ -78,8 +78,8 @@ public static class RSAHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string PemToXml(this string pemKey)
     {
-        RSA_CSP.ImportFromPem(pemKey);
-        return RSA_CSP.ToXmlString(true);
+        RSA.ImportFromPem(pemKey);
+        return RSA.ToXmlString(true);
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static class RSAHelper
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string XmlToPem(this string xmlKey, bool PKCS8Format = false)
     {
-        RSA_CSP.FromXmlString(xmlKey);
-        return PKCS8Format ? RSA_CSP.ExportPkcs8PrivateKeyPem() : RSA_CSP.ExportRSAPrivateKeyPem();
+        RSA.FromXmlString(xmlKey);
+        return PKCS8Format ? RSA.ExportPkcs8PrivateKeyPem() : RSA.ExportRSAPrivateKeyPem();
     }
 }

@@ -32,7 +32,8 @@ public class BrailleEncoding : IEncoding
     public static string Encode(byte[] bytes)
     {
         int count = bytes.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
             span[i] = characters[bytes[i]];
         return new(span);
@@ -45,7 +46,8 @@ public class BrailleEncoding : IEncoding
     public static string EncodeWithUnicodeOrder(byte[] bytes)
     {
         int count = bytes.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
             span[i] = (char)(FIRST_BRAILLE + bytes[i]);
         return new(span);

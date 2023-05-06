@@ -18,6 +18,9 @@ internal static class MathExtension
     /// </remarks>
     public static BigInteger ModularInverse(BigInteger a, BigInteger n)
     {
+        GuardEx.IsPositive(a);
+        GuardEx.IsPositive(n);
+
         BigInteger q, t, m = n, x = 1, y = 0;
         if (n.IsOne)
             return 0;

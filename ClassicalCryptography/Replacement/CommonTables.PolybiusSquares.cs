@@ -11,8 +11,11 @@ public static partial class CommonTables
     public static readonly PolybiusSquare TapCode = new("12345", "ABCDEFGHIJLMNOPQRSTUVWXYZ");
 
     /// <summary>
-    /// ADFGX(字母表没有J)
+    /// ADFGX
     /// </summary>
+    /// <remarks>
+    /// 字母表:<c>BTALPDHOZKQFVSNGICUXMREWY</c>
+    /// </remarks>
     public static readonly PolybiusSquare ADFGX = new("ADFGX", "BTALPDHOZKQFVSNGICUXMREWY");
 
 }

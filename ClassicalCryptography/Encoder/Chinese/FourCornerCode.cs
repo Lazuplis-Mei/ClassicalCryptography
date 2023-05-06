@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Encoder.Chinese;
+﻿using CommunityToolkit.HighPerformance.Buffers;
+
+namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// <see href="https://zh.wikipedia.org/zh-cn/%E5%9B%9B%E8%A7%92%E5%8F%B7%E7%A0%81">四角号码</see>
@@ -49,7 +51,8 @@ public class FourCornerCode
     public static string ToCodesString(string text)
     {
         int length = text.Length * 5;
-        Span<char> span = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> span = length.CanAllocString() ? stackalloc char[length] : memory.Span;
         var currentSpan = span;
         for (int i = 0; i < text.Length; i++)
         {

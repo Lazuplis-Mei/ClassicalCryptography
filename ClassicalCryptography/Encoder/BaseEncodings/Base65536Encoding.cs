@@ -11,14 +11,12 @@ public class Base65536Encoding : IEncoding
 {
     private const int PaddingBlockStart = 5376;
     private const int BmpThreshold = 0x10000;
-    private static readonly BidirectionalDictionary<byte, int> Map;
+    private static readonly ByteMap<int> Map;
 
     static Base65536Encoding()
     {
-        Map = new(256);
         var numbers = MemoryMarshal.Cast<byte, int>(Resources.Base65536);
-        for (int i = 0; i < 256; i++)
-            Map.Add((byte)i, numbers[i]);
+        Map = new ByteMap<int>(numbers.ToArray());
     }
 
     /// <inheritdoc/>
@@ -91,7 +89,7 @@ public class Base65536Encoding : IEncoding
             }
             else
             {
-                if (Map.Inverse.TryGetValue(blockStart, out byte point2))
+                if (Map.TryGetValue(blockStart, out byte point2))
                 {
                     if (sequenceEnded)
                         throw new ArgumentException("Base65536序列已结束");

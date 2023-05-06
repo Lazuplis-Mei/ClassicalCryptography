@@ -27,7 +27,8 @@ public class Base32Encoding : IEncoding
     /// <inheritdoc/>
     public static byte[] Decode(string encodeText)
     {
-        Guard.IsNotNullOrEmpty(encodeText);
+        if (string.IsNullOrEmpty(encodeText))
+            return Array.Empty<byte>();
 
         var base32 = encodeText.AsSpan().TrimEnd('=');
         var bytes = new byte[(base32.Length * 5 / 8)];
@@ -46,13 +47,13 @@ public class Base32Encoding : IEncoding
             }
             else
             {
-                mask = value >> (5 - bitsRemaining);
+                mask = value >>> (5 - bitsRemaining);
                 span[index++] = (byte)(currentByte | mask);
                 currentByte = (byte)(value << (bitsRemaining += 3));
             }
         }
 
-        if (index != base32.Length * 5 / 8)
+        if (index != bytes.Length)
             span[index] = currentByte;
 
         return bytes;
@@ -63,10 +64,12 @@ public class Base32Encoding : IEncoding
     public static string Encode(byte[] bytes)
     {
         Guard.IsNotNull(bytes);
-        Guard.HasSizeGreaterThan(bytes, 0);
-        
+        if (bytes.Length == 0)
+            return string.Empty;
+
         int length = bytes.Length.DivCeil(5) * 8;
-        Span<char> span = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> span = length.CanAllocString() ? stackalloc char[length] : memory.Span;
 
         byte nextCode = 0, bitsRemaining = 5;
         int index = 0;

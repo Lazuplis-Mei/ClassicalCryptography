@@ -132,13 +132,15 @@ public static partial class CommonTables
     /// <summary>
     /// 易经八卦和Base64
     /// </summary>
-    public static readonly SR IChingEightTrigramsBase64 = new(Base64,
+    internal static readonly SR IChingEightTrigramsBase64 = new(Base64,
         "䷁䷗䷆䷒䷎䷣䷭䷊䷏䷲䷧䷵䷽䷶䷟䷡䷇䷂䷜䷻䷦䷾䷯䷄䷬䷐䷮䷹䷞䷰䷛䷪䷖䷚䷃䷨䷳䷕䷑䷙䷢䷔䷿䷥䷷䷝䷱䷍䷓䷩䷺䷼䷴䷤䷸䷈䷋䷘䷅䷉䷠䷌䷫䷀☯");
 
     /// <summary>
     /// 火星文
     /// </summary>
     public static readonly SR MarsLanguage = new(Resources.MarsLanguagePlain, Resources.MarsLanguageText);
+
+    #region PhoneKeyboard
 
     /// <summary>
     /// 手机26键输入法的符号对应
@@ -179,4 +181,6 @@ public static partial class CommonTables
     /// 手机26键输入法的符号对应
     /// </summary>
     public static readonly SR PhoneKeyboard8 = new(QWER_Keyboard, "1234567890~@#$%&*(),/-_:;、", true);
+
+    #endregion
 }

@@ -11,6 +11,8 @@ namespace ClassicalCryptography.Encoder.BaseEncodings;
 [Introduction("进制转换", "提供(2,4,8)进制的转换")]
 public class BinaryEncoding
 {
+    private const ulong ZEROS = 0x0030_0030_0030_0030;
+
     /// <summary>
     /// 转换为二进制字符串
     /// </summary>
@@ -19,8 +21,9 @@ public class BinaryEncoding
     {
         var result = new StringBuilder(bytes.Length * 9);
         Span<char> span = stackalloc char[8];
-        ulong_long zeros = new(0x0030_0030_0030_0030, 0x0030_0030_0030_0030);
+        ulong_long zeros = new(ZEROS, ZEROS);
         ref ulong_long reference = ref Unsafe.As<char, ulong_long>(ref span.DangerousGetReference());
+
         foreach (var value in bytes)
         {
             var binary = Convert.ToString(value, 2);
@@ -56,9 +59,8 @@ public class BinaryEncoding
     [SkipLocalsInit]
     public static string EncodeQuater(byte[] bytes, char seperator = ' ', bool trimStart = false)
     {
-        var result = new StringBuilder();
+        var result = new StringBuilder(bytes.Length * 5);
         Span<char> span = stackalloc char[4];
-        ulong zeros = 0x0030_0030_0030_0030;
         ref ulong reference = ref Unsafe.As<char, ulong>(ref span.DangerousGetReference());
         foreach (var value in bytes)
         {
@@ -67,7 +69,7 @@ public class BinaryEncoding
                 result.Append(binary);
             else
             {
-                reference = zeros;
+                reference = ZEROS;
                 binary.CopyTo(span[^binary.Length..]);
                 result.Append(span);
             }
@@ -95,9 +97,8 @@ public class BinaryEncoding
     [SkipLocalsInit]
     public static string EncodeOctal(byte[] bytes, char seperator = ' ', bool trimStart = false)
     {
-        var result = new StringBuilder();
+        var result = new StringBuilder(bytes.Length * 4);
         Span<char> span = stackalloc char[4];
-        ulong zeros = 0x0030_0030_0030_0030;
         ref ulong reference = ref Unsafe.As<char, ulong>(ref span.DangerousGetReference());
         foreach (var value in bytes)
         {
@@ -106,7 +107,7 @@ public class BinaryEncoding
                 result.Append(binary);
             else
             {
-                reference = zeros;
+                reference = ZEROS;
                 binary.CopyTo(span[^binary.Length..]);
                 result.Append(span[1..]);
             }

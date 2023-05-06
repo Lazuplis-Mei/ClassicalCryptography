@@ -57,7 +57,8 @@ public class SingleReplacementCipher : ICipher<string, string>
     public string Decrypt(string cipherText)
     {
         int length = cipherText.Length;
-        Span<char> result = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> result = length.CanAllocString() ? stackalloc char[length] : memory.Span;
 
         for (int i = 0; i < length; i++)
         {
@@ -80,7 +81,8 @@ public class SingleReplacementCipher : ICipher<string, string>
     public string Encrypt(string plainText)
     {
         int length = plainText.Length;
-        Span<char> result = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> result = length.CanAllocString() ? stackalloc char[length] : memory.Span;
 
         for (int i = 0; i < length; i++)
         {

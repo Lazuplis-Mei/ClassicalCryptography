@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-
-namespace ClassicalCryptography.Encoder;
+﻿namespace ClassicalCryptography.Encoder;
 
 /// <summary>
 /// BubbleBabble编码
@@ -36,8 +34,8 @@ namespace ClassicalCryptography.Encoder;
 [ReferenceFrom("https://github.com/bohwaz/bubblebabble/blob/master/bubble_babble.php", ProgramingLanguage.PHP)]
 public partial class BubbleBabble : IEncoding
 {
-    private static readonly string vowels = "aeiouy";//аиоуыэ
-    private static readonly string consonants = "bcdfghklmnprstvzx";//бгджзклмнпрстфхцч
+    private static readonly string vowels = "aeiouy";
+    private static readonly string consonants = "bcdfghklmnprstvzx";
 
     /// <summary>
     /// 字符编码
@@ -60,7 +58,8 @@ public partial class BubbleBabble : IEncoding
     public static string Encode(byte[] bytes)
     {
         int count = bytes.Length / 2 * 6 + 5;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
 
         int index = 0;
         span[index++] = 'x';
@@ -105,8 +104,9 @@ public partial class BubbleBabble : IEncoding
         Guard.IsTrue(CheckString(text));
 
         string[] pairs = text[1..^1].PartitionUpTo(6);
-        using var memory = MemoryOwner<byte>.Allocate(pairs.Length * 2 - 1);
-        var span = memory.Span;
+        int size = pairs.Length * 2 - 1;
+        using var memory = size.TryAlloc();
+        Span<byte> span = size.CanAlloc() ? stackalloc byte[size] : memory.Span;
         int index = 0;
 
         int checksum = 1;

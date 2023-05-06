@@ -386,38 +386,38 @@ public static partial class ChineseCommonBraille
             if (match.Groups["Vowel"].Success)
             {
                 var m = alternate.Match(match.Value);
-                var rhyme = match.Value[(m.Index + m.Length)..];
+                var rhyme = match.ValueSpan[(m.Index + m.Length)..];
                 if (rhyme[0] == 'I' || rhyme[0] == 'V')
-                    return m.Groups["S"].Value + rhyme;
+                    return m.Groups["S"].Value + new string(rhyme);
                 if (rhyme[0] == 'A' || rhyme[0] == 'E')
-                    return m.Groups["F"].Value + rhyme;
+                    return m.Groups["F"].Value + new string(rhyme);
                 return match.Value;
             }
             if (match.Groups["Pinyin"].Success)
             {
                 var m = alternate.Matches(match.Value);
-                string rhyme = m[1].Groups["S"].Value;
-                string vowel = m[0].Value;
+                var rhyme = m[1].Groups["S"].ValueSpan;
+                var vowel = m[0].ValueSpan;
                 if (rhyme[0] == 'I' || rhyme[0] == 'V')
-                    vowel = m[0].Groups["S"].Value;
+                    vowel = m[0].Groups["S"].ValueSpan;
                 else if (rhyme[0] == 'A' || rhyme[0] == 'E')
-                    vowel = m[0].Groups["F"].Value;
+                    vowel = m[0].Groups["F"].ValueSpan;
                 else
                 {
-                    rhyme = m[1].Groups["F"].Value;
+                    rhyme = m[1].Groups["F"].ValueSpan;
                     if (rhyme[0] == 'I' || rhyme[0] == 'V')
-                        vowel = m[0].Groups["S"].Value;
+                        vowel = m[0].Groups["S"].ValueSpan;
                     else if (rhyme[0] == 'A' || rhyme[0] == 'E')
-                        vowel = m[0].Groups["F"].Value;
+                        vowel = m[0].Groups["F"].ValueSpan;
                 }
-                return vowel + rhyme + match.Value[^1];
+                return new string(vowel) + new string(rhyme) + match.ValueSpan[^1];
             }
             if (match.Groups["Pinyin2"].Success)
             {
                 var m = alternate.Match(match.Value);
                 var vowel = match.Value[..m.Index].Replace("(I)", string.Empty);
                 var rhyme = m.Groups["F"].Value;
-                return vowel + rhyme + match.Value[^1];
+                return vowel + rhyme + match.ValueSpan[^1];
             }
             return string.Empty;
         });
@@ -445,7 +445,7 @@ public static partial class ChineseCommonBraille
             Group group;
             if ((group = match.Groups["Punctuations"]).Success)
             {
-                if (EncodePunctuation && punctuations.TryGetValue(group.Value[0], out string? value))
+                if (EncodePunctuation && punctuations.TryGetValue(group.ValueSpan[0], out string? value))
                     result.Append(value);
                 continue;
             }
@@ -454,7 +454,7 @@ public static partial class ChineseCommonBraille
                 if (EncodeNumber)
                 {
                     result.Append(NUMBER_SIGN);
-                    foreach (var number in group.Value)
+                    foreach (var number in group.ValueSpan)
                         result.Append(letters[number.DigitsOneFirstNumber()]);
                     result.Append(' ');
                 }
@@ -465,7 +465,7 @@ public static partial class ChineseCommonBraille
                 if (EncodeLetters)
                 {
                     result.Append(LLETTER_SIGN);
-                    foreach (var letter in group.Value)
+                    foreach (var letter in group.ValueSpan)
                         result.Append(letters[letter.LetterIndex()]);
                     result.Append(' ');
                 }
@@ -476,14 +476,14 @@ public static partial class ChineseCommonBraille
                 if (EncodeLetters)
                 {
                     result.Append(ULETTER_SIGN);
-                    foreach (var letter in group.Value)
+                    foreach (var letter in group.ValueSpan)
                         result.Append(letters[letter.LetterIndex()]);
                     result.Append(' ');
                 }
                 continue;
             }
 
-            var character = match.Value[0];
+            var character = match.ValueSpan[0];
             if (DistinguishThird && EncodeTonenote)
             {
                 if (character == '他')
@@ -507,7 +507,7 @@ public static partial class ChineseCommonBraille
             if (EncodeTonenote)
             {
                 group = match.Groups["Tonenote"];
-                tonenote = (group.Success ? group.Value[0] : defaultPinYin[^1]).Base36Number();
+                tonenote = (group.Success ? group.ValueSpan[0] : defaultPinYin[^1]).Base36Number();
             }
             if (pinyinString is not null)
             {
@@ -568,13 +568,13 @@ public static partial class ChineseCommonBraille
             tonenote = 0;
     }
 
-    [GeneratedRegex(@"(?<Punctuations>[。，、；？！：“”‘’（）【】—…《》〈〉])|(?<LLetters>[a-z]+)|(?<ULetters>[A-Z]+)|(?<Numbers>[0-9]+)|(\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6})(?<Tonenote>[1-4])?\))?)")]
+    [GeneratedRegex(@"(?<Punctuations>[。，、；？！：“”‘’（）【】—…《》〈〉])|(?<LLetters>[a-z]+)|(?<ULetters>[A-Z]+)|(?<Numbers>[0-9]+)|(\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6})(?<Tonenote>[1-5])?\))?)")]
     private static partial Regex ChineseCharWithPinyin();
 
     [GeneratedRegex("(⠠(?<ULetters>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵]+) )|(⠰(?<LLetters>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚⠅⠇⠍⠝⠕⠏⠟⠗⠎⠞⠥⠧⠺⠭⠽⠵]+) )|(⠼(?<Numbers>[⠁⠃⠉⠙⠑⠋⠛⠓⠊⠚]+) )|(?<Others>(⠠[⠆⠤⠂])|(⠰[⠂⠄⠆])|[^⠠⠰⠼]+)")]
     private static partial Regex ChineseCommonBrailleRegex();
 
-    [GeneratedRegex(@"([A-Z](?<Rhyme>\[[A-Z]+/[A-Z]+\])[1-4])|((?<![A-Z\]\)])(?<sRhyme>\[[A-Z]+/[A-Z]+\])[1-4])|(?<Pinyin>(\[[A-Z]+/[A-Z]+\]){2})[1-4]|(?<Vowel>\[[A-Z]+/[A-Z]+\][A-Z]+)[1-4]|(?<sVowel>[A-Z]+\(I\))[1-4]|(?<Vowel2>[A-Z]+\(I\)[A-Z]+)[1-4]|(?<Pinyin2>[A-Z]+\(I\)\[[A-Z]+/[A-Z]+\])[1-4]")]
+    [GeneratedRegex(@"([A-Z](?<Rhyme>\[[A-Z]+/[A-Z]+\])[1-4])|((?<![A-Z\]\)])(?<sRhyme>\[[A-Z]+/[A-Z]+\])[1-4])|(?<Pinyin>(\[[A-Z]+/[A-Z]+\]){2})[1-4]|(?<Vowel>\[[A-Z]+/[A-Z]+\][A-Z]+)[1-4]|(?<sVowel>[A-Z]+\(I\))[1-4]|(?<Vowel2>[A-Z]+\(I\)[A-Z]+)[1-4]|(?<Pinyin2>[A-Z]+\(I\)\[[A-Z]+/[A-Z]+\])[1-5]")]
     private static partial Regex PinyinResolveRegex();
 
     [GeneratedRegex(@"\[(?<F>[A-Z]+)/(?<S>[A-Z]+)\]")]

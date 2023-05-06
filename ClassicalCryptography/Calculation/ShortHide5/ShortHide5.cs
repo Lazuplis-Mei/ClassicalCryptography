@@ -66,12 +66,19 @@ public static class ShortHide5
         var alphaBet = cipher.GetAlphaBet();
         //Log5(ulong_long.MaxValue) = 55.1
         int index = 55;
-        Span<char> text = stackalloc char[index];
+        Span<char> span = stackalloc char[index];
         foreach (var value in cipher)
-            text[--index] = alphaBet[value % alphaBet.Length];
+            span[--index] = alphaBet[value % alphaBet.Length];
         if (cipher.Level != SH5Level.Double)
-            return new(text[index..]);
-        return $"{cipher.GetPrefix()}{text[index..]}";
+            return new(span[index..]);
+        int count = cipher.PrefixCount;
+        if (count <= index)
+        {
+            span = span[(index - count)..];
+            span[..count].Fill('X');
+            return new(span);
+        }
+        return $"{cipher.GetPrefix()}{span[index..]}";
     }
 
     /// <summary>
@@ -159,9 +166,9 @@ public static class ShortHide5
         int u1, u2, u3;
         do
         {
-            u1 = RandomHelper.NextByte(1, 27);
-            u2 = RandomHelper.NextByte(1, 27);
-            u3 = RandomHelper.NextByte(1, 27);
+            u1 = Random.Shared.Next(1, 27);
+            u2 = Random.Shared.Next(1, 27);
+            u3 = Random.Shared.Next(1, 27);
             int index = 0;
             for (int i = 0; i < 5; i++) for (int j = 0; j < 5; j++) for (int k = 0; k < 5; k++)
                         alphaBet[index++] = AlphaBetTriple[(i * u1 + j * u2 + k * u3) % 64];
@@ -254,9 +261,10 @@ public static class ShortHide5
         var result = new HashSet<SH5>();
         for (int u1 = 0; u1 < 26; u1++)
         {
-            if (characterSet.IsSubsetOf(SingleAlphaBets[u1]))
+            var alphaBet = SingleAlphaBets[u1];
+            if (characterSet.IsSubsetOf(alphaBet))
             {
-                if (SingleAlphaBets[u1][0] != word[0])
+                if (alphaBet[0] != word[0])
                 {
                     ulong_long v1 = 0;
                     foreach (char character in word)
@@ -264,7 +272,7 @@ public static class ShortHide5
                         checked
                         {
                             v1 *= 5;
-                            v1 += (ulong)SingleAlphaBets[u1].IndexOf(character);
+                            v1 += (ulong)alphaBet.IndexOf(character);
                         }
                     }
                     result.Add(new(u1 + 1, v1));

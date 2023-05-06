@@ -21,15 +21,13 @@ internal static class SpanExtension
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Span<T> ToFlatSpan<T>(this Span2D<T> span2D)
     {
-        if (span2D.TryGetSpan(out var span))
-            return span;
-        return Span<T>.Empty;
+        return span2D.TryGetSpan(out var span) ? span : Span<T>.Empty;
     }
 
     /// <summary>
     /// 从<paramref name="span"/>中读取一个<typeparamref name="T"/>类型的值并写入
     /// </summary>
-    public static void WriteBigEndian<T>(this ref T value, Span<byte> span) where T : unmanaged
+    public static void WriteBigEndian<T>(ref T value, Span<byte> span) where T : unmanaged
     {
         value = default;
         ref byte reference = ref Unsafe.As<T, byte>(ref value);

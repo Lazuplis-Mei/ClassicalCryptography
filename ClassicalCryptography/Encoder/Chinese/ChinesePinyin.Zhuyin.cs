@@ -2,6 +2,8 @@
 
 public readonly partial record struct ChinesePinyin
 {
+    private static readonly string toneNotes = "ˉˊˇˋ˙";
+
     private static readonly BidirectionalDictionary<string, string> zhuYins = new()
     {
         { "None", "" },

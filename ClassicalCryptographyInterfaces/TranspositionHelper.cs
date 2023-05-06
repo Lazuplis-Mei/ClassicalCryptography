@@ -1,9 +1,7 @@
-﻿namespace ClassicalCryptography.Interfaces;
-
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Runtime.CompilerServices;
 
+namespace ClassicalCryptography.Interfaces;
 /// <summary>
 /// 换位密码使用的扩展方法
 /// </summary>
@@ -92,7 +90,8 @@ public static class TranspositionHelper
     public static string AssembleText(this ushort[] order, string text)
     {
         int length = order.Length;
-        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : memory.Span;
 
         for (int i = 0; i < length; i++)
             buffer[i] = order[i] < text.Length ? text[order[i]] : GetPaddingChar();
@@ -108,7 +107,8 @@ public static class TranspositionHelper
     public static string AssembleTextInverse(this ushort[] order, string text)
     {
         int length = order.Length;
-        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : new char[length];
+        using var memory = length.TryAllocString();
+        Span<char> buffer = length.CanAllocString() ? stackalloc char[length] : memory.Span;
 
         for (int i = 0; i < length; i++)
             buffer[order[i]] = i < text.Length ? text[i] : GetPaddingChar();
@@ -126,7 +126,8 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        using var memory = size.TryAllocString();
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : memory.Span;
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -146,7 +147,8 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        using var memory = size.TryAllocString();
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : memory.Span;
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -166,7 +168,8 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        using var memory = size.TryAllocString();
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : memory.Span;
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -186,7 +189,8 @@ public static class TranspositionHelper
         int width = order.GetLength(0);
         int height = order.GetLength(1);
         int size = width * height;
-        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : new char[size];
+        using var memory = size.TryAllocString();
+        Span<char> buffer = size.CanAllocString() ? stackalloc char[size] : memory.Span;
 
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)

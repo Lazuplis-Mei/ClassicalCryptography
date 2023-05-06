@@ -20,8 +20,8 @@
 
 	<ItemGroup>
 	  <PackageReference Include="CHTCHSConv" Version="1.0.0" />
-	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.1.0" />
-	  <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.1.0" />
+	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
+	  <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" />
 	  <PackageReference Include="K4os.Text.BaseX" Version="0.0.9" />
 	  <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
 	  <PackageReference Include="SimpleBase" Version="4.0.0" />

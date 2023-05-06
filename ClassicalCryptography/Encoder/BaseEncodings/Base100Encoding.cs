@@ -29,7 +29,8 @@ public class Base100Encoding : IEncoding
     public static string Encode(byte[] bytes)
     {
         int size = bytes.Length * 4;
-        Span<byte> buffer = size.CanAlloc() ? stackalloc byte[size] : new byte[size];
+        using var memory = size.TryAlloc();
+        Span<byte> buffer = size.CanAlloc() ? stackalloc byte[size] : memory.Span;
         for (int i = 0; i < bytes.Length; i++)
         {
             int j = 4 * i;
@@ -48,18 +49,19 @@ public class Base100Encoding : IEncoding
     /// </remarks>
     public static byte[] Decode(string encodeText)
     {
-        var emojiBytes = Encoding.UTF8.GetBytes(encodeText);
-        Guard.IsEqualTo(emojiBytes.Length % 4, 0);
+        int count = Encoding.UTF8.GetByteCount(encodeText);
+        Guard.IsEqualTo(count % 4, 0);
 
-        var bytes = new byte[emojiBytes.Length / 4];
-        var span = bytes.AsSpan();
-        for (int i = 0, temp = 0; i < emojiBytes.Length; i++)
+        using var memory = count.TryAlloc();
+        Span<byte> buffer = count.CanAlloc() ? stackalloc byte[count] : memory.Span;
+        Encoding.UTF8.GetBytes(encodeText, buffer);
+        for (int i = 0, temp = 0; i < buffer.Length; i++)
         {
             if (i % 4 == 2)
-                temp = (byte)((emojiBytes[i] - 0x8F) << 6);
+                temp = (byte)((buffer[i] - 0x8F) << 6);
             else if (i % 4 == 3)
-                span[i / 4] = (byte)(emojiBytes[i] - 0xB7 + temp);
+                buffer[i / 4] = (byte)(buffer[i] - 0xB7 + temp);
         }
-        return bytes;
+        return buffer[..(count / 4)].ToArray();
     }
 }

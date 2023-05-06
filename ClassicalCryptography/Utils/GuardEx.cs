@@ -31,7 +31,7 @@ public static class GuardEx
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void IsPositive(BigInteger number)
     {
-        if (!BigInteger.IsPositive(number))
+        if (number.IsZero || BigInteger.IsNegative(number))
             throw new ArgumentException($"<{number}>不是正整数", nameof(number));
     }
 

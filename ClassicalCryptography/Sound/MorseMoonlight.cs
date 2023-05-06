@@ -51,10 +51,10 @@ public static partial class MorseMoonlight
         (99, 100, new[] { "Db2", "Db3", "Db5" }), (100, 103, new[] { "C2", "Ab2", "C3", "Eb5" }),
         (103, 104, new[] { "C2", "Ab2", "C3", "Eb5" }), (104, 106,new[]  {"Db2", "Ab2", "Db3", "E5"})};
 
-    private const int T = 70;
-    private const int M = 400;
-    private const int S = M - T;
-    private const int L = M + T;
+    private const int TIME = 70;
+    private const int MEDIUM = 400;
+    private const int SHORT = MEDIUM - TIME;
+    private const int LONG = MEDIUM + TIME;
 
     /// <summary>
     /// 音乐
@@ -115,16 +115,16 @@ public static partial class MorseMoonlight
             switch (morseCode[i])
             {
                 case '.':
-                    notelist.Add(new(start, 0, matches[i].Value, 127, S));
-                    start += S;
+                    notelist.Add(new(start, 0, matches[i].Value, 127, SHORT));
+                    start += SHORT;
                     break;
                 case '-':
-                    notelist.Add(new(start, 0, matches[i].Value, 127, M));
-                    start += M;
+                    notelist.Add(new(start, 0, matches[i].Value, 127, MEDIUM));
+                    start += MEDIUM;
                     break;
                 case '/':
-                    notelist.Add(new(start, 0, matches[i].Value, 127, L));
-                    start += L;
+                    notelist.Add(new(start, 0, matches[i].Value, 127, LONG));
+                    start += LONG;
                     break;
                 default:
                     break;
@@ -146,6 +146,6 @@ public static partial class MorseMoonlight
         file.WriteTo(filePath);
     }
 
-    [GeneratedRegex("[CDEFGAB][#b]?[12345]")]
+    [GeneratedRegex("[CDEFGAB][#b]?[1-5]")]
     private static partial Regex SoundNoteRegex();
 }

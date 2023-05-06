@@ -82,6 +82,7 @@ public partial class RSASteganograph
         int prefixRegionLength = prefix.Length + 1;
         buffer[prefix.Length] = PREFIX_END_FLAG;
         Random.Shared.NextBytes(buffer[prefixRegionLength..]);
+
         //为了避免生成质数时，数值的增长覆盖了前缀字节结尾的标记，扩大了寻找质数的范围
         buffer[prefixRegionLength] /= 4;
 
@@ -104,17 +105,14 @@ public partial class RSASteganograph
         return RSAHelper.GenerateRSAPrivateKey(p, q);
     }
 
-    private static RSAKeySize GetKeySize(int size)
+    private static RSAKeySize GetKeySize(int size) => (size << 4) switch
     {
-        return (size << 4) switch
-        {
-            <= RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
-            <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
-            <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
-            <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
-            _ => throw new ArgumentOutOfRangeException(nameof(size), "前缀字节的长度过长"),
-        };
-    }
+        <= RSA_KEYSIZE_SHORT => RSAKeySize.RSA1024,
+        <= RSA_KEYSIZE_MEDIUM => RSAKeySize.RSA2048,
+        <= RSA_KEYSIZE_LONG => RSAKeySize.RSA3072,
+        <= RSA_KEYSIZE_VERYLONG => RSAKeySize.RSA4096,
+        _ => throw new ArgumentOutOfRangeException(nameof(size), "前缀字节的长度过长"),
+    };
 
     /// <summary>
     /// 以指定的文本作为前缀生成RSA私钥
@@ -134,8 +132,8 @@ public partial class RSASteganograph
 
         Span<byte> prefix = stackalloc byte[byteCount];
         Encoding.GetBytes(text, prefix);
-        int halfLength = prefix.Length / 2;
-        var xmlKey = GenerateRSAPrivateKey(prefix[..halfLength], prefix[halfLength..]);
+        int half = prefix.Length / 2;
+        var xmlKey = GenerateRSAPrivateKey(prefix[..half], prefix[half..]);
         return pemFormat ? xmlKey.XmlToPem() : xmlKey;
     }
 
@@ -175,8 +173,8 @@ public partial class RSASteganograph
         Guard.IsEqualTo(keyValueNode.Name, "RSAKeyValue");
 
         string? base64P = keyValueNode.SelectSingleNode("P")?.InnerText;
-        string? base64Q = keyValueNode.SelectSingleNode("Q")?.InnerText;
         Guard.IsNotNull(base64P);
+        string? base64Q = keyValueNode.SelectSingleNode("Q")?.InnerText;
         Guard.IsNotNull(base64Q);
 
         byte[] pBytes = K4os.Text.BaseX.Base64.FromBase64(base64P);
@@ -206,7 +204,8 @@ public partial class RSASteganograph
     {
         var (prifixP, prifixQ) = GetPrifix(privateKey);
         int length = prifixP.Count + prifixQ.Count;
-        Span<byte> prifix = length.CanAlloc() ? stackalloc byte[length] : new byte[length];
+        using var memory = length.TryAlloc();
+        Span<byte> prifix = length.CanAlloc() ? stackalloc byte[length] : memory.Span;
         prifixP.CopyTo(prifix);
         prifixQ.CopyTo(prifix, prifixP.Count);
         return Encoding.GetString(prifix);

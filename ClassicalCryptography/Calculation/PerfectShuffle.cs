@@ -122,7 +122,7 @@ public static class PerfectShuffle
     /// 加密内容
     /// </summary>
     /// <remarks>
-    /// 如果<paramref name="randomize"/>为<see langword="true"/>，则每个字母都有50%的可能性插入1次额外的洗牌。<br/>
+    /// 如果<paramref name="randomize"/>为<see langword="true"/>，则每个字母都有75%的可能性插入1次额外的洗牌。<br/>
     /// 如果已经插入了1次额外的洗牌，那么将有25%的可能性插入第2次。
     /// </remarks>
     /// <param name="text">要加密的文本</param>
@@ -408,8 +408,7 @@ public static class PerfectShuffle
     private static BitArray FindShufflings(Span<char> uLetters, char character)
     {
         int i = uLetters.IndexOf(character);
-        if (i == -1)
-            throw new ArgumentException($"{character}不在指定范围中", nameof(character));
+        Guard.IsInRangeFor(i, shufflings);
         return shufflings[i];
     }
 
@@ -421,7 +420,8 @@ public static class PerfectShuffle
     {
         repeatPosition.Clear();
         int count = word.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         span[0] = word[0];
         for (int i = count = 1; i < word.Length; i++)
         {
@@ -454,23 +454,23 @@ public static class PerfectShuffle
     private static void ShuffleInside(Span<char> letterSpan)
     {
         Span<char> copy = stackalloc char[26];
-        int half = copy.Length / 2;
+        const int HALF = 13;
         letterSpan.CopyTo(copy);
-        for (int i = 0; i < half; i++)
+        for (int i = 0; i < HALF; i++)
             letterSpan[2 * i + 1] = copy[i];
-        for (int i = half; i < copy.Length; i++)
-            letterSpan[2 * (i - half)] = copy[i];
+        for (int i = HALF; i < copy.Length; i++)
+            letterSpan[2 * (i - HALF)] = copy[i];
     }
 
     [SkipLocalsInit]
     private static void ShuffleOutside(Span<char> letterSpan)
     {
         Span<char> copy = stackalloc char[26];
-        int half = copy.Length / 2;
+        const int HALF = 13;
         letterSpan.CopyTo(copy);
-        for (int i = 0; i < half; i++)
+        for (int i = 0; i < HALF; i++)
             letterSpan[2 * i] = copy[i];
-        for (int i = half; i < copy.Length; i++)
-            letterSpan[2 * (i - half) + 1] = copy[i];
+        for (int i = HALF; i < copy.Length; i++)
+            letterSpan[2 * (i - HALF) + 1] = copy[i];
     }
 }

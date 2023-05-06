@@ -1,4 +1,5 @@
 ﻿using ClassicalCryptography.Replacement;
+using CommunityToolkit.HighPerformance.Buffers;
 
 namespace ClassicalCryptography.Encoder.Chinese;
 
@@ -43,7 +44,8 @@ public class CommercialCode
     public static string FromCodes(params ushort[] codes)
     {
         int count = codes.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
             span[i] = commercialCodeString[codes[i]];
         return new(span);
@@ -70,7 +72,8 @@ public class CommercialCode
     public static string ToCodesString(string text)
     {
         int count = text.Length * 4;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
         {
             int code = 0;

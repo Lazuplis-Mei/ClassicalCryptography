@@ -167,10 +167,9 @@ public static partial class BaseEncoding
                     result.Append(character);
                     continue;
                 }
-                ushort value = character;
                 result.Append('=');
-                result.Append(HexUpper[value >> 4]);
-                result.Append(HexUpper[value & 0xF]);
+                result.Append(HexUpper[character >> 4]);
+                result.Append(HexUpper[character & 0xF]);
                 continue;
             }
             oneCharacter[0] = character;
@@ -197,19 +196,20 @@ public static partial class BaseEncoding
             Group group;
             if ((group = match.Groups["Hex"]).Success)
             {
-                int length = group.Value.Length / 3;
-                using var memory = MemoryOwner<byte>.Allocate(length);
+                ReadOnlySpan<char> span = group.ValueSpan;
+                int length = span.Length / 3;
+                using var memory = SpanOwner<byte>.Allocate(length);
                 var bytes = memory.Span;
-                for (int i = 0; i < group.Value.Length; i++)
+                for (int i = 0; i < span.Length; i++)
                 {
-                    int high = group.Value[++i].Base36Number();
-                    int low = group.Value[++i].Base36Number();
+                    int high = span[++i].Base36Number();
+                    int low = span[++i].Base36Number();
                     bytes[i / 3] = MathEx.MakeByte((byte)high, (byte)low);
                 }
                 result.Append(Encoding.GetString(bytes));
                 continue;
             }
-            result.Append(match.Value);
+            result.Append(match.ValueSpan);
         }
         return result.ToString();
     }
@@ -281,25 +281,33 @@ public static partial class BaseEncoding
     /// <summary>
     /// 使用指定表(如<see cref="Base36"/>等)编码
     /// </summary>
+    [SkipLocalsInit]
     public static string ToBase(string input, string table)
     {
-        var bytes = Encoding.GetBytes(input);
-        var number = new BigInteger(bytes, true, true);
+        int count = Encoding.GetByteCount(input);
+        using var memory = count.TryAlloc();
+        Span<byte> buffer = count.CanAlloc() ? stackalloc byte[count] : memory.Span;
+        Encoding.GetBytes(input, buffer);
+        var number = new BigInteger(buffer, true, true);
         return NumberToBase(number, table);
     }
 
     /// <summary>
     /// 使用指定表编码整数
     /// </summary>
+    [SkipLocalsInit]
     public static string NumberToBase(BigInteger number, string table)
     {
-        var stack = new Stack<char>();
+        uint @base = (uint)table.Length;
+        int count = checked((int)(number.GetBitLength() / BitOperations.Log2(@base) + 1));
+        using var memory = count.TryAllocString();
+        Span<char> buffer = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         while (!number.IsZero)
         {
-            stack.Push(table[(int)(number % table.Length)]);
-            number /= table.Length;
+            number = BigInteger.DivRem(number, @base, out var remainder);
+            buffer[--count] = table[(int)remainder];
         }
-        return new(stack.ToArray());
+        return new(buffer[count..]);
     }
 
     /// <summary>
@@ -317,14 +325,15 @@ public static partial class BaseEncoding
     /// </summary>
     public static BigInteger NumberFromBase(string input, string table)
     {
-        var number = BigInteger.Zero;
-        int baseNumber = table.Length;
+        BigInteger result = BigInteger.Zero;
+        int @base = table.Length;
         for (int i = 0; i < input.Length; i++)
         {
-            var poweredNumber = BigInteger.Pow(baseNumber, input.Length - i - 1);
-            number += table.IndexOf(input[i]) * poweredNumber;
+            int n = table.IndexOf(input[i]);
+            result *= @base;
+            result += n;
         }
-        return number;
+        return result;
     }
 
     [GeneratedRegex("(?<Hex>(=[0-9a-fA-F]{2})+)|[^=]+")]

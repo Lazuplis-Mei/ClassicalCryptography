@@ -8,21 +8,23 @@
 /// </remarks>
 public class PGPWordList : IEncoding
 {
-    private static readonly BidirectionalDictionary<byte, string> EvenWord;
-    private static readonly BidirectionalDictionary<byte, string> OddWord;
+    private static readonly ByteMap<string> EvenWord;
+    private static readonly ByteMap<string> OddWord;
 
     static PGPWordList()
     {
-        EvenWord = new();
-        OddWord = new();
+        var evenWords = new string[256];
+        var oddWords = new string[256];
         using var reader = new StreamReader(GZip.DecompressToStream(Resources.PGPWordList));
         for (byte i = 0; !reader.EndOfStream; i++)
         {
             string line = reader.ReadLine()!;
             int si = line.IndexOf(' ');
-            EvenWord.Add(i, line[..si]);
-            OddWord.Add(i, line[(si + 1)..]);
+            evenWords[i] = line[..si];
+            oddWords[i] = line[(si + 1)..];
         }
+        EvenWord = new(evenWords);
+        OddWord = new(oddWords);
     }
 
     /// <inheritdoc/>
@@ -51,9 +53,9 @@ public class PGPWordList : IEncoding
         for (int i = 0; i < words.Length; i++)
         {
             if (evenFlag ^= true)
-                span[i] = EvenWord.Inverse[words[i]];
+                span[i] = EvenWord[words[i]];
             else
-                span[i] = OddWord.Inverse[words[i]];
+                span[i] = OddWord[words[i]];
         }
         return bytes;
     }

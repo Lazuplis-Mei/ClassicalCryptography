@@ -146,7 +146,7 @@ internal static class StringExtension
     };
 
     /// <summary>
-    /// 小写36进制字符
+    /// 36进制字符
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Base36Number(this char character) => character switch

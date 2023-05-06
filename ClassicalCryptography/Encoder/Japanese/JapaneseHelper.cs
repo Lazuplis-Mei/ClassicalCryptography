@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using SR = SingleReplacementCipher;
 using SD = BidirectionalDictionary<char, char>;
+using CommunityToolkit.HighPerformance.Buffers;
 
 /// <summary>
 /// 半角片假名
@@ -150,7 +151,8 @@ public static class JapaneseHelper
     public static string ReduceDakuten(string text)
     {
         int count = text.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         int index = 0;
         for (int i = 0; i < count; i++)
         {
@@ -184,7 +186,8 @@ public static class JapaneseHelper
     public static string RecoverIteration(string text)
     {
         int count = text.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         span[0] = text[0];
         for (int i = 1; i < count; i++)
         {
@@ -237,7 +240,8 @@ public static class JapaneseHelper
     public static string ReduceIteration(string text)
     {
         int count = text.Length;
-        Span<char> span = count.CanAllocString() ? stackalloc char[count] : new char[count];
+        using var memory = count.TryAllocString();
+        Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         span[0] = text[0];
         for (int i = 1; i < count; i++)
         {

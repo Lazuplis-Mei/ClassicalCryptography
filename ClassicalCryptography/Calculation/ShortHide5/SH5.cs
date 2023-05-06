@@ -15,16 +15,25 @@ public readonly partial struct SH5 : IEnumerable<int>
     /// <summary>
     /// <see href="https://www.bilibili.com/read/cv15676311">标准的1组SH5推荐字母表</see>
     /// </summary>
+    /// <remarks>
+    /// <c>EADIHTNORFS</c>
+    /// </remarks>
     public static readonly string AlphaBetSingle = "EADIHTNORFS";
 
     /// <summary>
     /// 2组SH5的字母表
     /// </summary>
+    /// <remarks>
+    /// <c>XABCDEFGHIJKLMNOPQRSTUVWYZ</c>
+    /// </remarks>
     public static readonly string AlphaBetDouble = "XABCDEFGHIJKLMNOPQRSTUVWYZ";
 
     /// <summary>
     /// 3组SH5的字母表(虽然我觉得这不够好，多几个标点符号又何妨，但我没有更改它)
     /// </summary>
+    /// <remarks>
+    /// <c>[空格]ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,</c>
+    /// </remarks>
     public static readonly string AlphaBetTriple = " ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789,";
 
     /// <summary>
@@ -144,7 +153,7 @@ public readonly partial struct SH5 : IEnumerable<int>
         {
             case SH5Level.Single:
                 var value = matches[0].ValueSpan;
-                Pair1 = ((byte)value[0].LetterNumber(), FromBase36(value[1..]));
+                Pair1 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 break;
             case SH5Level.Double:
                 value = matches[0].ValueSpan;
@@ -157,11 +166,11 @@ public readonly partial struct SH5 : IEnumerable<int>
                 break;
             case SH5Level.Trible:
                 value = matches[0].ValueSpan;
-                Pair1 = ((byte)value[0].LetterNumber(), FromBase36(value[1..]));
+                Pair1 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 value = matches[1].ValueSpan;
-                Pair2 = ((byte)value[0].LetterNumber(), FromBase36(value[1..]));
+                Pair2 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 value = matches[2].ValueSpan;
-                Pair3 = ((byte)value[0].LetterNumber(), FromBase36(value[1..]));
+                Pair3 = (value[0].LetterNumber(), FromBase36(value[1..]));
                 if (sortPair)
                 {
                     if (Pair1.U > Pair2.U)
@@ -177,12 +186,15 @@ public readonly partial struct SH5 : IEnumerable<int>
         SortPair = sortPair;
     }
 
+    /// <inheritdoc cref="SH5(string, bool)"/>
+    public static SH5 Parse(string SH5Patten) => new(SH5Patten);
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static byte DoubleAlphaBet(char character) => character switch
+    private static int DoubleAlphaBet(char character) => character switch
     {
         'X' => 0,
-        <= 'W' => (byte)(character - 'A' + 1),
-        <= 'Z' => (byte)(character - 'A'),
+        <= 'W' => character - 'A' + 1,
+        <= 'Z' => character - 'A',
         _ => throw new ArgumentException("字符不在2组SH5的字母表中", nameof(character))
     };
 
