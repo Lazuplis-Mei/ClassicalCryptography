@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace ClassicalCryptography.Utils;
+﻿namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 一些数学计算的方法
@@ -37,35 +35,6 @@ internal static class MathExtension
         if (BigInteger.IsNegative(x))
             x += m;
         return x;
-    }
-
-    /// <summary>
-    /// 二进制序列转换为数值
-    /// </summary>
-    public static int ToInt32(this BitArray bits)
-    {
-        int number = 0;
-        foreach (var value in bits.EnumeratorUnBox())
-        {
-            number <<= 1;
-            if (value)
-                number++;
-        }
-        return number;
-    }
-
-    /// <summary>
-    /// 数值转换成<see cref="BitArray"/>
-    /// </summary>
-    /// <param name="number">数值</param>
-    /// <param name="count">长度</param>
-    public static BitArray ToBitArray(this int number, int count)
-    {
-        var bits = new BitArray(count);
-        //如果可以直接修改m-array就好了
-        for (int i = 0; i < count; i++)
-            bits[i] = (number >> (count - i - 1) & 1) != 0;
-        return bits;
     }
 
     /// <summary>

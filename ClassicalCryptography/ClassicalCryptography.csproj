@@ -1,91 +1,91 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
-		<ImplicitUsings>enable</ImplicitUsings>
-		<Nullable>enable</Nullable>
-		<GenerateDocumentationFile>True</GenerateDocumentationFile>
-		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-	</PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	  <FileAlignment>512</FileAlignment>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-	  <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	  <FileAlignment>512</FileAlignment>
-	</PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
 
-	<ItemGroup>
-	  <PackageReference Include="CHTCHSConv" Version="1.0.0" />
-	  <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
-	  <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" />
-	  <PackageReference Include="K4os.Text.BaseX" Version="0.0.9" />
-	  <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
-	  <PackageReference Include="SimpleBase" Version="4.0.0" />
-	  <PackageReference Include="StackBlur" Version="1.1.1" />
-	  <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
-	  <PackageReference Include="System.IO.Hashing" Version="7.0.0" />
-	  <PackageReference Include="ZXing.Net" Version="0.16.9" />
-	  <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CHTCHSConv" Version="1.0.0" />
+    <PackageReference Include="CommunityToolkit.Diagnostics" Version="8.2.0" />
+    <PackageReference Include="CommunityToolkit.HighPerformance" Version="8.2.0" />
+    <PackageReference Include="K4os.Text.BaseX" Version="0.0.9" />
+    <PackageReference Include="PinYinConverterCore" Version="1.0.2" />
+    <PackageReference Include="SimpleBase" Version="4.0.0" />
+    <PackageReference Include="StackBlur" Version="1.1.1" />
+    <PackageReference Include="System.Drawing.Common" Version="7.0.0" />
+    <PackageReference Include="System.IO.Hashing" Version="7.0.0" />
+    <PackageReference Include="ZXing.Net" Version="0.16.9" />
+    <PackageReference Include="ZXing.Net.Bindings.Windows.Compatibility" Version="0.16.10" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="..\ClassicalCryptographyInterfaces\ClassicalCryptographyInterfaces.csproj" />
-		<ProjectReference Include="..\MidiLibrary\MidiLibrary.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ClassicalCryptographyInterfaces\ClassicalCryptographyInterfaces.csproj" />
+    <ProjectReference Include="..\MidiLibrary\MidiLibrary.csproj" />
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Compile Update="Properties\Resources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>Resources.resx</DependentUpon>
-	  </Compile>
-	</ItemGroup>
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	</ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <None Update="Properties\CommercialCode.dat">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	  <None Update="Properties\FourCorner.dat">
-	    <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-	  </None>
-	  <None Update="TIMIDITY.CFG">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	  <None Update="timidity.exe">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
+  <ItemGroup>
+    <None Update="Properties\CommercialCode.dat">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\FourCorner.dat">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Update="TIMIDITY.CFG">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="timidity.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
-	<ItemGroup>
-	  <Using Include="ClassicalCryptography.Attributes" />
-	  <Using Include="ClassicalCryptography.Interfaces" />
-	  <Using Include="ClassicalCryptography.Properties" />
-	  <Using Include="ClassicalCryptography.Utils" />
-	  <Using Include="ClassicalCryptography.Utils.GlobalTables">
-	    <Static>True</Static>
-	  </Using>
-	  <Using Include="CommunityToolkit.Diagnostics" />
-	  <Using Include="System.Numerics" />
-	  <Using Include="System.Runtime.CompilerServices" />
-	  <Using Include="System.Text" />
-	  <Using Include="System.Text.RegularExpressions" />
-	  <Using Include="System.UInt128">
-	    <Alias>ulong_long</Alias>
-	  </Using>
+  <ItemGroup>
+    <Using Include="ClassicalCryptography.Attributes" />
+    <Using Include="ClassicalCryptography.Interfaces" />
+    <Using Include="ClassicalCryptography.Properties" />
+    <Using Include="ClassicalCryptography.Utils" />
+    <Using Include="ClassicalCryptography.Utils.GlobalTables">
+      <Static>True</Static>
+    </Using>
+    <Using Include="CommunityToolkit.Diagnostics" />
+    <Using Include="System.Numerics" />
+    <Using Include="System.Runtime.CompilerServices" />
+    <Using Include="System.Text" />
+    <Using Include="System.Text.RegularExpressions" />
+    <Using Include="System.UInt128">
+      <Alias>ulong_long</Alias>
+    </Using>
     <Using Include="ClassicalCryptography.Utils.MathExtension">
-	    <Alias>MathEx</Alias>
-	  </Using>
-	</ItemGroup>
+      <Alias>MathEx</Alias>
+    </Using>
+  </ItemGroup>
 
 </Project>

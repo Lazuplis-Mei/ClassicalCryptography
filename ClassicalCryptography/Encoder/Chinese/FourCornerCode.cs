@@ -1,6 +1,4 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-
-namespace ClassicalCryptography.Encoder.Chinese;
+﻿namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// <see href="https://zh.wikipedia.org/zh-cn/%E5%9B%9B%E8%A7%92%E5%8F%B7%E7%A0%81">四角号码</see>
@@ -15,7 +13,7 @@ public class FourCornerCode
 
     static FourCornerCode()
     {
-        fourCornerCodeData = new();
+        fourCornerCodeData = new(19912);
         using var reader = new StreamReader(GZip.DecompressToStream(Resources.FourCorner));
         while (!reader.EndOfStream)
         {
@@ -54,9 +52,9 @@ public class FourCornerCode
         using var memory = length.TryAllocString();
         Span<char> span = length.CanAllocString() ? stackalloc char[length] : memory.Span;
         var currentSpan = span;
-        for (int i = 0; i < text.Length; i++)
+        foreach (char character in text)
         {
-            var code = fourCornerCodeData.FirstOrDefault(pair => pair.Value.Contains(text[i])).Key;
+            var code = fourCornerCodeData.FirstOrDefault(pair => pair.Value.Contains(character)).Key;
             if (code == 0)
                 continue;
             else

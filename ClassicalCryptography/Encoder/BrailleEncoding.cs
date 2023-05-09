@@ -12,15 +12,7 @@ public class BrailleEncoding : IEncoding
     /// </summary>
     public const int FIRST_BRAILLE = '\u2800';
 
-    private static readonly string characters = Resources.BrailleEncodingString;
-    private static readonly Dictionary<char, byte> decodeMap;
-
-    static BrailleEncoding()
-    {
-        decodeMap = new(256);
-        for (int i = 0; i < characters.Length; i++)
-            decodeMap.Add(characters[i], (byte)i);
-    }
+    private static readonly ByteMap<char> decodeMap = new(Resources.BrailleEncodingString.ToCharArray());
 
     /// <summary>
     /// 字符编码
@@ -35,7 +27,7 @@ public class BrailleEncoding : IEncoding
         using var memory = count.TryAllocString();
         Span<char> span = count.CanAllocString() ? stackalloc char[count] : memory.Span;
         for (int i = 0; i < count; i++)
-            span[i] = characters[bytes[i]];
+            span[i] = decodeMap[bytes[i]];
         return new(span);
     }
 

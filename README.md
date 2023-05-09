@@ -1093,36 +1093,33 @@ CommercialCode.FromMorse("-../..-/-/....-/...../....-/..-/--...");
 
 * BubbleBabble(`BubbleBabble`)[^17]
 * 国家通用盲文方案(`ChineseCommonBraille`)[^18]
-    
-  * `AutoSimplify`:指示编码时将繁体字对应为简体字
-  * `EncodeTonenote`:指示应当编码声调(轻声声调5将被忽略)
-  * `EncodePunctuation`:指示应当编码如下的标点符号  
-  `。，、；？！：“”‘’（）【】—…《》〈〉`
-  * `EncodeNumber`:指示应当编码数字
-  * `EncodeLetters`:指示应当编码英文字母
-  * `DistinguishThird`:指示应当区分“他她它”
-  * `UseAbbreviations`:指示部分声调的简写规则
   * 多音字的选择不一定正确，但你可以自己指定拼音
+  * 以下选项由`ChineseCommonBraille.Settings`提供
+    * `AutoSimplify`:指示编码时将繁体字对应为简体字
+    * `EncodeTonenote`:指示应当编码声调(轻声声调5将被忽略)
+    * `EncodePunctuation`:指示应当编码如下的标点符号  
+    `。，、；？！：“”‘’（）【】—…《》〈〉`
+    * `EncodeNumber`:指示应当编码数字
+    * `EncodeLetters`:指示应当编码英文字母
+    * `DistinguishThird`:指示应当区分“他她它”
+    * `UseAbbreviations`:指示部分声调的简写规则
   * 演示代码
 
   ```csharp
-  ChineseCommonBraille.OutputPinyins = true;
-  ChineseCommonBraille.Encode("盲文编码说", out string? py);
-  //> ⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠱⠺⠆
+  ChineseCommonBraille.OutputPinyin.Encode("盲文编码说", out string? py);
+  //> ⠍⠦⠒⠂⠃⠩⠁⠍⠔⠄⠱⠺
   //py> 盲(MANG2)文(WEN2)编(BIAN1)码(MA3)说(SHUI4)
-  ChineseCommonBraille.Encode("盲文编码说(shuo1)",out py);
-  //> ⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠱⠕⠁
+  ChineseCommonBraille.OutputPinyin.Encode("盲文编码说(shuo1)", out py);
+  //> ⠍⠦⠒⠂⠃⠩⠁⠍⠔⠄⠱⠕⠁
   //py> 盲(MANG2)文(WEN2)编(BIAN1)码(MA3)说(SHUO1)
   ```
 
   * 解码拼音
 
   ```csharp
-  ChineseCommonBraille.DistinguishThird = false;
-  ChineseCommonBraille.UseAbbreviations = false;
-  var bt = ChineseCommonBraille.Encode("谁水双举盲文编码就说(shuo1)指纹很准噶");
-  var py = ChineseCommonBraille.DecodePinyins(bt);
-  ChineseCommonBraille.ResolvePinyins(py);
+  var bt = ChineseCommonBraille.Decodeable.Encode("谁水双举盲文编码就说(shuo1)指纹很准噶");
+  var py = ChineseCommonBraille.Decodeable.DecodePinyins(bt);
+  ChineseCommonBraille.Decodeable.ResolvePinyins(py);
   //bt> ⠱⠮⠂⠱⠺⠄⠱⠶⠁⠛⠥⠄⠍⠦⠂⠒⠂⠃⠩⠁⠍⠔⠄⠛⠳⠆⠱⠕⠁⠌⠄⠒⠂⠓⠴⠄⠌⠒⠄⠛⠔⠂
   //py> SH(I)EI2SH(I)[UI/WEI]3SH(I)[UANG/WANG]1[G/J][U/WU]3MANG2[UN/WEN]2B[IAN/YAN]1MA3[G/J][IU/YOU]4SH(I)[UO/WO]1ZH(I)3[UN/WEN]2[H/X]EN3ZH(I)[UN/WEN]3[G/J]A2
   //> SHEI2SHUI3SHUANG1[G/J]U3MANG2WEN2BIAN1MA3JIU4SHUO1ZHI3WEN2HEN3ZHUN3GA2

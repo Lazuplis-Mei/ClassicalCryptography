@@ -1,6 +1,6 @@
 ﻿namespace ClassicalCryptography.Encoder.Chinese;
 
-public readonly partial record struct ChinesePinyin
+public readonly partial struct ChinesePinyin
 {
     private static readonly string toneNotes = "ˉˊˇˋ˙";
 
@@ -43,10 +43,10 @@ public readonly partial record struct ChinesePinyin
         { "IA", "ㄧㄚ" },
         { "IAO", "ㄧㄠ" },
         { "IE", "ㄧㄝ" },
-        { ChineseRhyme.IOU.ToString(), "ㄧㄡ" },
+        { "IU", "ㄧㄡ" },
         { "UA", "ㄨㄚ" },
         { "UAI", "ㄨㄞ" },
-        { ChineseRhyme.UEI.ToString(), "ㄨㄟ" },
+        { "UI", "ㄨㄟ" },
         { "UO", "ㄨㄛ" },
         { "VE", "ㄩㄝ" },
         { "AN", "ㄢ" },
@@ -59,8 +59,8 @@ public readonly partial record struct ChinesePinyin
         { "ING", "ㄧㄥ" },
         { "UAN", "ㄨㄢ" },
         { "UANG", "ㄨㄤ" },
-        { ChineseRhyme.UEN.ToString(), "ㄨㄣ" },
-        { ChineseRhyme.ONG.ToString(), "ㄨㄥ" },
+        { "UN", "ㄨㄣ" },
+        { "ONG", "ㄨㄥ" },
         { "VAN", "ㄩㄢ" },
         { "VN", "ㄩㄣ" },
         { "IONG", "ㄩㄥ" },

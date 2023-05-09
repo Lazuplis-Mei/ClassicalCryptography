@@ -5,15 +5,57 @@ namespace ClassicalCryptography.Encoder.Chinese;
 /// <summary>
 /// 中文拼音
 /// </summary>
-public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseRhyme Rhyme, ChineseToneNote ToneNote)
+public readonly partial struct ChinesePinyin
 {
     /// <summary>
-    /// 从字符串解析拼音
+    /// 声母
     /// </summary>
-    public static ChinesePinyin Parse(string pinyin)
+    public readonly ChineseVowel Vowel;
+
+    /// <summary>
+    /// 韵母
+    /// </summary>
+    public readonly ChineseRhyme Rhyme;
+
+    /// <summary>
+    /// 声调
+    /// </summary>
+    public readonly ChineseToneNote ToneNote;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private string GetRhymeString() => Rhyme switch
+    {
+        ChineseRhyme.IOU => "IU",
+        ChineseRhyme.UEI => "UI",
+        ChineseRhyme.UEN => "UN",
+        ChineseRhyme.UENG => "ONG",
+        _ => Rhyme.ToString(),
+    };
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private string GetSingleRhymeString() => Rhyme switch
+    {
+        ChineseRhyme.IOU => "IOU",
+        ChineseRhyme.UEI => "UEI",
+        ChineseRhyme.UEN => "UEN",
+        ChineseRhyme.UENG => "UENG",
+        _ => Rhyme.ToString(),
+    };
+
+    /// <summary>
+    /// 中文拼音
+    /// </summary>
+    public ChinesePinyin(ChineseVowel vowel, ChineseRhyme rhyme, ChineseToneNote toneNote)
+    {
+        Guard.IsFalse(vowel is ChineseVowel.None && rhyme is ChineseRhyme.None);
+        Vowel = vowel;
+        Rhyme = rhyme;
+        ToneNote = toneNote;
+    }
+
+    internal ChinesePinyin(string pinyin)
     {
         int tonenote = 0;
-        pinyin = ParsePinyin(pinyin);
         if (char.IsAsciiDigit(pinyin[^1]))
         {
             tonenote = pinyin[^1].Base36Number();
@@ -35,13 +77,24 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
             vowel = Enum.Parse<ChineseVowel>(pinyin[..1]);
             rhyme = Enum.Parse<ChineseRhyme>(pinyin[1..]);
         }
-        return new(vowel, rhyme, (ChineseToneNote)tonenote);
+        Vowel = vowel;
+        Rhyme = rhyme;
+        ToneNote = (ChineseToneNote)tonenote;
     }
+
+    /// <summary>
+    /// 从字符串解析拼音
+    /// </summary>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static ChinesePinyin Parse(string pinyin) => new(ParsePinyin(pinyin));
 
     /// <summary>
     /// 转换成注音符号(不包含声调)
     /// </summary>
-    public string ToZhuyinWithoutToneNote() => $"{zhuYins[Vowel.ToString()]}{zhuYins[Rhyme.ToString()]}";
+    public string ToZhuyinWithoutToneNote()
+    {
+        return $"{zhuYins[Vowel.ToString()]}{zhuYins[GetRhymeString()]}";
+    }
 
     /// <summary>
     /// 转换成注音符号(包含声调)
@@ -50,7 +103,7 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
     {
         if (ToneNote is ChineseToneNote.None)
             return ToZhuyinWithoutToneNote();
-        return $"{zhuYins[Vowel.ToString()]}{zhuYins[Rhyme.ToString()]}{toneNotes[(int)ToneNote - 1]}";
+        return $"{zhuYins[Vowel.ToString()]}{zhuYins[GetRhymeString()]}{toneNotes[(int)ToneNote - 1]}";
     }
 
     /// <summary>
@@ -78,4 +131,19 @@ public readonly partial record struct ChinesePinyin(ChineseVowel Vowel, ChineseR
         return new(vowel, rhyme, toneNote);
     }
 
+    /// <inheritdoc/>
+    public override string ToString()
+    {
+        string? rhyme = null, vowel = null;
+        if (Rhyme is ChineseRhyme.None)
+            vowel = SingleVowels.Inverse[Vowel.ToString()];
+        else if (Vowel is ChineseVowel.None)
+            rhyme = SingleRhymes.Inverse[GetSingleRhymeString()];
+        else
+        {
+            vowel = Vowel.ToString();
+            rhyme = GetRhymeString();
+        }
+        return ToneNote is ChineseToneNote.None ? $"{vowel}{rhyme}" : $"{vowel}{rhyme}{(int)ToneNote}";
+    }
 }

@@ -79,7 +79,6 @@ public class TuupolaBase85Encoding
 
     private const int SPACES = 0x20202020;
     private static readonly uint[] powers = { 85 * 85 * 85 * 85, 85 * 85 * 85, 85 * 85, 85, 1 };
-    private readonly Dictionary<char, uint> inverseMap = new();
 
     /// <summary>
     /// Base85编码
@@ -89,8 +88,6 @@ public class TuupolaBase85Encoding
         Guard.IsEqualTo(characters.Length, 85);
         Guard.IsEqualTo(characters.ToHashSet().Count, 85);
         Characters = characters;
-        for (int i = 0; i < characters.Length; i++)
-            inverseMap.Add(characters[i], (uint)i);
         CompressSpaces = compressSpaces;
         CompressZeroes = compressZeroes;
         Prefix = prefix;
@@ -176,7 +173,7 @@ public class TuupolaBase85Encoding
             {
                 value += value << 2;
                 value += value << 4;
-                value += inverseMap[character];
+                value += (uint)Characters.IndexOf(character);
             }
             bytes.AsSpan(4 * index).WriteBigEndian(value);
         }

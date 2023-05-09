@@ -1,5 +1,4 @@
 ﻿using ClassicalCryptography.Replacement;
-using CommunityToolkit.HighPerformance.Buffers;
 
 namespace ClassicalCryptography.Encoder.Chinese;
 
