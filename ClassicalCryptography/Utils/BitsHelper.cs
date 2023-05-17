@@ -43,7 +43,7 @@ internal static class BitsHelper
     public static BitArray ToBitArray(this int number, int count)
     {
         var bits = new BitArray(count);
-        //如果可以直接修改m-array就好了
+        //如果可以直接修改m_array就好了
         for (int i = 0; i < count; i++)
             bits[i] = (number >> (count - i - 1) & 1) != 0;
         return bits;

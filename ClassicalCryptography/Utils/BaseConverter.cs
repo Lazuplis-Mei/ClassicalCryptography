@@ -1,4 +1,6 @@
-﻿namespace ClassicalCryptography.Utils;
+﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace ClassicalCryptography.Utils;
 
 /// <summary>
 /// 进制转换

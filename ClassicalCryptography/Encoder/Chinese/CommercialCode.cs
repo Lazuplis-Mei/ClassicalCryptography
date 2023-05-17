@@ -1,24 +1,40 @@
 ﻿using ClassicalCryptography.Replacement;
+using ClassicalCryptography.Utils;
 
 namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// <see href="https://github.com/Lazuplis-Mei/MorseCode.Chinese">中文电码</see>
 /// </summary>
+/// <remarks>
+/// <see href="https://www.qqxiuzi.cn/bianma/dianbao.html">《标准电码本（修订本）》</see><br/>
+/// 不兼容的两个字：螀(5831)镵(7016)，除此以外添加了1907个字，总体覆盖范围为：<br/>
+/// [\u00B7\u00D7\u00F7]<br/>
+/// [\u03A9]<br/>
+/// [\u0410-\u042F]<br/>
+/// [\u2014\u2018\u2019\u201C\u201D\u2026]<br/>
+/// [\u2160-\u2169]<br/>
+/// [\u3001\u3002\u300A\u300B\u3037]<br/>
+/// [\u3105-\u3129]<br/>
+/// [\u32C0-\u32CB]<br/>
+/// [\u3358-\u3370\u33E0-\u33FE]<br/>
+/// [\u4E00-\u9FFF](非全部)<br/>
+/// [\uFF01\uFF08\uFF09\uFF0B-\uFF0D\uFF0F-\uFF1B\uFF0D\uFF0F\uFF21-\uFF3A]
+/// </remarks>
 [Introduction("中文电码", "标准中文电码(Chinese Commercial Code)")]
-public class CommercialCode
+public static class CommercialCode
 {
-    private static readonly Dictionary<char, ushort> commercialCodeData = new();
+    private const char CHINESE_SPACE = '　';
+    private static readonly Dictionary<char, ushort> commercialCodeData = new(9196);
     private static readonly string commercialCodeString;
 
     static CommercialCode()
     {
         commercialCodeString = Encoding.UTF8.GetString(GZip.Decompress(Resources.CommercialCode));
+        commercialCodeData.Add(CHINESE_SPACE, 9998);
         for (ushort i = 0; i < commercialCodeString.Length; i++)
-        {
-            if (commercialCodeString[i] != commercialCodeString[0])
+            if (commercialCodeString[i] is not CHINESE_SPACE)
                 commercialCodeData.Add(commercialCodeString[i], i);
-        }
     }
 
     /// <summary>
@@ -26,14 +42,7 @@ public class CommercialCode
     /// </summary>
     public static string FromCodeString(string codeText)
     {
-        return new(codeText.Partition(4, s =>
-        {
-            int value = s[0].Base36Number() * 1000;
-            value += s[1].Base36Number() * 100;
-            value += s[2].Base36Number() * 10;
-            value += s[3].Base36Number();
-            return commercialCodeString[value];
-        }));
+        return new(codeText.Partition(4, s => commercialCodeString[s.ReadDigits4()]));
     }
 
     /// <summary>
@@ -57,10 +66,8 @@ public class CommercialCode
     {
         var codes = new ushort[text.Length];
         for (int i = 0; i < codes.Length; i++)
-        {
             if (commercialCodeData.TryGetValue(text[i], out ushort code))
                 codes[i] = code;
-        }
         return codes;
     }
 
@@ -78,10 +85,7 @@ public class CommercialCode
             int code = 0;
             if (commercialCodeData.TryGetValue(text[i / 4], out ushort value))
                 code = value;
-            span[i++] = Digits[code / 1000];
-            span[i++] = Digits[code / 100 % 10];
-            span[i++] = Digits[code / 10 % 10];
-            span[i] = Digits[code % 10];
+            span.WriteDigits4(code, ref i);
         }
         return new(span);
     }

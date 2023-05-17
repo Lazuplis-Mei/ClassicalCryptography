@@ -1,10 +1,11 @@
-﻿using CommunityToolkit.HighPerformance.Buffers;
-
-namespace ClassicalCryptography.Encoder.Chinese;
+﻿namespace ClassicalCryptography.Encoder.Chinese;
 
 /// <summary>
 /// 汉字的拼音九键输入法
 /// </summary>
+/// <remarks>
+/// 可接受的中文汉字范围为[〇\u4E00-\u9FA5\uE81A-\uE863]
+/// </remarks>
 public partial class PinyinNineKey
 {
     private readonly BidirectionalDictionary<char, (char Key, int Position)> keyboards;
@@ -43,9 +44,10 @@ public partial class PinyinNineKey
     /// 汉字转换成拼音九键输入
     /// </summary>
     /// <remarks>
-    /// 对于多音字，无法得知具体使用哪个读音，可以用括号指定<br/>
-    /// 例如:<c>说(shuo)</c><br/>
-    /// 如不指定，将使用默认读音，不包含声调
+    /// 对于多音字，无法得知具体使用哪个读音(不能包括声调)，可以用括号指定<br/>
+    /// 例如说(SHUO)<br/>
+    /// 如不指定，将使用默认读音<br/>
+    /// <seealso cref="ChineseHelper.GetDefaultPinyin"/>
     /// </remarks>
     /// <param name="text">汉字(拼音)组成的文本</param>
     public string ToCodes(string text)
@@ -87,7 +89,7 @@ public partial class PinyinNineKey
         return new(span);
     }
 
-    [GeneratedRegex(@"\p{IsCJKUnifiedIdeographs}(\((?<Pinyin>[A-Za-z]{1,6})\))?")]
+    [GeneratedRegex(@"[〇\u4E00-\u9FA5\uE81A-\uE863](\((?<Pinyin>[A-Za-z]{1,6})\))?")]
     private static partial Regex ChineseCharWithPinyin();
 
 }

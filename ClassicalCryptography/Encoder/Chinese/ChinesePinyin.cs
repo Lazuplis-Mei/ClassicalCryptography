@@ -47,7 +47,11 @@ public readonly partial struct ChinesePinyin
     /// </summary>
     public ChinesePinyin(ChineseVowel vowel, ChineseRhyme rhyme, ChineseToneNote toneNote)
     {
+        GuardEx.IsDefined(vowel);
+        GuardEx.IsDefined(rhyme);
+        GuardEx.IsDefined(toneNote);
         Guard.IsFalse(vowel is ChineseVowel.None && rhyme is ChineseRhyme.None);
+
         Vowel = vowel;
         Rhyme = rhyme;
         ToneNote = toneNote;

@@ -33,7 +33,7 @@ namespace ClassicalCryptographyTest
         public void Test()
         {
             //Stereogram.MakeWithPattern(new("E:/shark.png"),new("E:/jellybeans2.jpg")).Save("E:/stereogram.png");
-         
+
 
         }
     }

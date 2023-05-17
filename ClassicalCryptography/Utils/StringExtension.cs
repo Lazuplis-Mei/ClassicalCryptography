@@ -274,4 +274,56 @@ internal static class StringExtension
         return K4os.Text.BaseX.Base64.ToBase64(number.ToByteArray(true, true));
     }
 
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void WriteDigits4(this Span<char> span, int number, ref int index)
+    {
+        Guard.IsInRange(number, 0, 10000);
+        int value;
+        (value, number) = int.DivRem(number, 1000);
+        span[index++] = Digits[value];
+        (value, number) = int.DivRem(number, 100);
+        span[index++] = Digits[value];
+        (value, number) = int.DivRem(number, 10);
+        span[index++] = Digits[value];
+        span[index] = Digits[number];
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int ReadDigits4(this ReadOnlySpan<char> span)
+    {
+        int value = span[0].Base36Number() * 1000;
+        value += span[1].Base36Number() * 100;
+        value += span[2].Base36Number() * 10;
+        value += span[3].Base36Number();
+        return value;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static void WriteDigits5(this Span<char> span, int number)
+    {
+        Guard.IsInRange(number, 0, 100000);
+        int value;
+        (value, number) = int.DivRem(number, 10000);
+        span[0] = Digits[value];
+        (value, number) = int.DivRem(number, 1000);
+        span[1] = Digits[value];
+        (value, number) = int.DivRem(number, 100);
+        span[2] = Digits[value];
+        (value, number) = int.DivRem(number, 10);
+        span[3] = Digits[value];
+        span[4] = Digits[number];
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int ReadDigits5(this ReadOnlySpan<char> span)
+    {
+        int value = span[0].Base36Number() * 10000;
+        value += span[1].Base36Number() * 1000;
+        value += span[2].Base36Number() * 100;
+        value += span[3].Base36Number() * 10;
+        value += span[4].Base36Number();
+        return value;
+    }
 }

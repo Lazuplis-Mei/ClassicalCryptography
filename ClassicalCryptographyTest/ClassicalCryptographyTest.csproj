@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ChineseStrokeCode\ChineseStrokeCode.csproj" />
     <ProjectReference Include="..\ClassicalCryptography\ClassicalCryptography.csproj" />
   </ItemGroup>
 

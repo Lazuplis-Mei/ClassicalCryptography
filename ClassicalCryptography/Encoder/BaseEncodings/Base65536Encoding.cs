@@ -31,33 +31,6 @@ public class Base65536Encoding : IEncoding
         return result.ToString();
     }
 
-    /*
-    //我知道原始代码的作者想正确的处理unicode代理项但无此必要
-    //而且这里的逻辑也存在问题
-    //代理项在正常情况下应该使用ConvertToUtf32，这里直接使用text[position]是为了解码Base65536的特殊情况
-    //而非代理项就可以直接text[position]，总而言之这个方法被弃用了
-    private static int ConvertToCodePoint(string text, int position)
-    {
-        if (char.IsHighSurrogate(text[position]) || char.IsLowSurrogate(text[position]))
-            return text[position];
-
-        return char.ConvertToUtf32(text, position);
-    }
-
-    public static IEnumerable<int> ToCodePoints(string text)
-    {
-        Guard.IsNotNull(text);
-
-        for (int i = 0; i < text.Length;)
-        {
-            int code = char.ConvertToUtf32(text, i++);
-            if (code >= BmpThreshold)
-                i++;
-            yield return code;
-        }
-    }
-    */
-
     /// <inheritdoc/>
     public static byte[] Decode(string encodeText) => Decode(encodeText, false);
 

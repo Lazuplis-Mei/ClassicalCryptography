@@ -70,7 +70,7 @@ public static partial class ChineseHelper
     });
 
     /// <summary>
-    /// 获取汉字的默认拼音
+    /// 获取汉字的默认拼音(严格形式)
     /// </summary>
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string GetDefaultPinyin(char character)
@@ -91,7 +91,7 @@ public static partial class ChineseHelper
     {
         IList<Match> chineseChars = ChineseCharWithPinyin().Matches(text);
         var result = new ChinesePinyin[chineseChars.Count];
-        for (int i = 0; i < chineseChars.Count; i++)
+        for (int i = 0; i < result.Length; i++)
         {
             var match = chineseChars[i];
             var character = match.ValueSpan[0];
@@ -101,6 +101,18 @@ public static partial class ChineseHelper
                 throw new ArgumentException($"`{pinYin}`不是字符`{character}`的读音", nameof(text));
             result[i] = new ChinesePinyin(pinYin);
         }
+        return result;
+    }
+
+    /// <summary>
+    /// 将注音符号(包含声调)转换成拼音
+    /// </summary>
+    public static ChinesePinyin[] GetPinyinsFromZhuyins(string zhuyins)
+    {
+        IList<Match> matches = ZhuyinRegex().Matches(zhuyins);
+        var result = new ChinesePinyin[matches.Count];
+        for (int i = 0; i < result.Length; i++)
+            result[i] = ChinesePinyin.FromZhuyin(matches[i].Value);
         return result;
     }
 
@@ -143,7 +155,6 @@ public static partial class ChineseHelper
     /// <summary>
     /// 拼音(严格形式)是否是汉字的读音之一
     /// </summary>
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsPinyinOf(string pinyin, char character)
     {
         var chineseChar = new ChineseChar(character);
@@ -195,4 +206,7 @@ public static partial class ChineseHelper
 
     [GeneratedRegex(@"[〇\u4E00-\u9FA5\uE81A-\uE863](\((?<Pinyin>[A-Za-zāáǎàōóǒòēéěèīíǐìūúǔùǖǘǚǜ]{1,6}[1-5])\))?")]
     private static partial Regex ChineseCharWithPinyin();
+
+    [GeneratedRegex(@"[\u3105-\u3129]{1,3}[ˉˊˇˋ˙]")]
+    private static partial Regex ZhuyinRegex();
 }

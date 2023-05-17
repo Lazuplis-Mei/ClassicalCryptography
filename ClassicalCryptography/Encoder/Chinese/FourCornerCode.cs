@@ -4,11 +4,18 @@
 /// <see href="https://zh.wikipedia.org/zh-cn/%E5%9B%9B%E8%A7%92%E5%8F%B7%E7%A0%81">四角号码</see>
 /// </summary>
 /// <remarks>
-/// 在线工具:<see href="https://www.qqxiuzi.cn/bianma/sijiaohaoma/">四角号码</see>
+/// 在线工具:<see href="https://www.qqxiuzi.cn/bianma/sijiaohaoma/">四角号码</see><br/>
+/// 〇<br/>
+/// [\u3400-\u4DBF]<br/>
+/// [\u4E00-\u9FFF]<br/>
+/// 至少还包括以下扩展区的部分<br/>
+/// 20000-2A6DF<br/>
+/// 2A700-2B739<br/>
 /// </remarks>
 [Introduction("四角号码", "检索汉字的一种方法，依据汉字四个角的笔形编制的数字号码")]
-public class FourCornerCode
+public static class FourCornerCode
 {
+    private const int PAD_VALUE = 100000;
     private static readonly Dictionary<int, string> fourCornerCodeData;
 
     static FourCornerCode()
@@ -18,7 +25,7 @@ public class FourCornerCode
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine()!;
-            fourCornerCodeData.Add(Convert.ToInt32($"1{line[..5]}"), line[5..]);
+            fourCornerCodeData.Add(PAD_VALUE + line.AsSpan(0, 5).ReadDigits5(), line[5..]);
         }
     }
 
@@ -31,7 +38,7 @@ public class FourCornerCode
     /// </remarks>
     public static string FromCodeString(string codeText)
     {
-        return new(codeText.Partition(5, s => fourCornerCodeData[100000 + int.Parse(s)][0]));
+        return string.Concat(codeText.Partition(5, s => char.ConvertFromUtf32(Rune.GetRuneAt(fourCornerCodeData[PAD_VALUE + s.ReadDigits5()], 0).Value)));
     }
 
     /// <summary>
@@ -39,7 +46,7 @@ public class FourCornerCode
     /// </summary>
     public static string FromCode(string code)
     {
-        return fourCornerCodeData[100000 + Convert.ToInt32(code)];
+        return fourCornerCodeData[PAD_VALUE + code.AsSpan().ReadDigits5()];
     }
 
     /// <summary>
@@ -58,8 +65,35 @@ public class FourCornerCode
             if (code == 0)
                 continue;
             else
-                code -= 100000;
-            code.ToString("D5").CopyTo(currentSpan);
+                code -= PAD_VALUE;
+            currentSpan.WriteDigits5(code);
+            currentSpan = currentSpan[5..];
+        }
+        return new(span[..^currentSpan.Length]);
+    }
+
+    /// <summary>
+    /// 转换成四角号码串(针对性处理扩展汉字)
+    /// </summary>
+    /// <remarks>
+    /// 使用<see cref="string.EnumerateRunes"/>代替字符枚举
+    /// </remarks>
+    [SkipLocalsInit]
+    public static string ToCodesStringEx(string text)
+    {
+        int length = text.Length * 5;
+        using var memory = length.TryAllocString();
+        Span<char> span = length.CanAllocString() ? stackalloc char[length] : memory.Span;
+        var currentSpan = span;
+        foreach (var rune in text.EnumerateRunes())
+        {
+            string character = char.ConvertFromUtf32(rune.Value);
+            var code = fourCornerCodeData.FirstOrDefault(pair => pair.Value.Contains(character)).Key;
+            if (code == 0)
+                continue;
+            else
+                code -= PAD_VALUE;
+            currentSpan.WriteDigits5(code);
             currentSpan = currentSpan[5..];
         }
         return new(span[..^currentSpan.Length]);
