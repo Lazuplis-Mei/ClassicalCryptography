@@ -34,7 +34,7 @@ namespace ClassicalCryptographyTest
         public void Test()
         {
             //Stereogram.MakeWithPattern(new("E:/shark.png"),new("E:/jellybeans2.jpg")).Save("E:/stereogram.png");
-            PhantomTank.MirageTank(new Bitmap(@"D:\Foreground.png"), new Bitmap(@"D:\Background.png")).Save(@"D:\PhantomTank.png");
+            PhantomTank.Mirage(new Bitmap(@"D:\Foreground.png"), new Bitmap(@"D:\Background.png"), true).Save(@"D:\MirageTankGrayscale.png");
         }
     }
 }

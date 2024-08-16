@@ -104,7 +104,7 @@ public static class PhantomTank
     /// <summary>
     /// 将两张图片作为前景和背景组合，背景为彩图
     /// </summary>
-    public static unsafe Bitmap MirageTank(Bitmap foreGround, Bitmap backGround)
+    public static unsafe Bitmap Mirage(Bitmap foreGround, Bitmap backGround, bool grayscale = false)
     {
         var maxWidth = Math.Max(foreGround.Width, backGround.Width);
         var maxHeight = Math.Max(foreGround.Height, backGround.Height);
@@ -126,6 +126,13 @@ public static class PhantomTank
             int R, G, B;
             var fColor = Color.FromArgb(fdataSpan[i]);
             var bColor = Color.FromArgb(bdataSpan[i]);
+            if (grayscale)
+            {
+                var g = fColor.GetGrayscale();
+                fColor = Color.FromArgb(fColor.A, g, g, g);
+                g = bColor.GetGrayscale();
+                bColor = Color.FromArgb(bColor.A, g, g, g);
+            }
 
             R = fColor.R + (255 - fColor.R) * 128 / 255;
             G = fColor.G + (255 - fColor.G) * 128 / 255;
@@ -143,7 +150,7 @@ public static class PhantomTank
             G = (int)Math.Min(255, G * 255 / alpha);
             B = (int)Math.Min(255, B * 255 / alpha);
 
-            dataSpan[i] = Color.FromArgb((int)alpha, R, G, B).ToArgb();
+            dataSpan[i] = BitsHelper.CombineInt32((byte)alpha, (byte)R, (byte)G, (byte)B);
         }
 
         bitmap.UnlockBits(data);
