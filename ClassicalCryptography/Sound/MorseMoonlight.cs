@@ -55,6 +55,7 @@ public static partial class MorseMoonlight
     private const int MEDIUM = 400;
     private const int SHORT = MEDIUM - TIME;
     private const int LONG = MEDIUM + TIME;
+    private const int VERYLONG = MEDIUM + TIME + TIME;
 
     /// <summary>
     /// 音乐
@@ -125,6 +126,10 @@ public static partial class MorseMoonlight
                 case '/':
                     notelist.Add(new(start, 0, matches[i].Value, 127, LONG));
                     start += LONG;
+                    break;
+                case ' ':
+                    notelist.Add(new(start, 0, matches[i].Value, 127, VERYLONG));
+                    start += VERYLONG;
                     break;
                 default:
                     break;

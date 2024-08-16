@@ -101,4 +101,55 @@ public static class PhantomTank
         return bitmap;
     }
 
+    /// <summary>
+    /// 将两张图片作为前景和背景组合，背景为彩图
+    /// </summary>
+    public static unsafe Bitmap MirageTank(Bitmap foreGround, Bitmap backGround)
+    {
+        var maxWidth = Math.Max(foreGround.Width, backGround.Width);
+        var maxHeight = Math.Max(foreGround.Height, backGround.Height);
+        var bitmap = new Bitmap(maxWidth, maxHeight);
+        foreGround = new Bitmap(foreGround, bitmap.Size);
+        backGround = new Bitmap(backGround, bitmap.Size);
+        foreGround.Ensure32bppArgb();
+        backGround.Ensure32bppArgb();
+
+        var data = bitmap.LockBits();
+        var dataSpan = data.AsSpan();
+        var fdata = foreGround.LockBits();
+        var fdataSpan = fdata.AsSpan();
+        var bdata = backGround.LockBits();
+        var bdataSpan = bdata.AsSpan();
+
+        for (int i = 0; i < dataSpan.Length; i++)
+        {
+            int R, G, B;
+            var fColor = Color.FromArgb(fdataSpan[i]);
+            var bColor = Color.FromArgb(bdataSpan[i]);
+
+            R = fColor.R + (255 - fColor.R) * 128 / 255;
+            G = fColor.G + (255 - fColor.G) * 128 / 255;
+            B = fColor.B + (255 - fColor.B) * 128 / 255;
+            var avg1 = (R + G + B) / 3;
+
+            R = bColor.R + bColor.R * (-128) / 255;
+            G = bColor.G + bColor.G * (-128) / 255;
+            B = bColor.B + bColor.B * (-128) / 255;
+            var avg2 = (R + G + B) / 3;
+            double alpha = avg2 - avg1 + 255;
+            if (alpha == 0)
+                alpha = 0.0001;
+            R = (int)Math.Min(255, R * 255 / alpha);
+            G = (int)Math.Min(255, G * 255 / alpha);
+            B = (int)Math.Min(255, B * 255 / alpha);
+
+            dataSpan[i] = Color.FromArgb((int)alpha, R, G, B).ToArgb();
+        }
+
+        bitmap.UnlockBits(data);
+        foreGround.Dispose();
+        backGround.Dispose();
+        return bitmap;
+    }
+
 }

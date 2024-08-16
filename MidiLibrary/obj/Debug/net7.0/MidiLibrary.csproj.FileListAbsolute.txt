@@ -12,3 +12,17 @@ E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\refint
 E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.xml
 E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.pdb
 E:\文档文件\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\ref\MidiLibrary.dll
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\bin\Debug\net7.0\MidiLibrary.deps.json
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\bin\Debug\net7.0\MidiLibrary.dll
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\bin\Debug\net7.0\MidiLibrary.pdb
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\bin\Debug\net7.0\MidiLibrary.xml
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.AssemblyInfoInputs.cache
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.AssemblyInfo.cs
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.csproj.CoreCompileInputs.cache
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.sourcelink.json
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.dll
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\refint\MidiLibrary.dll
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.xml
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\MidiLibrary.pdb
+c:\Users\Administrator\Documents\GitHub\ClassicalCryptography\MidiLibrary\obj\Debug\net7.0\ref\MidiLibrary.dll

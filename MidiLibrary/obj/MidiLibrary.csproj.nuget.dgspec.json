@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "E:\\文档文件\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj": {}
+    "C:\\Users\\Administrator\\Documents\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj": {}
   },
   "projects": {
-    "E:\\文档文件\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj": {
+    "C:\\Users\\Administrator\\Documents\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\文档文件\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj",
+        "projectUniqueName": "C:\\Users\\Administrator\\Documents\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj",
         "projectName": "MidiLibrary",
-        "projectPath": "E:\\文档文件\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj",
-        "packagesPath": "C:\\Users\\39883\\.nuget\\packages\\",
-        "outputPath": "E:\\文档文件\\GitHub\\ClassicalCryptography\\MidiLibrary\\obj\\",
+        "projectPath": "C:\\Users\\Administrator\\Documents\\GitHub\\ClassicalCryptography\\MidiLibrary\\MidiLibrary.csproj",
+        "packagesPath": "C:\\Users\\Administrator\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Administrator\\Documents\\GitHub\\ClassicalCryptography\\MidiLibrary\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\39883\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\Administrator\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net7.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -34,6 +32,11 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
         }
       },
       "frameworks": {
@@ -50,12 +53,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[7.0.18, 7.0.18]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[7.0.18, 7.0.18]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[7.0.18, 7.0.18]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.202\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
         }
       }
     }

@@ -6,7 +6,8 @@ using ClassicalCryptography.Encoder.Chinese;
 using ClassicalCryptography.Encoder.Japanese;
 using ClassicalCryptography.Encoder.PLEncodings;
 using ClassicalCryptography.Image;
-using ClassicalCryptography.Replacement;
+using ClassicalCryptography.Sound;
+using ClassicalCryptography.Transposition;
 using ClassicalCryptography.Utils;
 using CommunityToolkit.Diagnostics;
 using CommunityToolkit.HighPerformance.Buffers;
@@ -33,8 +34,7 @@ namespace ClassicalCryptographyTest
         public void Test()
         {
             //Stereogram.MakeWithPattern(new("E:/shark.png"),new("E:/jellybeans2.jpg")).Save("E:/stereogram.png");
-
-
+            PhantomTank.MirageTank(new Bitmap(@"D:\Foreground.png"), new Bitmap(@"D:\Background.png")).Save(@"D:\PhantomTank.png");
         }
     }
 }
