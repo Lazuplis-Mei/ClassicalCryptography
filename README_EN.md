@@ -724,7 +724,7 @@ JigsawCipher
 * The following figure shows the encrypted text using `1,5,2,3`
 ![JigsawCipher](Images/JigsawCipher.png)
 
-* 演示代码
+* code
 
 ```csharp
 var key = JigsawCipher.Key.FromString("1,2,1");
